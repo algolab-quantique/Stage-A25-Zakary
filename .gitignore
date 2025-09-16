@@ -39,3 +39,10 @@
 
 # debug information files
 *.dwo
+
+main
+perf.data
+*.optrpt
+*.objdump
+/extern/pybind11/
+/.venv

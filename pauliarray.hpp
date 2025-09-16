@@ -1,4 +1,7 @@
 #pragma once
+#include <pybind11/pybind11.h>
+namespace py = pybind11;
+
 #include <iostream>
 #include <cstdint> // uint8_t
 #include <vector>
@@ -8,6 +11,7 @@
 #include <random>
 #include <map>
 #include <cstring>
+
 
 using namespace std;
 using pauli_t = uint8_t;
@@ -24,12 +28,26 @@ map<pauli_t, string> pauli_to_str = {
     {Z, "Z"}
 };
 
+// static const pauli_t product_table[4][4] = {
+//         {I, X, Z, Y},  // I x {I,X,Z,Y}
+//         {X, I, Y, Z},  // X x {I,X,Z,Y}  
+//         {Z, Y, I, X},  // Z x {I,X,Z,Y}
+//         {Y, Z, X, I}   // Y x {I,X,Z,Y}
+// };
+
 static const pauli_t product_table[4][4] = {
-        {I, X, Z, Y},  // I x {I,X,Z,Y}
-        {X, I, Y, Z},  // X x {I,X,Z,Y}  
-        {Z, Y, I, X},  // Z x {I,X,Z,Y}
-        {Y, Z, X, I}   // Y x {I,X,Z,Y}
-};
+        {true, true, true, true},   // I x {I,X,Z,Y}
+        {true, true, false, false}, // X x {I,X,Z,Y}
+        {true, false, true, false}, // Z x {I,X,Z,Y}
+        {true, false, false, true}  // Y x {I,X,Z,Y
+    };
+
+// static const pauli_t product_table[4][4] = {
+//         {1, 1, 1, 1},   // I x {I,X,Z,Y}
+//         {1, 1, 0, 0}, // X x {I,X,Z,Y}
+//         {1, 0, 1, 0}, // Z x {I,X,Z,Y}
+//         {1, 0, 0, 1}  // Y x {I,X,Z,Y
+//     };
 
 static const std::complex<double> phase_table[4][4] = {
         {1,  1,  1,  1},   // I x {I,X,Z,Y}
@@ -168,27 +186,53 @@ void PauliArray::create_xz_strings() {
 }
 
 
-vector<bool> PauliArray::commutes(const PauliArray& other) {
-    int n = this->size();
-    if (n != other.size()) {
-        throw std::invalid_argument("PauliArray sizes");
-    }
-    vector<bool> results(n, false);
-    
-    #pragma omp parallel for
-    for (int i = 0; i < n; i++) {
-        uint8_t z1 = (paulis[i] >> 1) & 0x01;
-        uint8_t x1 = paulis[i] & 0x01;
-        uint8_t z2 = (other.paulis[i] >> 1) & 0x01;
-        uint8_t x2 = other.paulis[i] & 0x01;
+// vector<bool> PauliArray::commutes(const PauliArray& other) {
+//     int n = this->size();
+//     if (n != other.size()) {
+//         throw std::invalid_argument("PauliArray sizes");
+//     }
+//     if (n == 0) return {};
 
-        results[i] = ((z1 * x2 + x1 * z2) % 2 == 0);
-        // results[i] = ( ((z1 & x2) ^ (x1 & z2)) == 0 );
-    }
+//     // pack 1 bit per element for x and z into 64-bit words
+//     size_t words = (n + 63) / 64;
+//     vector<uint64_t> x1w(words, 0), z1w(words, 0), x2w(words, 0), z2w(words, 0);
 
+//     auto pack_bits = [&](const vector<uint8_t>& src, vector<uint64_t>& dst){
+//         #pragma omp parallel for
+//         for (size_t i = 0; i < words; ++i) {
+//             uint64_t w = 0;
+//             size_t base = i * 64;
+//             size_t limit = std::min<size_t>(64, n - base);
+//             for (size_t b = 0; b < limit; ++b) {
+//                 if (src[base + b]) w |= (1ULL << b);
+//             }
+//             dst[i] = w;
+//         }
+//     };
 
-    return results;
-}
+//     pack_bits(this->x_string, x1w);
+//     pack_bits(this->z_string, z1w);
+//     pack_bits(other.x_string, x2w);
+//     pack_bits(other.z_string, z2w);
+
+//     // compute parity words: parity = (z1 & x2) ^ (x1 & z2)
+//     vector<uint64_t> parity(words);
+//     #pragma omp parallel for
+//     for (size_t i = 0; i < words; ++i) {
+//         parity[i] = (z1w[i] & x2w[i]) ^ (x1w[i] & z2w[i]);
+//     }
+
+//     // expand to vector<bool> result: commute if parity bit == 0
+//     vector<bool> results(n);
+//     #pragma omp parallel for
+//     for (int i = 0; i < n; ++i) {
+//         size_t wi = i / 64;
+//         size_t bi = i & 63;
+//         results[i] = ((parity[wi] >> bi) & 1ULL) == 0;
+//     }
+
+//     return results;
+// }
 
 std::ostream &operator<<(std::ostream &os, PauliArray const &pa) { 
     os << "pauliarray[size: " << pa.size() << ", string: [";

@@ -8,7 +8,10 @@
 
 using namespace std;
 
-int n = 500000000;
+#define n 750000000
+// #define n 250000000
+// #define n 100000000
+
 
 void test_pauliarray(){
     // vector<uint8_t> p = {I, X, Y, Z};
@@ -29,7 +32,7 @@ void test_pauliarray(){
     cout << "========== C++ PauliArray ==========" << endl;
     
     auto start_time = std::chrono::high_resolution_clock::now();
-    int n = 500000000;
+    // int n = 500000000;
     // int n = 250000000;
     // int n = 100000000;
     int n2 = 1;
@@ -96,17 +99,28 @@ void test_dpa(){
     cout << "========== C++ DensePauliArray ==========" << endl;
     
     auto start_time = std::chrono::high_resolution_clock::now();
-    int n = 500000000;
+    // int n = 500000000;
     // int n = 250000000;
     // int n = 100000000;
     int n2 = 1;
     cout << "Working with n = " << n << " ..." << endl;
 
     // SparsePauliArray p2(n, true, density);
+    DensePauliArray p1 = DensePauliArray::random(n);
+    DensePauliArray p2 = DensePauliArray::random(n);
 
     auto time_rand = std::chrono::high_resolution_clock::now();
     auto duration_rand = std::chrono::duration_cast<std::chrono::milliseconds>(time_rand - start_time);
     std::cout << "Random generation time: " << duration_rand.count() << " ms" << std::endl;
+
+    auto pr = p1.commutes(p2);
+
+    cout << "DONE!" << endl;
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration_exec = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - time_rand);
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    cout << "Operation time: " << duration_exec.count() << " ms" << std::endl;
+    std::cout << "Execution time: " << duration.count() << " ms" << std::endl;
     
     
     // cout << p1 << endl;
@@ -118,9 +132,9 @@ void test_dpa(){
 
 
 int main() {
-    // test_pauliarray();
+    test_pauliarray();
     // test_spa();
-    test_dpa();
+    // test_dpa();
     
 
 
