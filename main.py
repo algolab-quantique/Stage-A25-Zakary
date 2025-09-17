@@ -49,14 +49,10 @@ def pa_cpp():
     p1 = pc.PauliArray.random(n)
     p2 = pc.PauliArray.random(n)
 
-
     random_gen_time = time.time()
     print(f"Random genetation time: {((random_gen_time-start_time)*1000):.2f} ms")
 
     results = p1.commutes_numpy(p2)
-
-
-    
         
     print("DONE!")
 
