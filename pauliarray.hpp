@@ -1,6 +1,11 @@
 #pragma once
+
+// #ifdef USE_PYBIND11
 #include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
 namespace py = pybind11;
+// #endif
+
 
 #include <iostream>
 #include <cstdint> // uint8_t
@@ -11,6 +16,7 @@ namespace py = pybind11;
 #include <random>
 #include <map>
 #include <cstring>
+#include <chrono>
 
 
 using namespace std;
@@ -69,6 +75,9 @@ class PauliArray {
         ~PauliArray();
         vector<pauli_t> zx_to_paulis(const vector<uint8_t>& z_string, const vector<uint8_t>& x_string) const;
         vector<bool> commutes(const PauliArray& other);
+    // #ifdef USE_PYBIND11
+        py::array_t<uint8_t> commutes_numpy(const PauliArray& other);
+    // #endif
         int size() const;
         vector<uint8_t> get_x_string() const;
         vector<uint8_t> get_z_string() const;
@@ -84,7 +93,6 @@ class PauliArray {
         vector<uint8_t> x_string;
         vector<uint8_t> z_string;
         complex<double> phase;
-        pair<pauli_t, std::complex<double>> lookup_mult(pauli_t a, pauli_t b) const;
         void create_xz_strings();
 
 
@@ -186,53 +194,45 @@ void PauliArray::create_xz_strings() {
 }
 
 
-// vector<bool> PauliArray::commutes(const PauliArray& other) {
-//     int n = this->size();
-//     if (n != other.size()) {
-//         throw std::invalid_argument("PauliArray sizes");
-//     }
-//     if (n == 0) return {};
-
-//     // pack 1 bit per element for x and z into 64-bit words
-//     size_t words = (n + 63) / 64;
-//     vector<uint64_t> x1w(words, 0), z1w(words, 0), x2w(words, 0), z2w(words, 0);
-
-//     auto pack_bits = [&](const vector<uint8_t>& src, vector<uint64_t>& dst){
-//         #pragma omp parallel for
-//         for (size_t i = 0; i < words; ++i) {
-//             uint64_t w = 0;
-//             size_t base = i * 64;
-//             size_t limit = std::min<size_t>(64, n - base);
-//             for (size_t b = 0; b < limit; ++b) {
-//                 if (src[base + b]) w |= (1ULL << b);
-//             }
-//             dst[i] = w;
-//         }
-//     };
-
-//     pack_bits(this->x_string, x1w);
-//     pack_bits(this->z_string, z1w);
-//     pack_bits(other.x_string, x2w);
-//     pack_bits(other.z_string, z2w);
-
-//     // compute parity words: parity = (z1 & x2) ^ (x1 & z2)
-//     vector<uint64_t> parity(words);
-//     #pragma omp parallel for
-//     for (size_t i = 0; i < words; ++i) {
-//         parity[i] = (z1w[i] & x2w[i]) ^ (x1w[i] & z2w[i]);
-//     }
-
-//     // expand to vector<bool> result: commute if parity bit == 0
-//     vector<bool> results(n);
-//     #pragma omp parallel for
-//     for (int i = 0; i < n; ++i) {
-//         size_t wi = i / 64;
-//         size_t bi = i & 63;
-//         results[i] = ((parity[wi] >> bi) & 1ULL) == 0;
-//     }
-
-//     return results;
-// }
+vector<bool> PauliArray::commutes(const PauliArray& other) {
+    int n = this->size();
+    if (n != other.size()) {
+        throw std::invalid_argument("PauliArray sizes");
+    }
+    vector<bool> result(n, true);
+    #pragma omp parallel for
+    for (int i = 0; i < n; i++) {
+        // result[i] = product_table[this->paulis[i]][other.paulis[i]];
+        uint8_t z1 = this->paulis[i] >> 1 & 0x01;
+        uint8_t x1 = this->paulis[i] & 0x01;
+        uint8_t z2 = other.paulis[i] >> 1 & 0x01;
+        uint8_t x2 = other.paulis[i] & 0x01;
+        result[i] = (z1 * x2 + x1 * z2) % 2 == 0;
+    }
+    return result;
+     
+}
+// #ifdef USE_PYBIND11
+py::array_t<uint8_t> PauliArray::commutes_numpy(const PauliArray& other) {
+    // py::gil_scoped_release release;
+    
+    int n = this->size();
+    if (n != other.size()) {
+        throw std::invalid_argument("PauliArray sizes");
+    }
+    
+    auto result = py::array_t<bool>(n);
+    auto result_ptr = result.mutable_data();
+    
+    auto now = std::chrono::high_resolution_clock::now();
+    #pragma omp parallel for
+    for (int i = 0; i < n; i++) {
+        result_ptr[i] = product_table[this->paulis[i]][other.paulis[i]];
+    }
+    cout << "Commute C++ time : " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now).count() << " ms" << endl;
+    return result;
+}
+// #endif
 
 std::ostream &operator<<(std::ostream &os, PauliArray const &pa) { 
     os << "pauliarray[size: " << pa.size() << ", string: [";
@@ -287,19 +287,19 @@ PauliArray PauliArray::compose(const PauliArray& other) const {
     return PauliArray(move(new_z_strings), move(new_x_strings), complex<double>(1,0));
 }
 
-// PauliArray PauliArray::tensor(const PauliArray& other) const {
-//     vector<pauli_t> result_vector(this->size(), 0);
-//     complex<double> tot_phase = this->phase * other.phase;
-//     for (int i = 0; i < this->size(); i++) {
-//         pair<pauli_t, complex<double>> res = lookup_mult(this->paulis[i], other.paulis[i]);
-//         tot_phase *= res.second;
-//         result_vector[i] = res.first;
-//     }
-//     PauliArray result_array(result_vector);
-//     result_array.phase = tot_phase; 
-//     return result_array;
+PauliArray PauliArray::tensor(const PauliArray& other) const {
+    vector<pauli_t> result_vector(this->size(), 0);
+    complex<double> tot_phase = this->phase * other.phase;
+    for (int i = 0; i < this->size(); i++) {
+        // pair<pauli_t, complex<double>> res = lookup_mult(this->paulis[i], other.paulis[i]);
+        // tot_phase *= res.second;
+        // result_vector[i] = res.first;
+    }
+    PauliArray result_array(result_vector);
+    result_array.phase = tot_phase; 
+    return result_array;
     
-// }
+}
 
 
 
@@ -347,3 +347,4 @@ PauliArray PauliArray::concatenate(const PauliArray& other) const {
 
 
 }
+

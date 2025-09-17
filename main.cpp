@@ -1,15 +1,14 @@
 #include <chrono>
 #include <iostream>
 
-
 #include "pauliarray.hpp"
 #include "sparsepauliarray.hpp"
 #include "densepauliarray.hpp"
 
 using namespace std;
 
-#define n 750000000
-// #define n 250000000
+// #define n 550000000
+#define n 250000000
 // #define n 100000000
 
 

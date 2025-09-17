@@ -1,3 +1,6 @@
-import example
+import paulicpp
 
-print(example.add(3, 4))
+
+n = 750000000
+pa = paulicpp.PauliArray.random(n)
+# print(pa)
