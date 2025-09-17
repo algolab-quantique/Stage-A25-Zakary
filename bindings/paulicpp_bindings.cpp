@@ -8,10 +8,10 @@ PYBIND11_MODULE(paulicpp, m) {
     m.doc() = "Python bindings for the PauliArray class using Pybind11";
 
     py::class_<PauliArray>(m, "PauliArray")
-        .def(py::init<>())  // Default constructor
-        .def(py::init<std::vector<pauli_t>>())  // Constructor with pauli vector
-        .def(py::init<std::vector<pauli_t>, int>())  // Constructor with pauli vector and flag
-        .def(py::init<std::vector<uint8_t>, std::vector<uint8_t>, std::complex<double>>())  // Constructor with z_string, x_string, and phase
+        .def(py::init<>()) 
+        .def(py::init<std::vector<pauli_t>>())  
+        .def(py::init<std::vector<pauli_t>, int>()) 
+        .def(py::init<std::vector<uint8_t>, std::vector<uint8_t>, std::complex<double>>()) 
         .def("zx_to_paulis", &PauliArray::zx_to_paulis, "Convert ZX strings to Pauli representation")
         .def("commutes", &PauliArray::commutes, "Check commutation with another PauliArray")
         .def("commutes_numpy", &PauliArray::commutes_numpy, "Check commutation with another PauliArray and return a Numpy array")
