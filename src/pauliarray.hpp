@@ -218,7 +218,7 @@ py::array_t<uint8_t> PauliArray::commutes_numpy(const PauliArray& other) {
     
     int n = this->size();
     if (n != other.size()) {
-        throw std::invalid_argument("PauliArray sizes");
+        throw std::invalid_argument("PauliArray sizes: " + std::to_string(n) + " != " + std::to_string(other.size()));
     }
     
     auto result = py::array_t<bool>(n);
@@ -304,8 +304,8 @@ PauliArray PauliArray::tensor(const PauliArray& other) const {
 
 
 PauliArray PauliArray::random(int n) {
-    vector<pauli_t> random_paulis;
-    random_paulis.reserve(n);
+    vector<pauli_t> random_paulis(n, 0);
+    // random_paulis.reserve(n);
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, 3);
@@ -313,8 +313,8 @@ PauliArray PauliArray::random(int n) {
 
     // #pragma omp parallel for
     for (int i = 0; i < n; i++) {
-        random_paulis.push_back(dis(gen));
-        // random_paulis[i] = dis(gen);
+        // random_paulis.push_back(dis(gen));
+        random_paulis[i] = dis(gen);
     }
     return PauliArray(std::move(random_paulis));
 }
