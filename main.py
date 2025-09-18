@@ -3,7 +3,7 @@ import qiskit
 import matplotlib.pyplot as plt
 import numpy as np
 
-import pauliarray
+import pauliarray as pa
 
 import paulicpp as pc
 import densepaulicpp as dpc
@@ -11,8 +11,8 @@ import densepaulicpp as dpc
 
 
 # n = 250000000
-n = 1000000
-dim = 500
+n = 400000
+dim = 1000
 # n = 50000000
 
 
@@ -24,8 +24,8 @@ def pa_py():
 
     shape = (dim,)
 
-    p1 = pauliarray.PauliArray.random(shape, n)
-    p2 = pauliarray.PauliArray.random(shape, n)
+    p1 = pa.PauliArray.random(shape, n)
+    p2 = pa.PauliArray.random(shape, n)
 
     random_gen_time = time.time()
     print(f"Random genetation time: {((random_gen_time-start_time)*1000):.2f} ms")
@@ -36,7 +36,7 @@ def pa_py():
 
     # results = p1.compose(p2)
     results = p1.tensor(p2)
-    print(results)
+    # print(results)
 
     print(p1)
     print("DONE!")
@@ -88,6 +88,7 @@ def dpa_cpp():
     # print(p2.to_string())
     # results = p1.commutes_batch(p2)
     pr = p1.tensor(p2)
+    # pr = p1.compose_batch(p2)
     # print(pr.to_string())
         
     print("DONE!")

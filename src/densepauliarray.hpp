@@ -50,6 +50,8 @@ public:
     int get_num_operators() const { return num_operators; }
     int get_num_qubits() const { return num_qubits; }
 
+    uint32_t bitwise_dot(const uint8_t* a, const uint8_t* b, size_t length) const;
+
 private:
     uint8_t* z_data;  // Flat array: [op0_q0, op0_q1, ..., op0_qN, op1_q0, op1_q1, ...]
     uint8_t* x_data;  
@@ -126,10 +128,9 @@ inline DensePauliArray::~DensePauliArray() {
 inline void DensePauliArray::allocate_data() {
     data_size = static_cast<size_t>(num_operators) * num_qubits;
     
-    // Align to 64 bytes for optimal cache line usage
     size_t aligned_size = (data_size + 63) & ~63;
     
-    if (posix_memalign(reinterpret_cast<void**>(&z_data), 64, aligned_size) != 0) {
+    if (posix_memalign(reinterpret_cast<void**>(&z_data), 64, aligned_size) != 0) { //a tester sur mac
         z_data = nullptr;
     }
     if (posix_memalign(reinterpret_cast<void**>(&x_data), 64, aligned_size) != 0) {
@@ -155,6 +156,7 @@ inline void DensePauliArray::copy_from(const DensePauliArray& other) {
     memcpy(x_data, other.x_data, data_size);
 }
 
+// OK! Envrion 4x plus rapide que PA
 DensePauliArray DensePauliArray::random(int num_operators, int num_qubits) {
     DensePauliArray result(num_operators, num_qubits);
     
@@ -174,6 +176,7 @@ DensePauliArray DensePauliArray::random(int num_operators, int num_qubits) {
     return result;
 }
 
+// OK! Avec PyBind, environ 10% (1.1x) plus rapide que PA (commute_with)
 vector<bool> DensePauliArray::commutes_batch(const DensePauliArray& other) const {
     if (num_operators != other.num_operators || num_qubits != other.num_qubits) {
         throw invalid_argument("Dimension mismatch");
@@ -202,6 +205,8 @@ vector<bool> DensePauliArray::commutes_batch(const DensePauliArray& other) const
     return results;
 }
 
+
+// NON! 4x TROP LENT!
 DensePauliArray DensePauliArray::compose_batch(const DensePauliArray& other) const {
     if (num_operators != other.num_operators || num_qubits != other.num_qubits) {
         throw invalid_argument("Dimension mismatch");
@@ -211,11 +216,33 @@ DensePauliArray DensePauliArray::compose_batch(const DensePauliArray& other) con
     
     #pragma omp parallel for schedule(static)
     for (size_t i = 0; i < data_size; i++) {
-        new_z[i] = (z_data[i] + other.z_data[i]) & 1;
-        new_x[i] = (x_data[i] + other.x_data[i]) & 1;
+        new_z[i] = z_data[i] ^ other.z_data[i];
+        new_x[i] = x_data[i] ^ other.x_data[i];
     }
+    
+    uint32_t this_phase_power = bitwise_dot(z_data, x_data, data_size);
+    uint32_t other_phase_power = bitwise_dot(other.z_data, other.x_data, data_size);
+    uint32_t new_phase_power = bitwise_dot(new_z, new_x, data_size);
+    uint32_t commutation_phase_power = 2 * bitwise_dot(x_data, other.z_data, data_size);
+    uint32_t total_phase_power = (this_phase_power + other_phase_power + commutation_phase_power - new_phase_power) % 4;
+    cout << "Phase power: " << total_phase_power << endl;
+
+
     DensePauliArray result(new_z, new_x, num_operators, num_qubits);
     
+    return result;
+}
+
+//fonction pourrite ca vaut rien
+uint32_t DensePauliArray::bitwise_dot(const uint8_t* data1, const uint8_t* data2, size_t size) const {
+    uint32_t result = 0;
+
+    #pragma omp parallel for reduction(+:result) schedule(static)
+    for (size_t i = 0; i < size; i++) {
+        uint8_t and_result = data1[i] & data2[i];
+        result += __builtin_popcount(and_result); //jsp a tester si ca marche ou pas
+    }
+
     return result;
 }
 
@@ -239,11 +266,10 @@ string DensePauliArray::to_string() const {
     }
 
     return res;
-            
-   
 }
 
-// Fait le produit tensoriel (concatenation)
+// OK! Pour petits tableaux, ~4x plus rapide que PA
+// Pour grands tableaux, ~6x plus rapide que PA
 DensePauliArray DensePauliArray::tensor(const DensePauliArray& other) const {
     int new_num_qubits = num_qubits + other.num_qubits;
     int new_num_operators = num_operators;
@@ -258,7 +284,7 @@ DensePauliArray DensePauliArray::tensor(const DensePauliArray& other) const {
     for (int op = 0; op < new_num_operators; op++) {
         memcpy(new_z + op * new_num_qubits, z_data + op * num_qubits, num_qubits);
         memcpy(new_x + op * new_num_qubits, x_data + op * num_qubits, num_qubits);
-        
+
         memcpy(new_z + op * new_num_qubits + num_qubits, other.z_data + op * other.num_qubits, other.num_qubits);
         memcpy(new_x + op * new_num_qubits + num_qubits, other.x_data + op * other.num_qubits, other.num_qubits);
     }
@@ -266,4 +292,6 @@ DensePauliArray DensePauliArray::tensor(const DensePauliArray& other) const {
 
     return DensePauliArray(new_z, new_x, new_num_operators, new_num_qubits);
 }
+
+
 

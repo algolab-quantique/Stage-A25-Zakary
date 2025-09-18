@@ -85,7 +85,7 @@ def make_stubs(option="all"):
     
 
 def add_pythonpath():
-#     export PYTHONPATH=/home/zwouklebleu/Documents/STAGES/T1/Stage-A25-Zakary/stubs:$PYTHONPATH
+#     export PYTHONPATH=/home/user/Documents/STAGES/T1/Stage-A25-Zakary/stubs:$PYTHONPATH
 # python3 test.py
     print("===== Setting PYTHONPATH =====")
     # stubs_path = os.path.join(cwd, "stubs")
