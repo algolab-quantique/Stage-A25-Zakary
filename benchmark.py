@@ -81,6 +81,7 @@ def dpa_cpp(option="all"):
             compose_time = time.time()
             compose_duration = (compose_time - commutes_time) * 1000
             
+            
             return random_duration, tensor_duration, commutes_duration, compose_duration
             
         case "tensor":

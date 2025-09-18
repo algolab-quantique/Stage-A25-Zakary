@@ -25,23 +25,34 @@ using pauli_t = uint8_t;
 
 class DensePauliArray {
 public:
+    //constructors/destructors
     DensePauliArray(int num_operators, int num_qubits);
     DensePauliArray(uint8_t* z_data, uint8_t* x_data, int num_operators, int num_qubits);
     DensePauliArray(const DensePauliArray& other);
     DensePauliArray(DensePauliArray&& other) noexcept;
-    DensePauliArray& operator=(const DensePauliArray& other);
-    DensePauliArray& operator=(DensePauliArray&& other) noexcept;
+    DensePauliArray identities(int num_operators, int num_qubits) const;
     ~DensePauliArray();
     
-    static DensePauliArray random(int num_operators, int num_qubits);
+    //operators and friends
+    DensePauliArray& operator=(const DensePauliArray& other);
+    DensePauliArray& operator=(DensePauliArray&& other) noexcept;
     
+    //computational methods
+    static DensePauliArray random(int num_operators, int num_qubits);
     vector<bool> commutes_batch(const DensePauliArray& other) const;
     DensePauliArray compose_batch(const DensePauliArray& other) const;
     DensePauliArray tensor(const DensePauliArray& other) const;
+    bool is_diagonal() const;
+    bool is_identity() const;
     
+    //affichage
     string to_string() const;
     
+    //helpers
+    uint32_t bitwise_dot(const uint8_t* a, const uint8_t* b, size_t length) const;
+    
     // Data layout: [operator][qubit]
+    //inlines 
     inline uint8_t get_z(int op, int qubit) const { return z_data[op * num_qubits + qubit]; }
     inline uint8_t get_x(int op, int qubit) const { return x_data[op * num_qubits + qubit]; }
     inline void set_z(int op, int qubit, uint8_t val) { z_data[op * num_qubits + qubit] = val; }
@@ -50,16 +61,17 @@ public:
     int get_num_operators() const { return num_operators; }
     int get_num_qubits() const { return num_qubits; }
 
-    uint32_t bitwise_dot(const uint8_t* a, const uint8_t* b, size_t length) const;
 
 private:
-    uint8_t* z_data;  // Flat array: [op0_q0, op0_q1, ..., op0_qN, op1_q0, op1_q1, ...]
-    uint8_t* x_data;  
-    int num_operators;
-    int num_qubits;
+    // Flat array: [op0_q0, op0_q1, ..., op0_qN, op1_q0, op1_q1, ...]
+    uint8_t* z_data; //z_strings/voids
+    uint8_t* x_data;  //x_strings/voids
+    int num_operators; //first dimension
+    int num_qubits; // second dimension
     size_t data_size;
     bool owns_data;
     
+    //helpers
     void allocate_data();
     void deallocate_data();
     void copy_from(const DensePauliArray& other);
@@ -176,7 +188,13 @@ DensePauliArray DensePauliArray::random(int num_operators, int num_qubits) {
     return result;
 }
 
-// OK! Avec PyBind, environ 10% (1.1x) plus rapide que PA (commute_with)
+/**
+ * * OK? ~1.1x plus rapide que PA
+ * TODO: optimiser davantage
+ * Fait un test element-wise de commutation entre this et other
+ * @param other test
+ * @return vector<bool> de taille num_operators, true si commute, false sinon
+ */
 vector<bool> DensePauliArray::commutes_batch(const DensePauliArray& other) const {
     if (num_operators != other.num_operators || num_qubits != other.num_qubits) {
         throw invalid_argument("Dimension mismatch");
@@ -206,8 +224,14 @@ vector<bool> DensePauliArray::commutes_batch(const DensePauliArray& other) const
 }
 
 
-// NON! 4x TROP LENT!
+/**
+ * ! NON! TROP LENT
+ * TODO: rendre ca pas dogwater (jsp)
+ * 
+ * Fait la composition entre this et other
+ */
 DensePauliArray DensePauliArray::compose_batch(const DensePauliArray& other) const {
+
     if (num_operators != other.num_operators || num_qubits != other.num_qubits) {
         throw invalid_argument("Dimension mismatch");
     }
@@ -268,9 +292,14 @@ string DensePauliArray::to_string() const {
     return res;
 }
 
-// OK! Pour petits tableaux, ~4x plus rapide que PA
-// Pour grands tableaux, ~6x plus rapide que PA
+
+/**
+ * Fait le produit tensoriel entre this et other. En realite, c'est juste une concatenation
+ */
+// * OK! Pour petits tableaux, ~4x plus rapide que PA
+// * Pour grands tableaux, ~6x plus rapide que PA
 DensePauliArray DensePauliArray::tensor(const DensePauliArray& other) const {
+    
     int new_num_qubits = num_qubits + other.num_qubits;
     int new_num_operators = num_operators;
     size_t new_data_size = static_cast<size_t>(new_num_operators) * new_num_qubits;
@@ -291,6 +320,29 @@ DensePauliArray DensePauliArray::tensor(const DensePauliArray& other) const {
 
 
     return DensePauliArray(new_z, new_x, new_num_operators, new_num_qubits);
+}
+
+bool DensePauliArray::is_diagonal() const {
+    for (size_t i = 0; i < data_size; i++) {
+        if (x_data[i] != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool DensePauliArray::is_identity() const {
+    for (size_t i = 0; i < data_size; i++) {
+        if (x_data[i] != 0 || z_data[i] != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+DensePauliArray DensePauliArray::identities(int num_operators, int num_qubits) const {
+    DensePauliArray result(num_operators, num_qubits);
+    return result;
 }
 
 
