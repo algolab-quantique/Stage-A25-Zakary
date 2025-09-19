@@ -13,7 +13,7 @@ def compile_pauliarray():
             "-fopenmp",
             "-O3",
             "-march=native",
-            "-Wall",
+            # "-Wall",
             "-shared",
             "-std=c++17",
             "-fPIC",
@@ -34,7 +34,7 @@ def compile_densepauliarray():
             "-fopenmp",
             "-O3",
             "-march=native",
-            "-Wall",
+            # "-Wall",
             "-shared",
             "-std=c++17",
             "-fPIC",
@@ -44,6 +44,8 @@ def compile_densepauliarray():
             "densepaulicpp$(python3-config --extension-suffix)"
         ]
         subprocess.run(" ".join(command), shell=True, check=True)
+        print("DensePauliArray - OK")
+
     except subprocess.CalledProcessError as e:
         print(f"An error occurred while compiling densepauliarray: {e}")
 
@@ -90,22 +92,25 @@ def add_pythonpath():
 #     export PYTHONPATH=/home/user/Documents/STAGES/T1/Stage-A25-Zakary/stubs:$PYTHONPATH
 # python3 test.py
     print("===== Setting PYTHONPATH =====")
-    # stubs_path = os.path.join(cwd, "stubs")
-    # if stubs_path not in sys.path:
-    #     sys.path.append(stubs_path)
-    try:
-        command = [
-            "export",
-            "PYTHONPATH=" + os.path.join(cwd, "stubs") + ":$PYTHONPATH"
-        ]
-        subprocess.run(" ".join(command), shell=True, check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"An error occurred while setting PYTHONPATH: {e}")
+    stubs_path = os.path.join(cwd, "stubs")
+    bindings_path = os.path.join(cwd, "bindings")
+    
+    current_pythonpath = os.environ.get('PYTHONPATH', '')
+    new_pythonpath = f"{bindings_path}:{stubs_path}:{current_pythonpath}"
+    os.environ['PYTHONPATH'] = new_pythonpath
+    
+    if stubs_path not in sys.path:
+        sys.path.insert(0, stubs_path)
+    if bindings_path not in sys.path:
+        sys.path.insert(0, bindings_path)
+    
+    print(f"PYTHONPATH set to: {new_pythonpath}")
+
     
 
 def main():
     compile_cpp("dpa")
-    add_pythonpath()
+    # add_pythonpath()
 
 
 if __name__ == "__main__":

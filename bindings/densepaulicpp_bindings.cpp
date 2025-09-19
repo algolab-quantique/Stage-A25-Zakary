@@ -22,5 +22,11 @@ PYBIND11_MODULE(densepaulicpp, m) {
                     py::arg("num_operators"), py::arg("num_qubits"), 
                     "Generate a random DensePauliArray")
 
-        .def("to_string", &DensePauliArray::to_string, "String representation");
+        .def("to_string", &DensePauliArray::to_string, "String representation")
+        .def("is_diagonal", &DensePauliArray::is_diagonal, "Check if the array is diagonal")
+          .def("is_identity", &DensePauliArray::is_identity, "Check if the array is identity")
+          .def_static("identities", &DensePauliArray::identities, 
+               py::arg("num_operators"), py::arg("num_qubits"), "Generate identity DensePauliArray")
+          .def("swap_zx", &DensePauliArray::swap_zx, "Swap Z and X components")
+          .def("traces", &DensePauliArray::traces, "Compute the trace of the DensePauliArray");
 }

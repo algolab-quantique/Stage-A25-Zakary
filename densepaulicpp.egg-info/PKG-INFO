@@ -1,3 +1,20 @@
+Metadata-Version: 2.4
+Name: densepaulicpp
+Version: 0.1.0
+Summary: projet
+Author-email: Your Name <your.email@example.com>
+License: n/a
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Provides-Extra: test
+Requires-Dist: pytest; extra == "test"
+Requires-Dist: numpy; extra == "test"
+
 # PauliC++ 
 WIP project which converts some of [PauliArray](https://github.com/algolab-quantique/pauliarray)'s functions to C++ in order to speed up the library all the whilst retaining the easy-to-use Python structure and syntax.
 
@@ -10,9 +27,9 @@ WIP project which converts some of [PauliArray](https://github.com/algolab-quant
 ## Installation
 #### Requirements
 - A python3.x.x interpreter
-- You need these Python librairies, installable via ***pip***: `PyBind11`, `mypy`, `NumPy`
+- You need these Python librairies, installable via ***pip***: `PyBind11`, `mypy`, `NumPy` and `Matplotlib`
 - `PauliArray` needs to be localy installed
 - A modern C++ compiler which supports at least C++17. For the moment **only** `gcc/g++` is supported
 - A Unix system
 
-Go to the directory where `compiler.py` is in, then run the script. If no errors occur, you then `pip install -e .` to install locally. Once done, you can access the exposed C++ calls as you would any other Python library via `import paulicpp` and `import densepaulicpp`. 
+Go to the directory where `compiler.py` is in, then run the script. If no errors occur, you can access the exposed C++ calls as you would any other Python library via `import paulicpp` and `import densepaulicpp`. 

@@ -30,7 +30,7 @@ public:
     DensePauliArray(uint8_t* z_data, uint8_t* x_data, int num_operators, int num_qubits);
     DensePauliArray(const DensePauliArray& other);
     DensePauliArray(DensePauliArray&& other) noexcept;
-    DensePauliArray identities(int num_operators, int num_qubits) const;
+    static DensePauliArray identities(int num_operators, int num_qubits);
     ~DensePauliArray();
     
     //operators and friends
@@ -44,6 +44,8 @@ public:
     DensePauliArray tensor(const DensePauliArray& other) const;
     bool is_diagonal() const;
     bool is_identity() const;
+    bool swap_zx();
+    int traces() const; 
     
     //affichage
     string to_string() const;
@@ -237,19 +239,39 @@ DensePauliArray DensePauliArray::compose_batch(const DensePauliArray& other) con
     }
     uint8_t* new_z = (uint8_t*)aligned_alloc(64, data_size);
     uint8_t* new_x = (uint8_t*)aligned_alloc(64, data_size);
+
+    uint8_t* and_z = (uint8_t*)aligned_alloc(64, data_size);
+    uint8_t* and_x = (uint8_t*)aligned_alloc(64, data_size);
     
     #pragma omp parallel for schedule(static)
     for (size_t i = 0; i < data_size; i++) {
-        new_z[i] = z_data[i] ^ other.z_data[i];
+        new_z[i] = z_data[i] ^ other.z_data[i]; // if both 1 -> 0, if one 1 -> 1, if both 0 -> 0
         new_x[i] = x_data[i] ^ other.x_data[i];
+
+        and_z[i] = z_data[i] & other.z_data[i]; //equiv to mul/matmul/wahterver
+        and_x[i] = x_data[i] & other.x_data[i];
+
+        
+        
     }
+    // int tx_oz = bitwise_dot(this->x_data, other.z_data, data_size);
+
+    // int mod2_power = tx_oz
+    //                 + bitwise_dot(and_z, new_x, data_size)
+    //                 + bitwise_dot(new_z, and_x, data_size);
     
+    // int mod4_power = (bitwise_dot(this->z_data, other.x_data, data_size)
+    //                 + tx_oz
+    //                 + 2 * mod2_power) % 4;
+    // cout << "Mod4 power: " << mod4_power << endl;
     uint32_t this_phase_power = bitwise_dot(z_data, x_data, data_size);
     uint32_t other_phase_power = bitwise_dot(other.z_data, other.x_data, data_size);
     uint32_t new_phase_power = bitwise_dot(new_z, new_x, data_size);
     uint32_t commutation_phase_power = 2 * bitwise_dot(x_data, other.z_data, data_size);
     uint32_t total_phase_power = (this_phase_power + other_phase_power + commutation_phase_power - new_phase_power) % 4;
+
     // cout << "Phase power: " << total_phase_power << endl;
+
 
 
     DensePauliArray result(new_z, new_x, num_operators, num_qubits);
@@ -340,10 +362,33 @@ bool DensePauliArray::is_identity() const {
     return true;
 }
 
-DensePauliArray DensePauliArray::identities(int num_operators, int num_qubits) const {
+DensePauliArray DensePauliArray::identities(int num_operators, int num_qubits) {
     DensePauliArray result(num_operators, num_qubits);
     return result;
 }
+
+bool DensePauliArray::swap_zx() {
+    if (!owns_data) {
+        throw runtime_error("data ownership required to swap");
+    }
+    // #pragma omp parallel for schedule(static)
+    // for (size_t i = 0; i < data_size; i++) {
+    //     std::swap(z_data[i], x_data[i]);
+    // }
+    std::swap(z_data, x_data);
+    return true;
+}
+
+int DensePauliArray::traces() const {
+    if (!is_identity()) {
+        return 0;
+    }
+    return 1 << (num_qubits); // 2^n
+}
+
+
+
+
 
 
 
