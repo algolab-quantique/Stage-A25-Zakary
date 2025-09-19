@@ -249,7 +249,7 @@ DensePauliArray DensePauliArray::compose_batch(const DensePauliArray& other) con
     uint32_t new_phase_power = bitwise_dot(new_z, new_x, data_size);
     uint32_t commutation_phase_power = 2 * bitwise_dot(x_data, other.z_data, data_size);
     uint32_t total_phase_power = (this_phase_power + other_phase_power + commutation_phase_power - new_phase_power) % 4;
-    cout << "Phase power: " << total_phase_power << endl;
+    // cout << "Phase power: " << total_phase_power << endl;
 
 
     DensePauliArray result(new_z, new_x, num_operators, num_qubits);
@@ -304,7 +304,7 @@ DensePauliArray DensePauliArray::tensor(const DensePauliArray& other) const {
     int new_num_operators = num_operators;
     size_t new_data_size = static_cast<size_t>(new_num_operators) * new_num_qubits;
 
-    cout << "Tensor C++: new_num_operators = " << new_num_operators << ", new_num_qubits = " << new_num_qubits << ", new_data_size = " << new_data_size << endl;
+    // cout << "Tensor C++: new_num_operators = " << new_num_operators << ", new_num_qubits = " << new_num_qubits << ", new_data_size = " << new_data_size << endl;
     
     uint8_t* new_z = (uint8_t*)aligned_alloc(64, new_data_size);
     uint8_t* new_x = (uint8_t*)aligned_alloc(64, new_data_size);
