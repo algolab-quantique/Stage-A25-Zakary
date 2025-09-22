@@ -46,3 +46,4 @@ perf.data
 *.objdump
 /extern/pybind11/
 /.venv
+/c_pauliarray

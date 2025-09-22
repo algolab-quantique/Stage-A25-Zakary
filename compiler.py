@@ -10,6 +10,7 @@ def compile_pauliarray():
     try:
         command = [
             "g++",
+            
             "-fopenmp",
             "-O3",
             "-march=native",
@@ -31,6 +32,7 @@ def compile_densepauliarray():
     try:
         command = [
             "g++",
+            "-g",
             "-fopenmp",
             "-O3",
             "-march=native",

@@ -1,5 +1,4 @@
 import time
-import qiskit
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -7,10 +6,10 @@ import benchmark_dpa
 import benchmark_np
 
 # n = 250000000
-n = 75000
-dim = 10000
+n = 50000
+dim = 1000
 reps = 1
-labels = ['Random Generation', 'Tensor', 'Commutes', 'Compose', 'Identity', 'New Identity', 'Swap ZX']
+labels = ['Random Generation', 'Tensor', 'Commutes', 'Compose', 'Identity', 'New Identity', 'Both Idendtities', 'Swap ZX']
 mode = "all"  # all, tensor, commutes, compose
 
 
@@ -77,8 +76,8 @@ def main():
     dense_cpp_times = np.zeros(len(labels))
     for i in range(reps):
         print(f"Rep {i+1}/{reps}")
-        numpy_times += benchmark_np.test_battery(n, dim, mode)
-        dense_cpp_times += benchmark_dpa.test_battery(n, dim, mode)
+        numpy_times += benchmark_np.test_battery(n, dim, mode) # pyright: ignore[reportOperatorIssue]
+        dense_cpp_times += benchmark_dpa.test_battery(n, dim, mode) # pyright: ignore[reportOperatorIssue]
 
     print("PauliArray (Voids) average times (ms):    ", numpy_times/reps)
     print("DensePauliArray (C++) average times (ms): ", dense_cpp_times/reps)

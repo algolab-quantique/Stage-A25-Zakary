@@ -44,6 +44,14 @@ def time_new_identity(n, shape):
     duration = (end_time - start_time) * 1000 
     return p, duration
 
+def time_both_identity(n, shape):
+    start_time = time.time()
+    p = dpc.DensePauliArray.identities(n, shape)
+    pr = p.is_identity()
+    end_time = time.time()
+    duration = (end_time - start_time) * 1000 
+    return duration
+
 def time_swap_zx(p1):
     start_time = time.time()
     p1.swap_zx()
@@ -82,6 +90,9 @@ def test_battery(n, dim, option="all"):
 
             p_id, new_identity_duration = time_new_identity(n, shape)
             times_list.append(new_identity_duration)
+
+            both_identity_duration = time_both_identity(n, shape)
+            times_list.append(both_identity_duration)
 
             swap_duration = time_swap_zx(p1)
             times_list.append(swap_duration)

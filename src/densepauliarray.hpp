@@ -34,8 +34,8 @@ public:
     ~DensePauliArray();
     
     //operators and friends
-    DensePauliArray& operator=(const DensePauliArray& other);
-    DensePauliArray& operator=(DensePauliArray&& other) noexcept;
+    // DensePauliArray& operator=(const DensePauliArray& other);
+    // DensePauliArray& operator=(DensePauliArray&& other) noexcept;
     
     //computational methods
     static DensePauliArray random(int num_operators, int num_qubits);
@@ -81,6 +81,8 @@ private:
 
 inline DensePauliArray::DensePauliArray(int num_operators, int num_qubits) 
     : num_operators(num_operators), num_qubits(num_qubits), owns_data(true) {
+    
+    
     allocate_data();
 }
 
@@ -91,7 +93,7 @@ inline DensePauliArray::DensePauliArray(uint8_t* z_data, uint8_t* x_data, int nu
 
 DensePauliArray::DensePauliArray(const DensePauliArray& other) 
     : num_operators(other.num_operators), num_qubits(other.num_qubits), owns_data(true) {
-    allocate_data();
+    // allocate_data();
     copy_from(other);
 }
 
@@ -104,39 +106,41 @@ DensePauliArray::DensePauliArray(DensePauliArray&& other) noexcept
     other.owns_data = false;
 }
 
-DensePauliArray& DensePauliArray::operator=(const DensePauliArray& other) {
-    if (this != &other) {
-        if (owns_data) deallocate_data();
-        num_operators = other.num_operators;
-        num_qubits = other.num_qubits;
-        owns_data = true;
-        allocate_data();
-        copy_from(other);
-    }
-    return *this;
-}
+// DensePauliArray& DensePauliArray::operator=(const DensePauliArray& other) {
+//     if (this != &other) {
+//         if (owns_data) deallocate_data();
+//         num_operators = other.num_operators;
+//         num_qubits = other.num_qubits;
+//         owns_data = true;
+//         allocate_data();
+//         copy_from(other);
+//     }
+//     return *this;
+// }
 
-DensePauliArray& DensePauliArray::operator=(DensePauliArray&& other) noexcept {
-    if (this != &other) {
-        if (owns_data) deallocate_data();
-        z_data = other.z_data;
-        x_data = other.x_data;
-        num_operators = other.num_operators;
-        num_qubits = other.num_qubits;
-        data_size = other.data_size;
-        owns_data = other.owns_data;
+// DensePauliArray& DensePauliArray::operator=(DensePauliArray&& other) noexcept {
+//     if (this != &other) {
+//         if (owns_data) deallocate_data();
+//         z_data = other.z_data;
+//         x_data = other.x_data;
+//         num_operators = other.num_operators;
+//         num_qubits = other.num_qubits;
+//         data_size = other.data_size;
+//         owns_data = other.owns_data;
         
-        other.z_data = nullptr;
-        other.x_data = nullptr;
-        other.owns_data = false;
-    }
-    return *this;
-}
+//         other.z_data = nullptr;
+//         other.x_data = nullptr;
+//         other.owns_data = false;
+//     }
+//     return *this;
+// }
 
 inline DensePauliArray::~DensePauliArray() {
     if (owns_data) {
         deallocate_data();
     }
+    // delete[] z_data;
+    // delete[] x_data;
 }
 
 inline void DensePauliArray::allocate_data() {
@@ -161,8 +165,16 @@ inline void DensePauliArray::allocate_data() {
 }
 
 inline void DensePauliArray::deallocate_data() {
-    if (z_data) { free(z_data); z_data = nullptr; }
-    if (x_data) { free(x_data); x_data = nullptr; }
+    if (z_data) { 
+        free(z_data); 
+        // delete[] z_data;
+        z_data = nullptr; 
+    }
+    if (x_data) { 
+        free(x_data); 
+        // delete[] x_data;
+        x_data = nullptr; 
+    }
 }
 
 inline void DensePauliArray::copy_from(const DensePauliArray& other) {
@@ -368,9 +380,6 @@ DensePauliArray DensePauliArray::identities(int num_operators, int num_qubits) {
 }
 
 bool DensePauliArray::swap_zx() {
-    if (!owns_data) {
-        throw runtime_error("data ownership required to swap");
-    }
     // #pragma omp parallel for schedule(static)
     // for (size_t i = 0; i < data_size; i++) {
     //     std::swap(z_data[i], x_data[i]);

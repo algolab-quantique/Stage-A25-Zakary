@@ -12,7 +12,7 @@ import densepaulicpp as dpc
 
 # n = 250000000
 n = 400000
-dim = 1000
+dim = 10000
 # n = 50000000
 
 
