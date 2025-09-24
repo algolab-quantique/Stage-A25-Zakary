@@ -5,7 +5,7 @@ import sys
 cwd = os.getcwd()
 # out_dir = os.path.join(cwd, "out")
 
-def compile_pauliarray():
+def compile_pauliarray() -> bool:
     print("===== Compiling PauliArray C++ code =====")
     try:
         command = [
@@ -24,10 +24,12 @@ def compile_pauliarray():
             "paulicpp$(python3-config --extension-suffix)"
         ]
         subprocess.run(" ".join(command), shell=True, check=True)
+        return True
     except subprocess.CalledProcessError as e:
         print(f"An error occurred while compiling pauliarray: {e}")
+        return False
 
-def compile_densepauliarray():
+def compile_densepauliarray() -> bool:
     print("===== Compiling DensePauliArray C++ code =====")
     try:
         command = [
@@ -47,21 +49,25 @@ def compile_densepauliarray():
         ]
         subprocess.run(" ".join(command), shell=True, check=True)
         print("DensePauliArray - OK")
+        return True
 
     except subprocess.CalledProcessError as e:
         print(f"An error occurred while compiling densepauliarray: {e}")
+        return False
 
 def compile_cpp(option="all"):
+    ret : bool = False
     match option:
         case "all":
             compile_pauliarray()
             compile_densepauliarray()
         case "pa":
-            compile_pauliarray()
+            ret = compile_pauliarray()
         case "dpa":
-            compile_densepauliarray()
+            ret = compile_densepauliarray()
 
-    make_stubs(option)
+    if ret:
+        make_stubs(option)
 
 def make_stub(libname, modname):
     print(f"===== Generating stubs for {libname} =====")
