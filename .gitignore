@@ -44,6 +44,6 @@ main
 perf.data
 *.optrpt
 *.objdump
-/extern/pybind11/
+# /extern/pybind11/
 /.venv
 /c_pauliarray

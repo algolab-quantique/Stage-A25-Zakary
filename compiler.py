@@ -54,6 +54,33 @@ def compile_densepauliarray() -> bool:
     except subprocess.CalledProcessError as e:
         print(f"An error occurred while compiling densepauliarray: {e}")
         return False
+    
+def compile_voidops() -> bool:
+    print("===== Compiling Void Operations C++ code =====")
+    try:
+        command = [
+            "g++",
+            # "-g",
+            "-fopenmp",
+            "-O3",
+            # "-flto",
+            "-march=native",
+            # "-Wall",
+            "-shared",
+            "-std=c++17",
+            "-fPIC",
+            "$(python3 -m pybind11 --includes)",
+            "bindings/voidops_bindings.cpp",
+            "-o",
+            "voidops$(python3-config --extension-suffix)"
+        ]
+        subprocess.run(" ".join(command), shell=True, check=True)
+        print("Void Operations - OK")
+        return True
+
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred while compiling void operations: {e}")
+        return False
 
 def compile_cpp(option="all"):
     ret : bool = False
@@ -65,6 +92,8 @@ def compile_cpp(option="all"):
             ret = compile_pauliarray()
         case "dpa":
             ret = compile_densepauliarray()
+        case "voidops":
+            ret = compile_voidops()
 
     if ret:
         make_stubs(option)
@@ -93,6 +122,8 @@ def make_stubs(option="all"):
             make_stub("paulicpp", "paulicpp")
         case "dpa":
             make_stub("densepaulicpp", "densepaulicpp")
+        case "voidops":
+            make_stub("voidops", "voidops")
     
     
 
@@ -117,7 +148,7 @@ def add_pythonpath():
     
 
 def main():
-    compile_cpp("dpa")
+    compile_cpp("voidops")
     # add_pythonpath()
 
 

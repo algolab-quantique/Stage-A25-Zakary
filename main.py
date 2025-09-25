@@ -1,110 +1,82 @@
 import time
-import qiskit
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
 
-import pauliarray as pa
+import pauliarray.binary.void_operations as vo_py
+import voidops as vo_cpp
+# sizes = [100, 1000, 10000, 100000, 500000, 1000000, 5000000, 10000000, 100000000, 1000000000]
+sizes = np.logspace(0, 9, 50, dtype=int)
+# sizes = np.logspace(0, 8, 50, dtype=int)
+# sizes = [3*10**9]
+# sizes = [10, 30, 50]
 
-import paulicpp as pc
-import densepaulicpp as dpc
-
-
-
-# n = 250000000
-n = 400000
-dim = 10000
-# n = 50000000
-
-
-
-def pa_py():
-    print("========== PauliArray (Voids) w/ NumPy ==========")
+def void_py(bit_strings_1, bit_strings_2):
+    voids_1 = vo_py.bit_strings_to_voids(bit_strings_1)
+    voids_2 = vo_py.bit_strings_to_voids(bit_strings_2)
     start_time = time.time()
-    print("Working with n = ", n, "...")
 
-    shape = (dim,)
+    # r = vo_py.bitwise_dot(voids_1, voids_2)
+    # r = vo_py.bitwise_count(voids_1) + vo_py.bitwise_count(voids_2)
+    # r = vo_py.bitwise_and(voids_1, voids_2)
+    r = vo_py.bitwise_xor(voids_1, voids_2)
+    # r = vo_py.bitwise_not(voids_1)
 
-    p1 = pa.PauliArray.random(shape, n)
-    p2 = pa.PauliArray.random(shape, n)
+    end_time = time.time()
+    return end_time - start_time, r
 
-    random_gen_time = time.time()
-    print(f"Random genetation time: {((random_gen_time-start_time)*1000):.2f} ms")
+def void_cpp(bit_strings_1, bit_strings_2):
+    voids_1 = vo_py.bit_strings_to_voids(bit_strings_1)
+    voids_2 = vo_py.bit_strings_to_voids(bit_strings_2)
+    start_time = time.time()
 
-    # print(p1.x_strings) 
-
-    # results = p1.commute_with(p2)
-
-    # results = p1.compose(p2)
-    results = p1.tensor(p2)
-    # print(results)
-
-    print(p1)
-    print("DONE!")
+    # r = vo_cpp.bitwise_dot(voids_1, voids_2)
+    # r = vo_cpp.bitwise_count(voids_1) + vo_cpp.bitwise_count(voids_2)
+    # r = vo_cpp.bitwise_and(voids_1, voids_2)
+    r = vo_cpp.bitwise_xor(voids_1, voids_2)
+    # r = vo_cpp.bitwise_not(voids_1)
 
 
     end_time = time.time()
-    duration = (end_time - start_time) * 1000
-    print(f"Operation time: {((end_time - random_gen_time) * 1000):.2f} ms")
-    print(f"Execution time: {duration:.2f} ms")
-
-
-
-
-def pa_cpp():
-    print("========== Python PauliArray w/ C++ libraries==========")
-    start_time = time.time()
-    print("Working with n = ", n, "...")
-
-    p1 = pc.PauliArray.random(n)
-    p2 = pc.PauliArray.random(n)
-
-    random_gen_time = time.time()
-    print(f"Random genetation time: {((random_gen_time-start_time)*1000):.2f} ms")
-
-    results = p1.commutes_numpy(p2)
-        
-    print("DONE!")
-
-
-    end_time = time.time()
-    duration = (end_time - start_time) * 1000
-    print(f"Operation time: {((end_time - random_gen_time) * 1000):.2f} ms")
-    print(f"Execution time: {duration:.2f} ms")
-
-
-def dpa_cpp():
-    print("========== Python DensePauliArray w/ C++ libraries==========")
-    start_time = time.time()
-    print("Working with n = ", n, "...")
-
-    p1 = dpc.DensePauliArray.random(dim, n)
-    p2 = dpc.DensePauliArray.random(dim, n)
-
-
-    random_gen_time = time.time()
-    print(f"Random genetation time: {((random_gen_time-start_time)*1000):.2f} ms")
-
-    # print(p1.to_string())
-    # print(p2.to_string())
-    # results = p1.commutes_batch(p2)
-    pr = p1.tensor(p2)
-    # pr = p1.compose_batch(p2)
-    # print(pr.to_string())
-        
-    print("DONE!")
-
-
-    end_time = time.time()
-    duration = (end_time - start_time) * 1000
-    print(f"Operation time: {((end_time - random_gen_time) * 1000):.2f} ms")
-    print(f"Execution time: {duration:.2f} ms")
+    return end_time - start_time, r
 
 def main():
-    pa_py()
-    print("\n\n")
-    # pa_cpp()
-    dpa_cpp()
-    
+    py_times = []
+    cpp_times = []
+    results = []
+
+    for size in sizes:
+        print(f"\n========== Testing size: {size} ==========")
+        bit_strings_1 = np.random.randint(0, 2, size=(size,), dtype=np.uint8)
+        bit_strings_2 = np.random.randint(0, 2, size=(size,), dtype=np.uint8)
+
+        print("---- Python ----")
+        py_time, py_result = void_py(bit_strings_1, bit_strings_2)
+        print(f"NPy execution time: {py_time:.7f} seconds")
+        # print(f"Result: {py_result}")
+
+        print("---- C++ ----")
+        cpp_time, cpp_result = void_cpp(bit_strings_1, bit_strings_2)
+        print(f"C++ execution time: {cpp_time:.7f} seconds")
+        # print(f"Result: {cpp_result}")
+        assert np.array_equal(py_result, cpp_result), "you fucked up brah!"
+
+        py_times.append(py_time)
+        cpp_times.append(cpp_time)
+        results.append((py_result, cpp_result))
+
+    # Plotting
+    plt.figure(figsize=(10, 6))
+    plt.plot(sizes, py_times, label='Python', marker='o')
+    plt.plot(sizes, cpp_times, label='C++', marker='o')
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlabel('Input Size')
+    plt.ylabel('Execution Time (seconds)')
+    plt.title('NP bitwise voids V.S C++ bitwise voids')
+    plt.legend()
+    plt.grid()
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == "__main__":
     main()

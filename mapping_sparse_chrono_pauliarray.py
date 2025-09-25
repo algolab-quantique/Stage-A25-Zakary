@@ -171,8 +171,10 @@ def main():
 
     label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions, 
                 c2h2_labels_positions, c2h4_labels_positions, c3h8_labels_positions, n2_labels_positions]
+    # label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions, 
+    #             c2h2_labels_positions, c2h4_labels_positions, n2_labels_positions]
     n_x, n_z, n_y, n_i = 0, 0, 0, 0
-    nz_z, nz_x = 0, 0
+    nz_z, nz_x, n_zx = 0, 0, 0
     n_strings, n_qubits = 0, 0
     reps = 1
 
@@ -239,20 +241,21 @@ def main():
                         n_i += 1 
                 nz_z += np.sum(i.x)
                 nz_x += np.sum(i.z)
+                n_zx += len(i.x)
             
             # print("==== Molecule info ====")
             # print(f"Number of terms in the Hamiltonian: {len(qubit_hamiltonien)}")
-            # n_strings += len(qubit_hamiltonien)
+            n_strings += len(qubit_hamiltonien)
             # print("Number of qubits:", qubit_hamiltonien.num_qubits)
-            # n_qubits += qubit_hamiltonien.num_qubits
+            n_qubits += qubit_hamiltonien.num_qubits
 
                 # print(nz_z, nz_x)
                 
     pr.disable()
 
     print("========== Analyse PauliArray ==========")
-    print("Number of strings:", n_strings)
-    print("Number of qubits:", n_qubits)
+    # print("Number of strings:", n_strings)
+    # print("Number of qubits:", n_qubits)
     total = n_x + n_z + n_y + n_i
     print(f"Total ops: {total}")
 
@@ -262,8 +265,9 @@ def main():
     print("=======================================")
     print("Non-zero z: ", nz_z)
     print("Non-zero x: ", nz_x)
-    print("Total non-zero ops: ", nz_z + nz_x)
-    print(f"Ratio non-zero z: {100*nz_z/total:.2f}%, Ratio non-zero x: {100*nz_x/total:.2f}%")
+    print("Total of ops: ", n_zx)
+    print(f"Ratio of non-zero ops: {(nz_z + nz_x)/(n_zx)*100:.2f}%")
+    print("=======================================")
 
     # print(f"\nNon-zero Z ops: {nz_z}, Non-zero X ops: {nz_x}")
     # ratio = (nz_z + nz_x) / (len(qubit_hamiltonien) * qubit_hamiltonien.num_qubits)
