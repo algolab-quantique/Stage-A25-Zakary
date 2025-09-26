@@ -169,10 +169,12 @@ def build_mol_info(atom_labels, positions):
 
 def main():
 
-    label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions, 
-                c2h2_labels_positions, c2h4_labels_positions, c3h8_labels_positions, n2_labels_positions]
+    # label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions, 
+    #             c2h2_labels_positions, c2h4_labels_positions, c3h8_labels_positions, n2_labels_positions]
     # label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions, 
     #             c2h2_labels_positions, c2h4_labels_positions, n2_labels_positions]
+    
+    label_list = [h2_labels_positions]
     n_x, n_z, n_y, n_i = 0, 0, 0, 0
     nz_z, nz_x, n_zx = 0, 0, 0
     n_strings, n_qubits = 0, 0
@@ -182,9 +184,8 @@ def main():
     pr = cProfile.Profile()
     pr.enable()
 
-    for i in range(len(label_list)):
-
-        mol_labels_position = label_list[i]
+    for mol_idx in range(len(label_list)):
+        mol_labels_position = label_list[mol_idx]
         mol_info = build_mol_info(*mol_labels_position())
         driver = PySCFDriver(**mol_info)
         problem = driver.run()
@@ -218,30 +219,30 @@ def main():
 
         
 
-        for i in range(reps):
+        for rep_idx in range(reps):
             t0 = time.time()
             qubit_hamiltonien = mapping.assemble_qubit_hamiltonian_from_sparses(
                 (one_body_orbitals, one_body_values), (two_body_orbitals, two_body_values)
             )
             qubit_hamiltonien = operator_to_sparse_pauli(qubit_hamiltonien).simplify()
             t1 = time.time()
-            laps[i] = t1 - t0
+            laps[rep_idx] = t1 - t0
             
             # MOI!!!!!!
             
-            for i in qubit_hamiltonien.paulis: # sort chaque paulistrings
-                for j in i.to_label(): # regarde chaque ops dans le paulistring
-                    if j == 'X':
+            for pauli_string in qubit_hamiltonien.paulis:  # Use 'pauli_string' instead of 'i'
+                for pauli_op in pauli_string.to_label():  # Use 'pauli_op' instead of 'j'
+                    if pauli_op == 'X':
                         n_x += 1
-                    elif j == 'Z':
+                    elif pauli_op == 'Z':
                         n_z += 1
-                    elif j == 'Y':
+                    elif pauli_op == 'Y':
                         n_y += 1
-                    elif j == 'I':
+                    elif pauli_op == 'I':
                         n_i += 1 
-                nz_z += np.sum(i.x)
-                nz_x += np.sum(i.z)
-                n_zx += len(i.x)
+                nz_z += np.sum(pauli_string.x)
+                nz_x += np.sum(pauli_string.z)
+                n_zx += len(pauli_string.x)
             
             # print("==== Molecule info ====")
             # print(f"Number of terms in the Hamiltonian: {len(qubit_hamiltonien)}")
@@ -258,15 +259,16 @@ def main():
     # print("Number of qubits:", n_qubits)
     total = n_x + n_z + n_y + n_i
     print(f"Total ops: {total}")
-
     print(f"X ops: {n_x}, Z ops: {n_z}, Y ops: {n_y}, I ops: {n_i}")
     print(f"Ratio X ops: {100*n_x/total:.2f}%, Ratio Z ops: {100*n_z/total:.2f}%, Ratio Y ops: {100*n_y/total:.2f}%, Ratio I ops: {100*n_i/total:.2f}%")
 
     print("=======================================")
-    print("Non-zero z: ", nz_z)
-    print("Non-zero x: ", nz_x)
-    print("Total of ops: ", n_zx)
-    print(f"Ratio of non-zero ops: {(nz_z + nz_x)/(n_zx)*100:.2f}%")
+    print("Non-zero z_voids: ", nz_z)
+    print("Non-zero x_voids: ", nz_x)
+    print("Total length: ", n_zx)
+    print(f"Ratio of non-zero z_voids: {nz_z/(n_zx)*100:.2f}%")
+    print(f"Ratio of non-zero x_voids: {nz_x/(n_zx)*100:.2f}%")
+    # print(f"Ratio of all non-zero voids: {(nz_z + nz_x)/(n_zx)*100:.2f}%")
     print("=======================================")
 
     # print(f"\nNon-zero Z ops: {nz_z}, Non-zero X ops: {nz_x}")
