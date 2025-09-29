@@ -4,7 +4,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(voidops, m) {
+PYBIND11_MODULE(voidops, m, py::mod_gil_not_used()) {
     m.doc() = "Module for void operations on numpy arrays using pybind11";
 
     m.def("bitwise_and", &bitwise_and, "addwad");
@@ -12,5 +12,6 @@ PYBIND11_MODULE(voidops, m) {
     m.def("bitwise_not", &bitwise_not, "addwad");
     m.def("bitwise_count", &bitwise_count, "addwad");
     m.def("bitwise_dot", &bitwise_dot, "addwad");
+    m.def("bitwise_or", &bitwise_or, "addwad");
 }
     
