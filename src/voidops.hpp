@@ -31,17 +31,17 @@ py::array bitwise_core(py::array voids_1, py::array voids_2, Op op) {
 
     size_t num_64bit_chunks = total_bytes / 8;
 
-    if (num_64bit_chunks < 10000000) {
-        #pragma omp simd
+    // if (num_64bit_chunks < 10000000) {
+    //     #pragma omp simd
+    //     for (size_t i = 0; i < num_64bit_chunks; ++i) {
+    //         ptr3_64[i] = op(ptr1_64[i], ptr2_64[i]);
+    //     }
+    // } else {
+        #pragma omp parallel for if(num_64bit_chunks >= 10000000) schedule(static)
         for (size_t i = 0; i < num_64bit_chunks; ++i) {
             ptr3_64[i] = op(ptr1_64[i], ptr2_64[i]);
         }
-    } else {
-        #pragma omp parallel for schedule(static)
-        for (size_t i = 0; i < num_64bit_chunks; ++i) {
-            ptr3_64[i] = op(ptr1_64[i], ptr2_64[i]);
-        }
-    }
+    // }
 
     size_t remaining_bytes = total_bytes % 8;
     if (remaining_bytes > 0) {
@@ -58,20 +58,23 @@ py::array bitwise_core(py::array voids_1, py::array voids_2, Op op) {
     return voids_3;
 }
 
-//Bon resultats
+// * Bon resultats
 //TODO: rendre ca vite
 py::array bitwise_and(py::array voids_1, py::array voids_2) {
     return bitwise_core(voids_1, voids_2, std::bit_and<uint64_t>());
 }
 
 
-// def bitwise_not(voids: NDArray) -> NDArray:
+py::array bitwise_xor(py::array voids_1, py::array voids_2) {
+    return bitwise_core(voids_1, voids_2, std::bit_xor<uint64_t>());
+}
 
-//     int_strings = voids_to_int_strings(voids)
-//     new_int_strings = np.invert(int_strings)
-//     new_voids = int_strings_to_voids(new_int_strings)
 
-//     return new_voids
+py::array bitwise_or(py::array voids_1, py::array voids_2) {
+    return bitwise_core(voids_1, voids_2, std::bit_or<uint64_t>());
+}
+
+
 py::array bitwise_not(py::array voids) {
     auto buf = voids.request();
     size_t total_bytes = buf.size * buf.itemsize;
@@ -88,7 +91,7 @@ py::array bitwise_not(py::array voids) {
             new_ptr_64[i] = ~ptr_64[i];
         }
     } else {
-        #pragma omp parallel for
+        #pragma omp parallel for 
         for (size_t i = 0; i < num_64bit_chunks; ++i) {
             new_ptr_64[i] = ~ptr_64[i];
         }
@@ -107,17 +110,6 @@ py::array bitwise_not(py::array voids) {
 
     return new_voids;
 }
-
-
-py::array bitwise_xor(py::array voids_1, py::array voids_2) {
-    return bitwise_core(voids_1, voids_2, std::bit_xor<uint64_t>());
-}
-
-
-py::array bitwise_or(py::array voids_1, py::array voids_2) {
-    return bitwise_core(voids_1, voids_2, std::bit_or<uint64_t>());
-}
-
 
 
 // * OK!
@@ -171,7 +163,22 @@ py::array bitwise_count(py::array voids_1) {
 
     size_t total_64_chunks = n * n64;
 
-    if (total_64_chunks < 10000000) {
+    // if (total_64_chunks < 10000000) {
+    //     for (size_t i = 0; i < n; ++i) {
+    //         const uint8_t* base = ptr1 + i * itemsize;
+    //         int64_t count = 0;
+    //         for (size_t k = 0; k < n64; ++k) {
+    //             uint64_t word;
+    //             std::memcpy(&word, base + k * 8, 8);
+    //             count += __builtin_popcountll(word);
+    //         }
+    //         for (size_t t = 0; t < tail; ++t) {
+    //             count += __builtin_popcount(base[n64 * 8 + t]);
+    //         }
+    //         ptr_out[i] = count;
+    //     }
+    // } else {
+        #pragma omp parallel for if (total_64_chunks >= 10000000) schedule(static)
         for (size_t i = 0; i < n; ++i) {
             const uint8_t* base = ptr1 + i * itemsize;
             int64_t count = 0;
@@ -185,22 +192,7 @@ py::array bitwise_count(py::array voids_1) {
             }
             ptr_out[i] = count;
         }
-    } else {
-        #pragma omp parallel for
-        for (size_t i = 0; i < n; ++i) {
-            const uint8_t* base = ptr1 + i * itemsize;
-            int64_t count = 0;
-            for (size_t k = 0; k < n64; ++k) {
-                uint64_t word;
-                std::memcpy(&word, base + k * 8, 8);
-                count += __builtin_popcountll(word);
-            }
-            for (size_t t = 0; t < tail; ++t) {
-                count += __builtin_popcount(base[n64 * 8 + t]);
-            }
-            ptr_out[i] = count;
-        }
-    }
+    // }
 
     result.resize(buf1.shape);
 
@@ -234,8 +226,25 @@ py::array bitwise_dot(py::array voids_1, py::array voids_2) {
     size_t tail = itemsize % 8;
     size_t total_64_chunks = n * n64;
 
-    if (total_64_chunks < 10000000) {
-        // #pragma omp simd
+    // if (total_64_chunks < 10000000) {
+    //     // #pragma omp simd
+    //     for (size_t i = 0; i < n; ++i) {
+    //         const uint8_t* base1 = ptr1 + i * itemsize;
+    //         const uint8_t* base2 = ptr2 + i * itemsize;
+    //         int64_t count = 0;
+    //         for (size_t k = 0; k < n64; ++k) {
+    //             uint64_t w1, w2;
+    //             std::memcpy(&w1, base1 + k * 8, 8);
+    //             std::memcpy(&w2, base2 + k * 8, 8);
+    //             count += __builtin_popcountll(w1 & w2);
+    //         }
+    //         for (size_t t = 0; t < tail; ++t) {
+    //             count += __builtin_popcount( (base1[n64 * 8 + t] & base2[n64 * 8 + t]) );
+    //         }
+    //         ptr_out[i] = count;
+    //     }
+    // } else {
+        #pragma omp parallel for if (total_64_chunks >= 10000000) schedule(static)
         for (size_t i = 0; i < n; ++i) {
             const uint8_t* base1 = ptr1 + i * itemsize;
             const uint8_t* base2 = ptr2 + i * itemsize;
@@ -251,24 +260,7 @@ py::array bitwise_dot(py::array voids_1, py::array voids_2) {
             }
             ptr_out[i] = count;
         }
-    } else {
-        #pragma omp parallel for
-        for (size_t i = 0; i < n; ++i) {
-            const uint8_t* base1 = ptr1 + i * itemsize;
-            const uint8_t* base2 = ptr2 + i * itemsize;
-            int64_t count = 0;
-            for (size_t k = 0; k < n64; ++k) {
-                uint64_t w1, w2;
-                std::memcpy(&w1, base1 + k * 8, 8);
-                std::memcpy(&w2, base2 + k * 8, 8);
-                count += __builtin_popcountll(w1 & w2);
-            }
-            for (size_t t = 0; t < tail; ++t) {
-                count += __builtin_popcount( (base1[n64 * 8 + t] & base2[n64 * 8 + t]) );
-            }
-            ptr_out[i] = count;
-        }
-    }
+    // }
 
     result.resize(buf1.shape);
 

@@ -169,12 +169,12 @@ def build_mol_info(atom_labels, positions):
 
 def main():
 
-    # label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions, 
-    #             c2h2_labels_positions, c2h4_labels_positions, c3h8_labels_positions, n2_labels_positions]
+    label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions, 
+                c2h2_labels_positions, c2h4_labels_positions, c3h8_labels_positions, n2_labels_positions]
     # label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions, 
     #             c2h2_labels_positions, c2h4_labels_positions, n2_labels_positions]
     
-    label_list = [h2_labels_positions]
+    # label_list = [h2_labels_positions]
     n_x, n_z, n_y, n_i = 0, 0, 0, 0
     nz_z, nz_x, n_zx = 0, 0, 0
     n_strings, n_qubits = 0, 0
@@ -183,6 +183,7 @@ def main():
     laps = np.zeros(reps)
     pr = cProfile.Profile()
     pr.enable()
+    start = time.time()
 
     for mol_idx in range(len(label_list)):
         mol_labels_position = label_list[mol_idx]
@@ -255,6 +256,7 @@ def main():
     pr.disable()
 
     print("========== Analyse PauliArray ==========")
+    print(f"Time taken : {time.time() - start:.3f} seconds")
     # print("Number of strings:", n_strings)
     # print("Number of qubits:", n_qubits)
     total = n_x + n_z + n_y + n_i

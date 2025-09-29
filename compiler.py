@@ -64,7 +64,7 @@ def compile_voidops() -> bool:
             "-fopenmp",
             "-O3",
             # "-mavx2",
-            "-flto",
+            "-flto=auto",
             # "-funroll-loops",
             # "-fprefetch-loop-arrays",
             "-march=native",
