@@ -5,7 +5,7 @@ import io
 import pstats
 import time
 from pstats import SortKey
-
+import matplotlib.pyplot as plt
 import numpy as np
 from pauliarray.conversion.qiskit import operator_to_sparse_pauli
 from pauliarray.mapping.fermion import JordanWigner
@@ -168,25 +168,25 @@ def build_mol_info(atom_labels, positions):
 
 
 def main():
+    label_list = [
+        h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions,
+        c2h2_labels_positions, c2h4_labels_positions, c3h8_labels_positions, n2_labels_positions]
+    molecule_names = [
+        "H2", "LiH", "H2O", "NH3", "C2H2", "C2H4", "C3H8", "N2"
+    ]
+    z_void_ratios = []
+    x_void_ratios = []
 
-    label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions, 
-                c2h2_labels_positions, c2h4_labels_positions, c3h8_labels_positions, n2_labels_positions]
-    # label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions, 
-    #             c2h2_labels_positions, c2h4_labels_positions, n2_labels_positions]
-    
-    # label_list = [h2_labels_positions]
-    n_x, n_z, n_y, n_i = 0, 0, 0, 0
-    nz_z, nz_x, n_zx = 0, 0, 0
-    n_strings, n_qubits = 0, 0
     reps = 1
-
     laps = np.zeros(reps)
     pr = cProfile.Profile()
     pr.enable()
     start = time.time()
 
-    for mol_idx in range(len(label_list)):
-        mol_labels_position = label_list[mol_idx]
+    for mol_idx, mol_labels_position in enumerate(label_list):
+        n_x, n_z, n_y, n_i = 0, 0, 0, 0
+        nz_z, nz_x, n_zx = 0, 0, 0
+
         mol_info = build_mol_info(*mol_labels_position())
         driver = PySCFDriver(**mol_info)
         problem = driver.run()
@@ -196,7 +196,6 @@ def main():
 
         one_body_orbitals = [[], []]
         one_body_values = []
-
         two_body_orbitals = [[], [], [], []]
         two_body_values = []
         for term in second_q_op.terms():
@@ -218,8 +217,6 @@ def main():
 
         mapping = JordanWigner(second_q_op.num_spin_orbitals)
 
-        
-
         for rep_idx in range(reps):
             t0 = time.time()
             qubit_hamiltonien = mapping.assemble_qubit_hamiltonian_from_sparses(
@@ -228,11 +225,9 @@ def main():
             qubit_hamiltonien = operator_to_sparse_pauli(qubit_hamiltonien).simplify()
             t1 = time.time()
             laps[rep_idx] = t1 - t0
-            
-            # MOI!!!!!!
-            
-            for pauli_string in qubit_hamiltonien.paulis:  # Use 'pauli_string' instead of 'i'
-                for pauli_op in pauli_string.to_label():  # Use 'pauli_op' instead of 'j'
+
+            for pauli_string in qubit_hamiltonien.paulis:
+                for pauli_op in pauli_string.to_label():
                     if pauli_op == 'X':
                         n_x += 1
                     elif pauli_op == 'Z':
@@ -240,20 +235,29 @@ def main():
                     elif pauli_op == 'Y':
                         n_y += 1
                     elif pauli_op == 'I':
-                        n_i += 1 
+                        n_i += 1
                 nz_z += np.sum(pauli_string.x)
                 nz_x += np.sum(pauli_string.z)
                 n_zx += len(pauli_string.x)
-            
-            # print("==== Molecule info ====")
-            # print(f"Number of terms in the Hamiltonian: {len(qubit_hamiltonien)}")
-            n_strings += len(qubit_hamiltonien)
-            # print("Number of qubits:", qubit_hamiltonien.num_qubits)
-            n_qubits += qubit_hamiltonien.num_qubits
 
-                # print(nz_z, nz_x)
-                
+        # Store ratios for plotting
+        z_void_ratio = nz_z / n_zx * 100 if n_zx > 0 else 0
+        x_void_ratio = nz_x / n_zx * 100 if n_zx > 0 else 0
+        z_void_ratios.append(z_void_ratio)
+        x_void_ratios.append(x_void_ratio)
+
     pr.disable()
+
+    # Plotting
+    plt.figure(figsize=(10, 6))
+    plt.plot(molecule_names, z_void_ratios, marker='o', label='Non-zero Z void ratio (%)')
+    plt.plot(molecule_names, x_void_ratios, marker='s', label='Non-zero X void ratio (%)')
+    plt.xlabel('Molecule')
+    plt.ylabel('Ratio (%)')
+    plt.title('Ratio of Non-zero Z and X Voids per Molecule')
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
 
     print("========== Analyse PauliArray ==========")
     print(f"Time taken : {time.time() - start:.3f} seconds")
@@ -263,7 +267,7 @@ def main():
     print(f"Total ops: {total}")
     print(f"X ops: {n_x}, Z ops: {n_z}, Y ops: {n_y}, I ops: {n_i}")
     print(f"Ratio X ops: {100*n_x/total:.2f}%, Ratio Z ops: {100*n_z/total:.2f}%, Ratio Y ops: {100*n_y/total:.2f}%, Ratio I ops: {100*n_i/total:.2f}%")
-
+  
     print("=======================================")
     print("Non-zero z_voids: ", nz_z)
     print("Non-zero x_voids: ", nz_x)

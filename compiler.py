@@ -10,9 +10,13 @@ def compile_pauliarray() -> bool:
     try:
         command = [
             "g++",
-            
+            # "-g",
             "-fopenmp",
             "-O3",
+            # "-mavx2",
+            "-flto=auto",
+            # "-funroll-loops",
+            # "-fprefetch-loop-arrays",
             "-march=native",
             # "-Wall",
             "-shared",
@@ -24,6 +28,7 @@ def compile_pauliarray() -> bool:
             "paulicpp$(python3-config --extension-suffix)"
         ]
         subprocess.run(" ".join(command), shell=True, check=True)
+        print("PauliArray - OK")
         return True
     except subprocess.CalledProcessError as e:
         print(f"An error occurred while compiling pauliarray: {e}")
@@ -86,11 +91,12 @@ def compile_voidops() -> bool:
         return False
 
 def compile_cpp(option="all"):
-    ret : bool = False
+    ret : bool = True
     match option:
         case "all":
             compile_pauliarray()
-            compile_densepauliarray()
+            # compile_densepauliarray()
+            compile_voidops()
         case "pa":
             ret = compile_pauliarray()
         case "dpa":
@@ -151,7 +157,7 @@ def add_pythonpath():
     
 
 def main():
-    compile_cpp("voidops")
+    compile_cpp("all")
     # add_pythonpath()
 
 

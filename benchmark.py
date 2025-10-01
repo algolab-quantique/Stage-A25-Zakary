@@ -2,92 +2,53 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
-import benchmark_dpa
-import benchmark_np
+import pauliarray as pa
+import paulicpp as pc
 
-# n = 250000000
-n = 50000
-dim = 1000
-reps = 1
-labels = ['Random Generation', 'Tensor', 'Commutes', 'Compose', 'Identity', 'New Identity', 'Both Idendtities', 'Swap ZX']
-mode = "all"  # all, tensor, commutes, compose
+# sizes = np.logspace(1, 8, 50, dtype=int)
+sizes= [2, 5]
 
+def pauli_py(p1: pa.PauliArray, p2: pa.PauliArray):
+    start_time = time.time()
+    r = p1.compose(p2)
+    end_time = time.time()
+    print(r)
 
+    return end_time - start_time, r
 
-def make_normalized_graph(numpy_times, cpp_times):    
-    x = np.arange(len(labels)) 
-    width = 0.35
-    
+def pauli_cpp(p1: pa.PauliArray, p2: pa.PauliArray):
+    start_time = time.time()
+    z1 = p1.z_voids
+    x1 = p1.x_voids
+    z2 = p2.z_voids
+    x2 = p2.x_voids
+    new_z, new_x = pc.compose(z1, x1, z2, x2)
+    r = pa.PauliArray.from_z_strings_and_x_strings(new_z, new_x)
 
-    fig, ax = plt.subplots()
-    # rects1 = ax.bar(x - width / 2, numpy_times, width, label='NumPy')
-    # rects2 = ax.bar(x + width / 2, dense_cpp_times, width, label='C++ (DensePauliArray)')
-    newpa = []
-    newcpp = []
-    for i in range(len(numpy_times)):
-        if numpy_times[i] < cpp_times[i]:
-            newpa.append(numpy_times[i]/cpp_times[i]*100)
-            newcpp.append(100)
-        else:
-            newcpp.append(cpp_times[i]/numpy_times[i]*100)
-            newpa.append(100)
-    
-    rects1 = ax.bar(x - width / 2, newpa, width, label='PauliArray (Python)')
-    rects2 = ax.bar(x + width / 2, newcpp, width, label='DensePauliArray (C++)')
-
-    for i in range(len(x)):
-        ax.text(x[i] - width / 2, newpa[i] + 1, f'{newpa[i]:.1f}%', ha='center', fontsize=8)
-        ax.text(x[i] + width / 2, newcpp[i] + 1, f'{newcpp[i]:.1f}%', ha='center', fontsize=8)
-    
-    ax.set_ylabel('Time (ms)')
-    ax.set_title(f"PauliArray voids V.S C++ DensePauliArray (n={n}, dim={dim})\n(Lower is better)")
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels)
-    ax.legend()
-
-    fig.tight_layout()
-
-def make_time_graph(numpy_times, cpp_times):
-    
-    x = np.arange(len(labels)) 
-    width = 0.35
-    
-
-    fig, ax = plt.subplots()
-    rects1 = ax.bar(x - width / 2, numpy_times, width, label='PauliArray (Python)')
-    rects2 = ax.bar(x + width / 2, cpp_times, width, label='DensePauliArray (C++)')
-
-    for i in range(len(x)):
-        ax.text(x[i] - width / 2, numpy_times[i] + 1, f'{numpy_times[i]:.1f} ms', ha='center', fontsize=8)
-        ax.text(x[i] + width / 2, cpp_times[i] + 1, f'{cpp_times[i]:.1f} ms', ha='center', fontsize=8)
-    
-    ax.set_ylabel('Time (ms)')
-    ax.set_title(f"PauliArray voids V.S C++ DensePauliArray (n={n}, dim={dim})\n(Lower is better)")
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels)
-    ax.legend()
-
-    fig.tight_layout()
-
+    end_time = time.time()
+    print(r)
+    return end_time - start_time, r
 
 def main():
+    py_times = []
+    cpp_times = []
+    results = []
 
-    numpy_times = np.zeros(len(labels))
-    dense_cpp_times = np.zeros(len(labels))
-    for i in range(reps):
-        print(f"Rep {i+1}/{reps}")
-        numpy_times += benchmark_np.test_battery(n, dim, mode) # pyright: ignore[reportOperatorIssue]
-        dense_cpp_times += benchmark_dpa.test_battery(n, dim, mode) # pyright: ignore[reportOperatorIssue]
-
-    print("PauliArray (Voids) average times (ms):    ", numpy_times/reps)
-    print("DensePauliArray (C++) average times (ms): ", dense_cpp_times/reps)
+    for size in sizes:
+        print(f"\n========== Testing size: {size} ==========")
+        p1 = pa.PauliArray.random((size,), 2)
+        p2 = pa.PauliArray.random((size,), 2)
 
 
-    make_normalized_graph(numpy_times, dense_cpp_times)
-    make_time_graph(numpy_times/reps, dense_cpp_times/reps)
-    plt.show()
+        print("---- Python ----")
+        py_time, py_result = pauli_py(p1, p2)
+        print(f"NPy execution time: {py_time:.7f} seconds")
 
-    
+        print("---- C++ ----")
+        cpp_time, cpp_result = pauli_cpp(p1, p2)
+        print(f"C++ execution time: {cpp_time:.7f} seconds")
+
+        # assert np.array_equal(py_result, cpp_result), "you fucked up brah!"
 
 if __name__ == "__main__":
     main()
