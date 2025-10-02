@@ -1,6 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include "../src/voidops.hpp"
+#include "../voidops.hpp"
 
 namespace py = pybind11;
 

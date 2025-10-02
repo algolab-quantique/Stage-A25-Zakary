@@ -23,9 +23,9 @@ def compile_pauliarray() -> bool:
             "-std=c++17",
             "-fPIC",
             "$(python3 -m pybind11 --includes)",
-            "bindings/paulicpp_bindings.cpp",
+            "src/bindings/paulicpp_bindings.cpp",
             "-o",
-            "paulicpp$(python3-config --extension-suffix)"
+            "build/paulicpp$(python3-config --extension-suffix)"
         ]
         subprocess.run(" ".join(command), shell=True, check=True)
         print("PauliArray - OK")
@@ -48,9 +48,9 @@ def compile_densepauliarray() -> bool:
             "-std=c++17",
             "-fPIC",
             "$(python3 -m pybind11 --includes)",
-            "bindings/densepaulicpp_bindings.cpp",
+            "src/bindings/densepaulicpp_bindings.cpp",
             "-o",
-            "densepaulicpp$(python3-config --extension-suffix)"
+            "build/densepaulicpp$(python3-config --extension-suffix)"
         ]
         subprocess.run(" ".join(command), shell=True, check=True)
         print("DensePauliArray - OK")
@@ -78,9 +78,9 @@ def compile_voidops() -> bool:
             "-std=c++17",
             "-fPIC",
             "$(python3 -m pybind11 --includes)",
-            "bindings/voidops_bindings.cpp",
+            "src/bindings/voidops_bindings.cpp",
             "-o",
-            "voidops$(python3-config --extension-suffix)"
+            "build/voidops$(python3-config --extension-suffix)"
         ]
         subprocess.run(" ".join(command), shell=True, check=True)
         print("Void Operations - OK")
@@ -110,15 +110,18 @@ def compile_cpp(option="all"):
 def make_stub(libname, modname):
     print(f"===== Generating stubs for {libname} =====")
     try:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = os.path.join(os.getcwd(), "build")
+        # subprocess.run("stubgen -m paulicpp -o ./src/stubs", shell=True, check=True, env=env)
         command = [
             # "PYTHONPATH=" + cwd,
             "stubgen",
             "-m",
             modname,
             " -o",
-            "./stubs"
+            "./src/stubs"
         ]
-        subprocess.run(" ".join(command), shell=True, check=True)
+        subprocess.run(" ".join(command), shell=True, check=True, env=env)
     except subprocess.CalledProcessError as e:
         print(f"An error occurred while generating stub for {libname}: {e}")
 
@@ -126,7 +129,8 @@ def make_stubs(option="all"):
     match option:
         case "all":
             make_stub("paulicpp", "paulicpp")
-            make_stub("densepaulicpp", "densepaulicpp")
+            # make_stub("densepaulicpp", "densepaulicpp")
+            make_stub("voidops", "voidops")
         case "pa":
             make_stub("paulicpp", "paulicpp")
         case "dpa":
@@ -140,25 +144,15 @@ def add_pythonpath():
 #     export PYTHONPATH=/home/user/Documents/STAGES/T1/Stage-A25-Zakary/stubs:$PYTHONPATH
 # python3 test.py
     print("===== Setting PYTHONPATH =====")
-    stubs_path = os.path.join(cwd, "stubs")
-    bindings_path = os.path.join(cwd, "bindings")
-    
-    current_pythonpath = os.environ.get('PYTHONPATH', '')
-    new_pythonpath = f"{bindings_path}:{stubs_path}:{current_pythonpath}"
-    os.environ['PYTHONPATH'] = new_pythonpath
-    
-    if stubs_path not in sys.path:
-        sys.path.insert(0, stubs_path)
-    if bindings_path not in sys.path:
-        sys.path.insert(0, bindings_path)
-    
-    print(f"PYTHONPATH set to: {new_pythonpath}")
+    import sys, os
+    sys.path.insert(0, os.path.join(os.getcwd(), "build"))
+    print(f"PYTHONPATH set to {sys.path[0]}")
 
     
 
 def main():
+    add_pythonpath()
     compile_cpp("all")
-    # add_pythonpath()
 
 
 if __name__ == "__main__":

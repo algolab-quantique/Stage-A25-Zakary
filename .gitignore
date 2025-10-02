@@ -42,9 +42,12 @@
 
 main
 perf.data
+*.prof
 *.optrpt
 *.objdump
 # /extern/pybind11/
 /.venv
 /c_pauliarray
-/local
+# /local
+/__pycache__
+/build

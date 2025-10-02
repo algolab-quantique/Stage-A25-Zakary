@@ -4,51 +4,81 @@ import numpy as np
 
 import pauliarray as pa
 import paulicpp as pc
+from pauliarray.pauli import pcpp
 
-# sizes = np.logspace(1, 8, 50, dtype=int)
-sizes= [2, 5]
+sizes = np.logspace(1, 7, 50, dtype=int)
+# sizes= [2, 5, 10]
 
 def pauli_py(p1: pa.PauliArray, p2: pa.PauliArray):
     start_time = time.time()
-    r = p1.compose(p2)
-    end_time = time.time()
-    print(r)
 
+    # r = p1.tensor(p2)
+    r = p1.bitwise_commute_with(p2)
+    # print(r.to_labels())
+
+    # print(r)
+    end_time = time.time()
     return end_time - start_time, r
 
 def pauli_cpp(p1: pa.PauliArray, p2: pa.PauliArray):
     start_time = time.time()
-    z1 = p1.z_voids
-    x1 = p1.x_voids
-    z2 = p2.z_voids
-    x2 = p2.x_voids
-    new_z, new_x = pc.compose(z1, x1, z2, x2)
-    r = pa.PauliArray.from_z_strings_and_x_strings(new_z, new_x)
+
+    r = pcpp.commute_with(p1, p2)
+    # r = pcpp.tensor(p1, p2)
+    # print(r.to_labels())
+    # print(r)
+
+    
 
     end_time = time.time()
-    print(r)
     return end_time - start_time, r
 
 def main():
+    start = time.time()
     py_times = []
     cpp_times = []
     results = []
 
     for size in sizes:
-        print(f"\n========== Testing size: {size} ==========")
-        p1 = pa.PauliArray.random((size,), 2)
-        p2 = pa.PauliArray.random((size,), 2)
-
+        print(f"\n\n========== Testing size: {size} ==========")
+        p1 = pcpp.random((4, size,2), 2)
+        p2 = pcpp.random((4, size,2), 2)
+        # p1 = pa.PauliArray.random((4, size,2), 2)
+        # p2 = pa.PauliArray.random((4, size,2), 2)
 
         print("---- Python ----")
         py_time, py_result = pauli_py(p1, p2)
         print(f"NPy execution time: {py_time:.7f} seconds")
 
-        print("---- C++ ----")
+        print("\n---- C++ ----")
         cpp_time, cpp_result = pauli_cpp(p1, p2)
         print(f"C++ execution time: {cpp_time:.7f} seconds")
 
-        # assert np.array_equal(py_result, cpp_result), "you fucked up brah!"
+        assert np.array_equal(py_result, cpp_result), "you fucked up brah!"
+
+        py_times.append(py_time)
+        cpp_times.append(cpp_time)
+        results.append((py_result, cpp_result))
+    
+    end = time.time()
+    print(f"\n\nTotal execution time for all sizes: {end - start:.7f} seconds")
+
+    # Plotting
+    plt.figure(figsize=(10, 6))
+    plt.plot(sizes, py_times, label='Python', marker='o')
+    plt.plot(sizes, cpp_times, label='C++', marker='o')
+    plt.xscale('log')
+    plt.yscale('log')
+    # plt.semilogx()
+    plt.xlabel('Nbr of bits')
+    plt.ylabel('Execution Time (seconds)')
+    plt.title('NP bitwise voids V.S C++ bitwise voids\nFunction: ')
+    plt.legend()
+    plt.grid()
+    plt.tight_layout()
+    plt.show()
+
+
 
 if __name__ == "__main__":
     main()
