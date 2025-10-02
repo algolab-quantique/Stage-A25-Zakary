@@ -156,9 +156,13 @@ py::array bitwise_not(py::array voids) {
     return new_voids;
 }
 
-/**
+/** 
  * @brief Counts the number of set bits in each element of a NumPy contiguous (C-like) array.
  * In other words, it returns the number of 1s found inside each element of the array.
+ * 
+ * @attention 
+ * This function uses the gcc/clang intrinsic __builtin_popcount() as its core operation.
+ * Thus, whilst very fast, it is NOT PORTABLE to non-gcc/clang compilers
  * 
  * @param voids_1 the input array
  * @return py::array An array of the number of set bits in each element of the input array
@@ -203,8 +207,10 @@ py::array bitwise_count(py::array voids_1) {
 
 /**
  * @brief Computes the bitwise dot product between corresponding elements of two NumPy contiguous (C-like) arrays.
- * \n Note: This function uses the gcc/clang intrinsic __builtin_popcount() as its core operation.
- * Thus, whilst very fast, it is not portable to non-gcc/clang compilers
+ * 
+ * @attention 
+ * This function uses the gcc/clang intrinsic __builtin_popcount() as its core operation.
+ * Thus, whilst very fast, it is NOT PORTABLE to non-gcc/clang compilers
  * 
  * @param voids_1 the first input array
  * @param voids_2 the second input array

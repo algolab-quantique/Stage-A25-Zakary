@@ -28,17 +28,14 @@ static const std::complex<double> phase_lookup[4] = {
 };
 
 py::tuple tensor(py::array z1, py::array x1, py::array z2, py::array x2) {
-    // Request buffer info for input arrays
     auto buf_z1 = z1.request();
     auto buf_x1 = x1.request();
     auto buf_z2 = z2.request();
     auto buf_x2 = x2.request();
 
-    // Get shapes of input arrays
     std::vector<size_t> shape1(buf_z1.shape.begin(), buf_z1.shape.end());
     std::vector<size_t> shape2(buf_z2.shape.begin(), buf_z2.shape.end());
 
-    // Ensure the shapes are compatible for concatenation
     if (shape1.size() != shape2.size()) {
         throw std::invalid_argument("Input arrays must have the same number of dimensions for concatenation.");
     }
@@ -48,11 +45,10 @@ py::tuple tensor(py::array z1, py::array x1, py::array z2, py::array x2) {
         }
     }
 
-    // Compute the concatenated shape
-    std::vector<size_t> combined_shape = shape1;
-    combined_shape.back() += shape2.back(); // Add the last dimension sizes
 
-    // Create output arrays for concatenated z and x
+    std::vector<size_t> combined_shape = shape1;
+    combined_shape.back() += shape2.back();
+
     py::array new_z(z1.dtype(), combined_shape);
     py::array new_x(z1.dtype(), combined_shape);
 
@@ -67,12 +63,10 @@ py::tuple tensor(py::array z1, py::array x1, py::array z2, py::array x2) {
     const void* ptr_z2 = buf_z2.ptr;
     const void* ptr_x2 = buf_x2.ptr;
 
-    // Sizes of the last dimension
     size_t last_dim1 = shape1.back();
     size_t last_dim2 = shape2.back();
-    size_t num_elements = buf_z1.size / last_dim1; // Number of elements excluding the last dimension
+    size_t num_elements = buf_z1.size / last_dim1;
 
-    // Concatenate z and x arrays
     #pragma omp parallel for schedule(static)
     for (size_t i = 0; i < num_elements; ++i) {
         size_t offset1 = i * last_dim1;
@@ -96,7 +90,6 @@ py::tuple tensor(py::array z1, py::array x1, py::array z2, py::array x2) {
                     last_dim2 * buf_x2.itemsize);
     }
 
-    // Return the concatenated arrays as a tuple
     return py::make_tuple(new_z, new_x);
 }
 
@@ -131,18 +124,15 @@ py::array_t<bool> bitwise_commute_with(py::array z1, py::array x1, py::array z2,
 
 
 py::tuple random_zx_strings(const std::vector<size_t>& shape, size_t num_qubits) {
-    // Calculate the total size of the array
     size_t total_size = 1;
     for (size_t dim : shape) {
         total_size *= dim;
     }
     total_size *= num_qubits;
 
-    // Create the full shape vector
     std::vector<size_t> full_shape = shape;
     full_shape.push_back(num_qubits);
 
-    // Create output arrays for z_strings and x_strings
     py::array_t<bool> z_strings(full_shape);
     py::array_t<bool> x_strings(full_shape);
 
@@ -157,12 +147,10 @@ py::tuple random_zx_strings(const std::vector<size_t>& shape, size_t num_qubits)
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> dist(0, 1);
 
-    // Fill the arrays with random values
     for (size_t i = 0; i < total_size; ++i) {
         ptr_z[i] = dist(gen);
         ptr_x[i] = dist(gen);
     }
 
-    // Return the z_strings and x_strings as a tuple
     return py::make_tuple(z_strings, x_strings);
 }
