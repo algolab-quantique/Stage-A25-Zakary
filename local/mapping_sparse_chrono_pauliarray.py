@@ -168,12 +168,14 @@ def build_mol_info(atom_labels, positions):
 
 
 def main():
-    label_list = [
-        h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions,
-        c2h2_labels_positions, c2h4_labels_positions, c3h8_labels_positions, n2_labels_positions]
-    molecule_names = [
-        "H2", "LiH", "H2O", "NH3", "C2H2", "C2H4", "C3H8", "N2"
-    ]
+    label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions,
+                  c2h2_labels_positions, c2h4_labels_positions, n2_labels_positions, c3h8_labels_positions]
+    # label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions,
+    #               c2h2_labels_positions, c2h4_labels_positions, n2_labels_positions]
+    # molecule_names = [
+    #     # "H2", "LiH", "H2O", "NH3", "C2H2", "C2H4", "C3H8", "N2"
+    #     "H2", "LiH", "H2O", "NH3", "C2H2", "C2H4", "N2"
+    # ]
     z_void_ratios = []
     x_void_ratios = []
 
@@ -249,15 +251,15 @@ def main():
     pr.disable()
 
     # Plotting
-    plt.figure(figsize=(10, 6))
-    plt.plot(molecule_names, z_void_ratios, marker='o', label='Non-zero Z void ratio (%)')
-    plt.plot(molecule_names, x_void_ratios, marker='s', label='Non-zero X void ratio (%)')
-    plt.xlabel('Molecule')
-    plt.ylabel('Ratio (%)')
-    plt.title('Ratio of Non-zero Z and X Voids per Molecule')
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
+    # plt.figure(figsize=(10, 6))
+    # plt.plot(molecule_names, z_void_ratios, marker='o', label='Non-zero Z void ratio (%)')
+    # plt.plot(molecule_names, x_void_ratios, marker='s', label='Non-zero X void ratio (%)')
+    # plt.xlabel('Molecule')
+    # plt.ylabel('Ratio (%)')
+    # plt.title('Ratio of Non-zero Z and X Voids per Molecule')
+    # plt.legend()
+    # plt.tight_layout()
+    # plt.show()
 
     print("========== Analyse PauliArray ==========")
     print(f"Time taken : {time.time() - start:.3f} seconds")

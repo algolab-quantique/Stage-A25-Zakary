@@ -51,3 +51,6 @@ perf.data
 # /local
 /__pycache__
 /build
+*.prof
+/tests/.venv
+/.vscode

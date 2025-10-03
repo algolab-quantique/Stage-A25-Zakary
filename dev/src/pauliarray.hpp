@@ -63,38 +63,11 @@ py::tuple tensor(py::array z1, py::array x1, py::array z2, py::array x2) {
     const void* ptr_z2 = buf_z2.ptr;
     const void* ptr_x2 = buf_x2.ptr;
 
-    size_t last_dim1 = shape1.back();
-    size_t last_dim2 = shape2.back();
-    size_t num_elements = buf_z1.size / last_dim1;
-
-    #pragma omp parallel for schedule(static)
-    for (size_t i = 0; i < num_elements; ++i) {
-        size_t offset1 = i * last_dim1;
-        size_t offset2 = i * last_dim2;
-        size_t offset_new = i * (last_dim1 + last_dim2);
-
-        // Copy z1 and z2
-        std::memcpy(static_cast<char*>(ptr_new_z) + offset_new * buf_z1.itemsize,
-                    static_cast<const char*>(ptr_z1) + offset1 * buf_z1.itemsize,
-                    last_dim1 * buf_z1.itemsize);
-        std::memcpy(static_cast<char*>(ptr_new_z) + (offset_new + last_dim1) * buf_z1.itemsize,
-                    static_cast<const char*>(ptr_z2) + offset2 * buf_z2.itemsize,
-                    last_dim2 * buf_z2.itemsize);
-
-        // Copy x1 and x2
-        std::memcpy(static_cast<char*>(ptr_new_x) + offset_new * buf_x1.itemsize,
-                    static_cast<const char*>(ptr_x1) + offset1 * buf_x1.itemsize,
-                    last_dim1 * buf_x1.itemsize);
-        std::memcpy(static_cast<char*>(ptr_new_x) + (offset_new + last_dim1) * buf_x1.itemsize,
-                    static_cast<const char*>(ptr_x2) + offset2 * buf_x2.itemsize,
-                    last_dim2 * buf_x2.itemsize);
-    }
-
-    return py::make_tuple(new_z, new_x);
+    
 }
 
 py::tuple compose(py::array z1, py::array x1, py::array z2, py::array x2){
-    
+    return py::make_tuple(1, 2);
 }
 
 
