@@ -7,7 +7,7 @@ This project uses [pybind11](https://github.com/pybind/pybind11) as its translat
  | Module Name     | Speed | 1-to-1 ? | Finished ? |
 |-----------------|-------|----------|------------|
 | void_operations.py | 1-9x  | Yes      | No         | 
-| pauli_array.py  | 2-6x    | No       | No         |
+| pauli_array.py  | 1-6x    | No       | No         |
 
 
 ## Structure
