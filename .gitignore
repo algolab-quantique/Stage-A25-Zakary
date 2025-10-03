@@ -52,5 +52,5 @@ perf.data
 /__pycache__
 /build
 *.prof
-/tests/.venv
+/paulicpp/.venv
 /.vscode

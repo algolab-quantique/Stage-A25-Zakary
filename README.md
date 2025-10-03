@@ -54,7 +54,7 @@ This is a dev repo. Anything outside of `/paulicpp` is subject to deletion. The 
 - Having lots of time to waste to debug this library.
 
 ## Installation
-Navigate to the `paulicpp` directory, then run:
+Navigate to the `paulicpp` directory, create a virtual environment then run:
 ```console
 $ python3 compiler.py
 ```
