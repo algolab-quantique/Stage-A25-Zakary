@@ -1,6 +1,7 @@
 import subprocess
 import os
 import sys
+import argparse
 
 
 cwd = os.getcwd()
@@ -9,34 +10,88 @@ PKG_NAME = "pauliarray"
 l_modules = ["paulicpp", "voidops"]  # , "densepaulicpp"
 step_num = 0 
 
-def compile_generic(module) -> bool:
+def compile_generic(module, compiler) -> bool:
     global step_num
-    step_num += 1
-    print(f"\n[{step_num}] --- Compiling {module}...")
-    try:
-        command = [
-            "g++",
-            "-g",
-            "-fopenmp",
-            "-O3",
-            "-flto=auto",
-            "-march=native",
-            # "-Wall",
-            "-shared",
-            "-std=c++17",
-            "-fPIC",
-            "$(python3 -m pybind11 --includes)",
-            f"{PKG_NAME}/src/bindings/{module}_bindings.cpp",
-            "-o",
-            f"{PKG_NAME}/src/build/{module}$(python3-config --extension-suffix)"
-        ]
-        subprocess.run(" ".join(command), shell=True, check=True)
-        print(f"{module} compiled successfully.")
-        print(f"Output located at: {PKG_NAME}/src/build/{module}.xxx.so")
-        return True
-    except subprocess.CalledProcessError as e:
-        print(f"An error occurred while compiling {module}: {e}")
-        return False  
+
+    if compiler not in ["g++", "clang++"]:
+        raise ValueError(f"Unsupported compiler: {compiler}")
+    elif compiler == "g++" or compiler == "gcc":
+        step_num += 1
+        print(f"\n[{step_num}] --- Compiling {module}...")
+        try:
+            try:
+                includes = subprocess.check_output(["python3", "-m", "pybind11", "--includes"], text=True).strip()
+            except Exception:
+                includes = subprocess.check_output("python3 -m pybind11 --includes", shell=True, text=True).strip()
+            try:
+                ext_suffix = subprocess.check_output(["python3-config", "--extension-suffix"], text=True).strip()
+            except Exception:
+                import sysconfig
+                ext_suffix = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
+
+            out_path = f"{PKG_NAME}/src/build/{module}{ext_suffix}"
+
+            command = (
+                "g++ "
+                "-fopenmp "
+                "-O3 "
+                "-flto=auto "
+                "-march=native "
+                "-shared "
+                "-std=c++17 "
+                "-fPIC "
+                f"{includes} "
+                f"{PKG_NAME}/src/bindings/{module}_bindings.cpp "
+                "-o "
+                f"{out_path}"
+            )
+            subprocess.run(command, shell=True, check=True)
+            print(f"{module} compiled successfully.")
+            print(f"Output located at: {out_path}")
+            return True
+        except subprocess.CalledProcessError as e:
+            print(f"An error occurred while compiling {module}: {e}")
+            return False 
+        
+
+    elif compiler == "clang++" or compiler == "clang":
+        step_num += 1
+        print(f"\n[{step_num}] --- Compiling {module}...")
+        try:
+            try:
+                includes = subprocess.check_output(["python3", "-m", "pybind11", "--includes"], text=True).strip()
+            except Exception:
+                includes = subprocess.check_output("python3 -m pybind11 --includes", shell=True, text=True).strip()
+            try:
+                ext_suffix = subprocess.check_output(["python3-config", "--extension-suffix"], text=True).strip()
+            except Exception:
+                import sysconfig
+                ext_suffix = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
+
+            out_path = f"{PKG_NAME}/src/build/{module}{ext_suffix}"
+
+            command = (
+                "clang++ "
+                "-fopenmp=libomp "
+                "-O3 "
+                "-flto=auto "
+                "-march=native "
+                "-shared "
+                "-std=c++17 "
+                "-fPIC "
+                f"{includes} "
+                f"{PKG_NAME}/src/bindings/{module}_bindings.cpp "
+                "-o "
+                f"{out_path}"
+            )
+            subprocess.run(command, shell=True, check=True)
+            print(f"{module} compiled successfully.")
+            print(f"Output located at: {out_path}")
+            return True
+        except subprocess.CalledProcessError as e:
+            print(f"An error occurred while compiling {module}: {e}")
+            return False
+
 
 
 def make_stub_generic(libname, modname):
@@ -73,19 +128,19 @@ def make_stubs(option="all"):
             make_stub_generic("voidops", "voidops")
 
 
-def compile_cpp(option="all"):
+def compile_cpp(option="all", compiler="g++"):
     ret : bool = True
     match option:
         case "all":
             for module in l_modules:
-                ret = ret and compile_generic(module)
+                ret = ret and compile_generic(module, compiler)
             print(f"\nAll modules compiled: {ret}")
         case "pa":
-            ret = compile_generic("paulicpp")
+            ret = compile_generic("paulicpp", compiler)
         case "dpa":
-            ret = compile_generic("densepaulicpp")
+            ret = compile_generic("densepaulicpp", compiler)
         case "voidops":
-            ret = compile_generic("voidops")
+            ret = compile_generic("voidops", compiler)
             
     if ret:
         make_stubs(option)
@@ -96,15 +151,31 @@ def add_pythonpath():
 # python3 test.py
     print("===== Setting PYTHONPATH =====")
     sys.path.insert(0, os.path.join(os.getcwd(), f"{PKG_NAME}/src/build"))
-    print(f"PYTHONPATH set to {sys.path[0]}")
+    # print(f"PYTHONPATH set to {sys.path[0]}")
 
     
 
 def main():
 
+    parser = argparse.ArgumentParser(description="Compile C++ modules and generate stubs.")
+   
+    parser.add_argument(
+        "--option",
+        type=str,
+        choices=["all", "pa", "dpa", "voidops"],
+        default="all",
+        help="Choose which module to compile (default: all)"
+    )
+    parser.add_argument(
+        "--compiler",
+        type=str,
+        choices=["g++", "clang++", "gcc", "clang"],
+        default="g++",
+        help="Choose the compiler to use (default: g++)"
+    )
     add_pythonpath()
     print(sys.path)
-    compile_cpp("all")
+    compile_cpp(option=parser.parse_args().option, compiler=parser.parse_args().compiler)
 
 
 if __name__ == "__main__":

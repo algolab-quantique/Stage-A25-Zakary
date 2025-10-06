@@ -23,6 +23,12 @@ namespace py = pybind11;
 #include <cstring>
 #include <omp.h>
 
+#ifdef _MSC_VER
+    #include <intrin.h>
+    #define __builtin_popcount __popcnt
+    #define __builtin_popcountll __popcnt64
+#endif
+
 // This threshold is completely arbitrary and can be tuned for performance depending on the hardware.
 #define THRESHOLD_PARALLEL 10000000
 
@@ -229,7 +235,7 @@ py::array bitwise_dot(py::array voids_1, py::array voids_2) {
             std::to_string(buf1.size) + " and " + std::to_string(buf2.size));
     }
 
-    py::array_t<int64_t> result(buf1.size);
+    py::array_t<int64_t> result(buf1.shape);
     auto buf_result = result.request();
 
     const uint8_t* ptr1 = static_cast<const uint8_t*>(buf1.ptr);
@@ -260,7 +266,21 @@ py::array bitwise_dot(py::array voids_1, py::array voids_2) {
         }
     // }
 
-    result.resize(buf1.shape);
+    // result.resize(buf1.shape);
+    // std::cout << "First shape:";
+    // for (ssize_t i = 0; i < buf1.ndim; ++i) {
+    //     std::cout << buf1.shape[i];
+    //     if (i < buf1.ndim - 1) std::cout << ", ";
+    // }
+    // std::cout << std::endl;
+
+    // std::cout << "Result shape:";
+    // for (ssize_t i = 0; i < result.ndim(); ++i) {
+    //     std::cout << result.shape(i);
+    //     if (i < result.ndim() - 1) std::cout << ", ";
+    // }
+    // std::cout << std::endl;
+
 
     return result;
 }

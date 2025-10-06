@@ -28,42 +28,42 @@ static const std::complex<double> phase_lookup[4] = {
 };
 
 py::tuple tensor(py::array z1, py::array x1, py::array z2, py::array x2) {
-    auto buf_z1 = z1.request();
-    auto buf_x1 = x1.request();
-    auto buf_z2 = z2.request();
-    auto buf_x2 = x2.request();
+    // auto buf_z1 = z1.request();
+    // auto buf_x1 = x1.request();
+    // auto buf_z2 = z2.request();
+    // auto buf_x2 = x2.request();
 
-    std::vector<size_t> shape1(buf_z1.shape.begin(), buf_z1.shape.end());
-    std::vector<size_t> shape2(buf_z2.shape.begin(), buf_z2.shape.end());
+    // std::vector<size_t> shape1(buf_z1.shape.begin(), buf_z1.shape.end());
+    // std::vector<size_t> shape2(buf_z2.shape.begin(), buf_z2.shape.end());
 
-    if (shape1.size() != shape2.size()) {
-        throw std::invalid_argument("Input arrays must have the same number of dimensions for concatenation.");
-    }
-    for (size_t i = 0; i < shape1.size() - 1; ++i) {
-        if (shape1[i] != shape2[i]) {
-            throw std::invalid_argument("Input arrays must have matching dimensions (except the last one).");
-        }
-    }
+    // if (shape1.size() != shape2.size()) {
+    //     throw std::invalid_argument("Input arrays must have the same number of dimensions for concatenation.");
+    // }
+    // for (size_t i = 0; i < shape1.size() - 1; ++i) {
+    //     if (shape1[i] != shape2[i]) {
+    //         throw std::invalid_argument("Input arrays must have matching dimensions (except the last one).");
+    //     }
+    // }
 
 
-    std::vector<size_t> combined_shape = shape1;
-    combined_shape.back() += shape2.back();
+    // std::vector<size_t> combined_shape = shape1;
+    // combined_shape.back() += shape2.back();
 
-    py::array new_z(z1.dtype(), combined_shape);
-    py::array new_x(z1.dtype(), combined_shape);
+    // py::array new_z(z1.dtype(), combined_shape);
+    // py::array new_x(z1.dtype(), combined_shape);
 
-    auto buf_new_z = new_z.request();
-    auto buf_new_x = new_x.request();
+    // auto buf_new_z = new_z.request();
+    // auto buf_new_x = new_x.request();
 
-    void* ptr_new_z = buf_new_z.ptr;
-    void* ptr_new_x = buf_new_x.ptr;
+    // void* ptr_new_z = buf_new_z.ptr;
+    // void* ptr_new_x = buf_new_x.ptr;
 
-    const void* ptr_z1 = buf_z1.ptr;
-    const void* ptr_x1 = buf_x1.ptr;
-    const void* ptr_z2 = buf_z2.ptr;
-    const void* ptr_x2 = buf_x2.ptr;
+    // const void* ptr_z1 = buf_z1.ptr;
+    // const void* ptr_x1 = buf_x1.ptr;
+    // const void* ptr_z2 = buf_z2.ptr;
+    // const void* ptr_x2 = buf_x2.ptr;
 
-    
+    return py::make_tuple(1, 2);
 }
 
 py::tuple compose(py::array z1, py::array x1, py::array z2, py::array x2){

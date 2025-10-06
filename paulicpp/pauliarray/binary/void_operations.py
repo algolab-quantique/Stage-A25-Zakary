@@ -23,10 +23,11 @@ def _contiguous(a):
     
 def _bc(a, b):
     if a.shape == b.shape:
-        return a, b
-    else:
-        tmp = np.broadcast_arrays(a, b)
-        return _contiguous(tmp[0]), _contiguous(tmp[1])
+        a2 = np.ascontiguousarray(a)
+        b2 = np.ascontiguousarray(b)
+        return a2, b2
+    tmp = np.broadcast_arrays(a, b)
+    return np.ascontiguousarray(tmp[0]), np.ascontiguousarray(tmp[1])
 
 
 def bit_strings_to_int_strings(bit_strings: NDArray[np.uint8]) -> NDArray[np.uint]:
@@ -131,6 +132,9 @@ def bitwise_dot(
     voids_2: NDArray,
 ) -> NDArray[np.int64]:
     if C_CCP:
+        # v1, v2 = _bc(voids_1, voids_2)
+        # v1 = _contiguous(v1)
+        # v2 = _contiguous(v2)
         return vcpp.bitwise_dot(*_bc(voids_1, voids_2))
     
     else:

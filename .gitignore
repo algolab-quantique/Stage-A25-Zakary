@@ -49,8 +49,8 @@ perf.data
 /.venv
 /c_pauliarray
 # /local
-/__pycache__
 /build
 *.prof
 /paulicpp/.venv
 /.vscode
+**/__pycache__

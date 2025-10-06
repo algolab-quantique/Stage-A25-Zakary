@@ -166,6 +166,28 @@ def build_mol_info(atom_labels, positions):
 
     return mol_info
 
+def collect_z_run_lengths(qubit_hamiltonien):
+    """
+    For each Pauli string, find every position with 'Z', count how many consecutive 'Z's follow.
+    Returns a list of all Z run lengths.
+    """
+    z_run_lengths = []
+    for pauli_string in qubit_hamiltonien.paulis:
+        label = pauli_string.to_label()
+        i = 0
+        while i < len(label):
+            if label[i] == 'Z':
+                run_len = 1
+                j = i + 1
+                while j < len(label) and label[j] == 'Z':
+                    run_len += 1
+                    j += 1
+                z_run_lengths.append(run_len)
+                i = j
+            else:
+                i += 1
+    return z_run_lengths
+
 
 def main():
     label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions,
@@ -178,6 +200,7 @@ def main():
     # ]
     z_void_ratios = []
     x_void_ratios = []
+    all_z_run_lengths = []
 
     reps = 1
     laps = np.zeros(reps)
@@ -227,6 +250,9 @@ def main():
             qubit_hamiltonien = operator_to_sparse_pauli(qubit_hamiltonien).simplify()
             t1 = time.time()
             laps[rep_idx] = t1 - t0
+            
+            all_z_run_lengths.extend(collect_z_run_lengths(qubit_hamiltonien))
+
 
             for pauli_string in qubit_hamiltonien.paulis:
                 for pauli_op in pauli_string.to_label():
@@ -286,6 +312,14 @@ def main():
 
     # print("Non-zero ops:")
     # print(qubit_hamiltonien.paulis)
+
+    plt.figure(figsize=(8, 5))
+    plt.hist(all_z_run_lengths, bins=range(1, max(all_z_run_lengths)+2), align='left', rwidth=0.8)
+    plt.xlabel('Length of consecutive Z run')
+    plt.ylabel('Count')
+    plt.title('Histogram of consecutive Z runs in Pauli strings (all molecules)')
+    plt.tight_layout()
+    plt.show()
 
 
     s = io.StringIO()
