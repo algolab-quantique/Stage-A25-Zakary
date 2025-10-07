@@ -10,6 +10,7 @@ import numpy as np
 from pauliarray.conversion.qiskit import operator_to_sparse_pauli
 from pauliarray.mapping.fermion import JordanWigner
 from qiskit_nature.second_q.drivers import PySCFDriver
+import datetime
 
 
 def h2_labels_positions():
@@ -327,7 +328,7 @@ def main():
     ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
 
     # ps.print_stats()
-    ps.dump_stats("sparse_chrono_pauliarray.prof")
+    ps.dump_stats(f"molecules-{datetime.date.today()}.prof")
     # print(s.getvalue())
 
     # print("PauliArray")

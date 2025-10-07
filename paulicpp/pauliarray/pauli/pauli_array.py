@@ -14,6 +14,11 @@ if TYPE_CHECKING:
     from pauliarray.pauli.operator_array_type_1 import OperatorArrayType1
     from pauliarray.pauli.weighted_pauli_array import WeightedPauliArray
 
+try:
+    from ..src.build import paulicpp as pcpp
+    C_CCP = True
+except ImportError:
+    C_CCP = False
 
 PAULI_LABELS = "IZXY"
 PAULI_TO_ZX_BITS = {
@@ -488,13 +493,15 @@ class PauliArray(object):
         Returns:
             "np.ndarray[np.bool]": An array of bool set to true for bitwise commuting Pauli string, and false otherwise.
         """
+        if C_CCP:
+            return pcpp.bitwise_commute_with(self.z_voids, self.x_voids, other.z_voids, other.x_voids)
+        else:    
+            ovlp_1 = vops.bitwise_and(self.z_voids, other.x_voids)
+            ovlp_2 = vops.bitwise_and(self.x_voids, other.z_voids)
 
-        ovlp_1 = vops.bitwise_and(self.z_voids, other.x_voids)
-        ovlp_2 = vops.bitwise_and(self.x_voids, other.z_voids)
+            olvp_3 = vops.bitwise_xor(ovlp_1, ovlp_2)
 
-        olvp_3 = vops.bitwise_xor(ovlp_1, ovlp_2)
-
-        return olvp_3 == vops.bit_strings_to_voids(np.zeros(self.num_qubits, dtype=np.uint8))
+            return olvp_3 == vops.bit_strings_to_voids(np.zeros(self.num_qubits, dtype=np.uint8))
 
     def traces(self) -> NDArray:
         """
@@ -1327,32 +1334,6 @@ def unique(
         NDArray, optional: The number of each unique in the original PauliArray
     """
 
-    # if axis is None:
-    #     paulis = paulis.flatten()
-    #     axis = 0
-    # elif axis >= paulis.ndim:
-    #     raise ValueError("")
-    # else:
-    #     axis = axis % paulis.ndim
-
-    # out = np.unique(
-    #     paulis.zx_voids,
-    #     axis=axis,
-    #     return_index=return_index,
-    #     return_inverse=return_inverse,
-    #     return_counts=return_counts,
-    # )
-
-    # if return_index or return_inverse or return_counts:
-    #     out = list(out)
-    #     unique_zx_voids = out[0]
-    #     out[0] = PauliArray.from_zx_voids(unique_zx_voids, paulis.num_qubits)
-    # else:
-    #     unique_zx_voids = out
-    #     out = PauliArray.from_zx_voids(unique_zx_voids, paulis.num_qubits)
-
-    # return out
-
     if axis is None:
         paulis = paulis.flatten()
         axis = 0
@@ -1361,25 +1342,28 @@ def unique(
     else:
         axis = axis % paulis.ndim
 
-    # Pack each Pauli string into a single binary blob
-    zx_voids = np.ascontiguousarray(paulis.zx_voids)
-    packed = zx_voids.view(np.void)  # Each row is a single binary object
-
-    out = np.unique(
-        packed,
-        axis=axis,
+    # out = np.unique(
+    #     paulis.zx_voids,
+    #     axis=axis,
+    #     return_index=return_index,
+    #     return_inverse=return_inverse,
+    #     return_counts=return_counts,
+    # )
+    out = pcpp.unique(
+        paulis.zx_voids,
+        # axis=axis,
         return_index=return_index,
         return_inverse=return_inverse,
         return_counts=return_counts,
     )
+        
 
-    # Recover unique PauliArray
     if return_index or return_inverse or return_counts:
         out = list(out)
-        unique_zx_voids = out[0].view(zx_voids.dtype).reshape(out[0].shape)
+        unique_zx_voids = out[0]
         out[0] = PauliArray.from_zx_voids(unique_zx_voids, paulis.num_qubits)
     else:
-        unique_zx_voids = out.view(zx_voids.dtype).reshape(out.shape)
+        unique_zx_voids = out
         out = PauliArray.from_zx_voids(unique_zx_voids, paulis.num_qubits)
 
     return out

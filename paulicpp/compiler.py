@@ -45,6 +45,7 @@ def compile_generic(module, compiler) -> bool:
                 "-o "
                 f"{out_path}"
             )
+            print(f"Running: {command}")
             subprocess.run(command, shell=True, check=True)
             print(f"{module} compiled successfully.")
             print(f"Output located at: {out_path}")
@@ -84,6 +85,7 @@ def compile_generic(module, compiler) -> bool:
                 "-o "
                 f"{out_path}"
             )
+            print(f"Running: {command}")
             subprocess.run(command, shell=True, check=True)
             print(f"{module} compiled successfully.")
             print(f"Output located at: {out_path}")
