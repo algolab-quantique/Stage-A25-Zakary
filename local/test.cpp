@@ -1,6 +1,6 @@
 
 // #include "voidops.hpp"
-#include "../paulicpp/pauliarray/src/sparsepauliarray.hpp"
+#include "../paulicpp/pauliarray/src/sparsepaulicpp.hpp"
 
 using namespace std;
 
@@ -18,7 +18,7 @@ using namespace std;
 // std::vector<dpoint> z2 = make_dpoint(z_vec2);
 // std::vector<dpoint> x2 = make_dpoint(x_vec2);
 
-#define RANDOM_SIZE 10000
+#define RANDOM_SIZE 10000000
 #define RANDOM_DENSITY 0.1
 #define RANDOM_PROXIMITY 0.99
 
@@ -26,16 +26,18 @@ using namespace std;
 
 int main() {
     cout << "========== SparsePauliArray ==========" << endl;
+    cout << "Generating random vectors of size " << RANDOM_SIZE << " with density " << RANDOM_DENSITY << " and proximity " << RANDOM_PROXIMITY << "...\n";
     std::vector<uint8_t> z = generate_random_vec(RANDOM_SIZE, RANDOM_DENSITY, RANDOM_PROXIMITY);
     std::vector<uint8_t> x = generate_random_vec(RANDOM_SIZE, RANDOM_DENSITY, RANDOM_PROXIMITY);
+    cout << "Done.\n\n";
     // SparsePauliArray spa1(z, x, RANDOM_SIZE);
     // spa1.show();
     vector<dpoint> z_pts = make_dpoint(z);
     vector<dpoint> x_pts = make_dpoint(x);
-    show_dpoints(z_pts);
-    show_dpoints(x_pts);
+    // show_dpoints(z_pts);
+    // show_dpoints(x_pts);
     // cout << "Z popcount: " <<  << endl;
-    overlap_dpoint(z_pts, x_pts);
+    // overlap_dpoint(z_pts, x_pts);
 
     vector<dpoint> xor_pts = xor_dpoint(z_pts, x_pts);
     // vector<dpoint> and_pts = and_dpoint(z_pts, x_pts);

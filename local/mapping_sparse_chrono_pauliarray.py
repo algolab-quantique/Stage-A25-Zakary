@@ -1,5 +1,3 @@
-# %%
-
 import cProfile
 import io
 import pstats
@@ -11,6 +9,8 @@ from pauliarray.conversion.qiskit import operator_to_sparse_pauli
 from pauliarray.mapping.fermion import JordanWigner
 from qiskit_nature.second_q.drivers import PySCFDriver
 import datetime
+import json
+import pprint
 
 
 def h2_labels_positions():
@@ -201,7 +201,7 @@ def main():
     # ]
     z_void_ratios = []
     x_void_ratios = []
-    all_z_run_lengths = []
+    all_nbr_qubits : dict = {}
 
     reps = 1
     laps = np.zeros(reps)
@@ -252,8 +252,6 @@ def main():
             t1 = time.time()
             laps[rep_idx] = t1 - t0
             
-            all_z_run_lengths.extend(collect_z_run_lengths(qubit_hamiltonien))
-
 
             for pauli_string in qubit_hamiltonien.paulis:
                 for pauli_op in pauli_string.to_label():
@@ -269,7 +267,12 @@ def main():
                 nz_x += np.sum(pauli_string.z)
                 n_zx += len(pauli_string.x)
 
-        # Store ratios for plotting
+
+                if qubit_hamiltonien.num_qubits in all_nbr_qubits:
+                    all_nbr_qubits[qubit_hamiltonien.num_qubits] += 1
+                else:
+                    all_nbr_qubits[qubit_hamiltonien.num_qubits] = 1
+
         z_void_ratio = nz_z / n_zx * 100 if n_zx > 0 else 0
         x_void_ratio = nz_x / n_zx * 100 if n_zx > 0 else 0
         z_void_ratios.append(z_void_ratio)
@@ -277,21 +280,8 @@ def main():
 
     pr.disable()
 
-    # Plotting
-    # plt.figure(figsize=(10, 6))
-    # plt.plot(molecule_names, z_void_ratios, marker='o', label='Non-zero Z void ratio (%)')
-    # plt.plot(molecule_names, x_void_ratios, marker='s', label='Non-zero X void ratio (%)')
-    # plt.xlabel('Molecule')
-    # plt.ylabel('Ratio (%)')
-    # plt.title('Ratio of Non-zero Z and X Voids per Molecule')
-    # plt.legend()
-    # plt.tight_layout()
-    # plt.show()
-
     print("========== Analyse PauliArray ==========")
     print(f"Time taken : {time.time() - start:.3f} seconds")
-    # print("Number of strings:", n_strings)
-    # print("Number of qubits:", n_qubits)
     total = n_x + n_z + n_y + n_i
     print(f"Total ops: {total}")
     print(f"X ops: {n_x}, Z ops: {n_z}, Y ops: {n_y}, I ops: {n_i}")
@@ -303,40 +293,16 @@ def main():
     print("Total length: ", n_zx)
     print(f"Ratio of non-zero z_voids: {nz_z/(n_zx)*100:.2f}%")
     print(f"Ratio of non-zero x_voids: {nz_x/(n_zx)*100:.2f}%")
-    # print(f"Ratio of all non-zero voids: {(nz_z + nz_x)/(n_zx)*100:.2f}%")
     print("=======================================")
-
-    # print(f"\nNon-zero Z ops: {nz_z}, Non-zero X ops: {nz_x}")
-    # ratio = (nz_z + nz_x) / (len(qubit_hamiltonien) * qubit_hamiltonien.num_qubits)
-    # print(f"Total non-zero ops: {nz_z+nz_x}/{len(qubit_hamiltonien)*qubit_hamiltonien.num_qubits}")
-    # print(f"Ratio of non-zero ops: {ratio:.6f} = {(1-ratio)*100:.2f}% sparsity")
-
-    # print("Non-zero ops:")
-    # print(qubit_hamiltonien.paulis)
-
-    plt.figure(figsize=(8, 5))
-    plt.hist(all_z_run_lengths, bins=range(1, max(all_z_run_lengths)+2), align='left', rwidth=0.8)
-    plt.xlabel('Length of consecutive Z run')
-    plt.ylabel('Count')
-    plt.title('Histogram of consecutive Z runs in Pauli strings (all molecules)')
-    plt.tight_layout()
-    plt.show()
-
+    print("List of number of qubits for each molecule:")
+    for key in sorted(all_nbr_qubits.keys()):
+        print(f"  {key} qubits: {all_nbr_qubits[key]} instances")
 
     s = io.StringIO()
     sortby = SortKey.CUMULATIVE
     ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
 
-    # ps.print_stats()
-    ps.dump_stats(f"molecules-{datetime.date.today()}.prof")
-    # print(s.getvalue())
 
-    # print("PauliArray")
-
-    print(f"{np.average(laps):.3f}, {np.std(laps):.3f}")
-
-        # print(len(qubit_hamiltonien))
-        # print(qubit_hamiltonien.num_qubits)
 
 if __name__ == "__main__":
     main()

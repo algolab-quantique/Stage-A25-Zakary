@@ -7,7 +7,7 @@ import argparse
 cwd = os.getcwd()
 
 PKG_NAME = "pauliarray"
-l_modules = ["paulicpp", "voidops"]  # , "densepaulicpp"
+l_modules = ["paulicpp", "voidops", "sparsepaulicpp"]  # , "densepaulicpp"
 step_num = 0 
 
 def compile_generic(module, compiler) -> bool:
