@@ -54,4 +54,6 @@ perf.data
 /paulicpp/.venv
 /.vscode
 **/__pycache__
-voids.json
+# voids.json
+*.png
+/local/results

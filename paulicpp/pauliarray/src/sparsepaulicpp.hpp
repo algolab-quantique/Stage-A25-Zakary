@@ -5,8 +5,7 @@
 #include <omp.h>
 #include <cstring>
 // #include <algorithm>
-// #include <random>
-#include <string>
+#include <random>
 #include <utility>   // std::pair
 
 // #include <Eigen/Sparse>
@@ -43,6 +42,29 @@ std::vector<dpoint> make_dpoint(const std::vector<uint8_t>& vec){
         points.push_back(p);
     }
     return points;
+}
+
+std::vector<uint8_t> generate_random_vec(int size, float density=0.1, float proximity=0.0) {
+    if (size <= 0) return {};
+    // clamp parameters to [0,1]
+    double p = std::min(std::max(static_cast<double>(density), 0.0), 1.0);
+    double q = std::min(std::max(static_cast<double>(proximity), 0.0), 1.0);
+
+    std::vector<uint8_t> v;
+    v.reserve(static_cast<size_t>(size));
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
+
+    bool prev = false;
+    for (int i = 0; i < size; ++i) {
+        double prob = prev ? (p + q * (1.0 - p)) : (p * (1.0 - q));
+        bool bit = dist(gen) < prob;
+        v.push_back(bit ? 1 : 0);
+        prev = bit;
+    }
+    return v;
 }
 
 
@@ -218,4 +240,12 @@ void overlap_dpoint(const std::vector<dpoint>& a, const std::vector<dpoint>& b) 
             ++j;
         }
     }
+}
+
+unsigned int popcount_dpoint(const std::vector<dpoint>& a) {
+    unsigned int count = 0;
+    for (const auto& p : a) {
+        count += (p.second - p.first);
+    }
+    return count;
 }

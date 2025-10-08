@@ -8,12 +8,13 @@ cwd = os.getcwd()
 
 PKG_NAME = "pauliarray"
 l_modules = ["paulicpp", "voidops", "sparsepaulicpp"]  # , "densepaulicpp"
+supported_compilers = ["g++", "clang++", "gcc", "clang"]
 step_num = 0 
 
 def compile_generic(module, compiler) -> bool:
     global step_num
 
-    if compiler not in ["g++", "clang++"]:
+    if compiler not in supported_compilers:
         raise ValueError(f"Unsupported compiler: {compiler}")
     elif compiler == "g++" or compiler == "gcc":
         step_num += 1
@@ -162,22 +163,22 @@ def main():
     parser = argparse.ArgumentParser(description="Compile C++ modules and generate stubs.")
    
     parser.add_argument(
-        "--option",
+        "--module", "-m",
         type=str,
         choices=["all", "pa", "dpa", "voidops"],
         default="all",
         help="Choose which module to compile (default: all)"
     )
     parser.add_argument(
-        "--compiler",
+        "--compiler", "-c",
         type=str,
-        choices=["g++", "clang++", "gcc", "clang"],
+        choices=supported_compilers,
         default="g++",
         help="Choose the compiler to use (default: g++)"
     )
     add_pythonpath()
     print(sys.path)
-    compile_cpp(option=parser.parse_args().option, compiler=parser.parse_args().compiler)
+    compile_cpp(option=parser.parse_args().module, compiler=parser.parse_args().compiler)
 
 
 if __name__ == "__main__":

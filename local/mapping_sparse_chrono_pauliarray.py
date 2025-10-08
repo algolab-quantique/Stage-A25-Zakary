@@ -268,10 +268,10 @@ def main():
                 n_zx += len(pauli_string.x)
 
 
-                if qubit_hamiltonien.num_qubits in all_nbr_qubits:
-                    all_nbr_qubits[qubit_hamiltonien.num_qubits] += 1
+                if pauli_string.num_qubits in all_nbr_qubits:
+                    all_nbr_qubits[pauli_string.num_qubits] += 1
                 else:
-                    all_nbr_qubits[qubit_hamiltonien.num_qubits] = 1
+                    all_nbr_qubits[pauli_string.num_qubits] = 1
 
         z_void_ratio = nz_z / n_zx * 100 if n_zx > 0 else 0
         x_void_ratio = nz_x / n_zx * 100 if n_zx > 0 else 0

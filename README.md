@@ -49,7 +49,7 @@ This is a dev repo. Anything outside of `/paulicpp` is subject to deletion. The 
 
 ## Requirements
 - Python 3.10+
-- Having `g++` or `clang` is ***fundamental*** to this project, as it uses the gcc/clang intrinsic *__builtin_popcount()* as one of its core operation. This is one of the reason why the C++ implementation is faster than previous pure-python.
+- Having `g++` or `clang` is ***fundamental*** to this project, as it uses the gcc/clang intrinsic *__builtin_popcount()* as one of its core operation. This is one of the reason why the C++ implementation is faster compared to pure python or even NumPy
 - Pre-installing in a venv `mypy` is not *necessary*, but not having it means the stub files will not be generated when compiling the source code.
 - Having lots of time to waste to debug this library.
 
@@ -68,3 +68,10 @@ Once done, you may call the library as usual within a python script with `import
 import pauliarray.binary.void_operations as vops
 print("Using", vops.get_backend(), "backend.")
 ```
+
+## Compiler.py
+You may call this script with the following arguments:
+- `-m` or `--module` : Choose which module(s) to compile. Default is `all`.
+<br> Accepted values are ["all", "pa", "dpa", "voidops"]
+- `-c` or `--compiler` : Choose which compiler to use. Default is `g++`. 
+<br> Accepted values are ["g++", "gcc", "clang++", "clang"]. 
