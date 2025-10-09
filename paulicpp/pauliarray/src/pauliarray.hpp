@@ -28,7 +28,7 @@ static const std::complex<double> phase_lookup[4] = {
     {0.0, 1.0}       // 3 -> 1j
 };
 
-py::tuple tensor(py::array z1, py::array x1, py::array z2, py::array x2) {
+inline py::tuple tensor(py::array z1, py::array x1, py::array z2, py::array x2) {
     // auto buf_z1 = z1.request();
     // auto buf_x1 = x1.request();
     // auto buf_z2 = z2.request();
@@ -67,12 +67,12 @@ py::tuple tensor(py::array z1, py::array x1, py::array z2, py::array x2) {
     return py::make_tuple(1, 2);
 }
 
-py::tuple compose(py::array z1, py::array x1, py::array z2, py::array x2){
+inline py::tuple compose(py::array z1, py::array x1, py::array z2, py::array x2){
     return py::make_tuple(1, 2);
 }
 
 
-py::array_t<bool> bitwise_commute_with(py::array z1, py::array x1, py::array z2, py::array x2) {
+inline py::array_t<bool> bitwise_commute_with(py::array z1, py::array x1, py::array z2, py::array x2) {
     py::array ovlp_1 = bitwise_and(z1, x2);
     py::array ovlp_2 = bitwise_and(x1, z2);
     py::array ovlp_3 = bitwise_xor(ovlp_1, ovlp_2);
@@ -97,7 +97,7 @@ py::array_t<bool> bitwise_commute_with(py::array z1, py::array x1, py::array z2,
 }
 
 
-py::tuple random_zx_strings(const std::vector<size_t>& shape, size_t num_qubits) {
+inline py::tuple random_zx_strings(const std::vector<size_t>& shape, size_t num_qubits) {
     size_t total_size = 1;
     for (size_t dim : shape) {
         total_size *= dim;
@@ -130,7 +130,7 @@ py::tuple random_zx_strings(const std::vector<size_t>& shape, size_t num_qubits)
 }
 
 
-py::object unique(py::array zx_voids, bool return_index = false, bool return_inverse = false, bool return_counts = false) {
+inline py::object unique(py::array zx_voids, bool return_index = false, bool return_inverse = false, bool return_counts = false) {
     auto buf = zx_voids.request();
     if (buf.ndim == 0) {
         if (return_index || return_inverse || return_counts) {

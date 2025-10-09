@@ -60,14 +60,16 @@ $ brew install llvm
 $ brew install libomp
 ```
 
-Navigate to the `paulicpp` directory, create a virtual environment then run:
+<!-- Navigate to the `paulicpp` directory, create a virtual environment then run:
 ```console
 $ python3 compiler.py
-```
+``` -->
 After which, run:
 ```console
 $ pip install .
 ```
+This should automatically compile the C++ code based on your machine and link place it to the correct path.
+
 Once done, you may call the library as usual within a python script with `import pauliarray`.
 <br> If you want to check what backend the library uses (C++ or a Python fallback), try:
 ``` python
@@ -76,6 +78,8 @@ print("Using", vops.get_backend(), "backend.")
 ```
 
 ## Compiler.py
+COMPILER.PY IS CURRENTLY DEPRECATED.
+
 You may call this script with the following arguments:
 - `-m` or `--module` : Choose which module(s) to compile. Default is `all`.
 <br> Accepted values are ["all", "pa", "dpa", "voidops"]
