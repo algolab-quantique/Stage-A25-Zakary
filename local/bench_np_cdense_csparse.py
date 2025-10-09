@@ -1,33 +1,26 @@
 import time
 import numpy as np
 import matplotlib.pyplot as plt
-
 import os
 import sys
-import importlib
-import traceback
 import json
 
 from pauliarray.src.build import sparsepaulicpp as spc
 import pauliarray.binary.void_operations as c_vops
 import pauliarray as pa
 
-
-import os, sys
 _old_pauli = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if _old_pauli not in sys.path:
     sys.path.insert(0, _old_pauli)
 
-from old_pauliarray.pauliarray.binary import void_operations as np_vops
+from old_pauliarray.pauliarray.binary import void_operations as np_vops # pyright: ignore[reportMissingImports]
 
 
-SIZE = 20
 DENSITY = 0.05
-PROXIMITY = 0.7
-OPTION = "XOR"
+PROXIMITY = 0.993
+OPTION = "COUNT"
 sizes = np.logspace(0, 7, 50, dtype=int)
-# sizes = np.logspace(1, 6, 50, dtype=int)
-# sizes = [100]
+# sizes = [20]
 
 # def random_bits(size):
 #         a = np.random.randint(0, 2, size=size, dtype=np.uint8).tolist()
@@ -101,7 +94,7 @@ def sparse(dpoint1, dpoint2, option):
         # case "DOT":
         #     res = spc.dot_dpoint(dpoint1, dpoint2)
         case "COUNT":
-            res = spc.popcount_dpoint(dpoint1)
+            res = spc.count_dpoint(dpoint1)
         case _:
             print(f"Unknown option: {option}")
 
@@ -116,12 +109,17 @@ def main():
     sparse_times = []
     dense_times = []
     results = []
+    nbr_1s = []
     assert c_vops.get_backend() == "C++", "C++ backend not set!"
 
     for size in sizes:
         print(f"\n\n========== Testing size: {size} ==========")
         ran_bits1 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
         ran_bits2 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
+        _1s = sum(ran_bits1) + sum(ran_bits2)
+        nbr_1s.append(_1s)
+        print(f"Number of 1s in both vectors: { _1s }")
+        print(f"Density: {_1s/(2*size):.4f}")
         # ran_bits3 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
         # ran_bits4 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
 
@@ -142,10 +140,14 @@ def main():
         print("\n---- Sparse ----")
         dpoint1 = spc.make_dpoint(ran_bits1)
         dpoint2 = spc.make_dpoint(ran_bits2)
-        # print("first dpoint:")
+
+        # print("random1: \n",ran_bits1)
+        # print("random2: \n",ran_bits2)
+        # print("\ndpoint1:")
         # spc.show_dpoints(dpoint1)
-        # print("\nsecond dpoint:")
+        # print("dpoint2:")
         # spc.show_dpoints(dpoint2)
+        # spc.overlap_dpoint(dpoint1, dpoint2)
         sparse_time, sparse_result = sparse(dpoint1, dpoint2, OPTION)
         # print("\nresult dpoint:")
         # spc.show_dpoints(sparse_result)
@@ -156,6 +158,7 @@ def main():
         dense_times.append(dense_time)
         sparse_times.append(sparse_time)
         # results.append((py_result, cpp_result))
+    print(f"\nOverall density: {sum(nbr_1s)/(sum(sizes)*2):.4f}")
     
 
     # Plotting

@@ -87,7 +87,7 @@ py::array_t<bool> bitwise_commute_with(py::array z1, py::array x1, py::array z2,
     const uint8_t* ptr1 = static_cast<const uint8_t*>(buf1.ptr);
     size_t n = buf1.size;
 
-    #pragma omp parallel for if (n >= THRESHOLD_PARALLEL) schedule(static)
+    #pragma omp parallel for if (n >= VOPS_THRESHOLD_PARALLEL) schedule(static)
     for (size_t i = 0; i < n; ++i) {
         ptr_result[i] = ptr1[i] == 0;
     }

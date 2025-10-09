@@ -57,3 +57,4 @@ perf.data
 # voids.json
 *.png
 /local/results
+.DS_Store

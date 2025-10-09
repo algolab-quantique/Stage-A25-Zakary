@@ -18,6 +18,9 @@ using pauli_t = uint8_t;
 using dpoint = std::pair<unsigned int, unsigned int>; // first = begin, second = end (exclusive)
 
 
+#define THRESHOLD_PARALLEL 1'000
+
+
 std::vector<dpoint> make_dpoint(const std::vector<uint8_t>& vec){
     std::vector<dpoint> points;
     bool in_run = false;
@@ -31,7 +34,7 @@ std::vector<dpoint> make_dpoint(const std::vector<uint8_t>& vec){
             }
         } else {
             if (in_run) {
-                dpoint p{run_start, static_cast<unsigned>(i)}; // end is exclusive
+                dpoint p{run_start, static_cast<unsigned>(i)}; // end is exclsusive
                 points.push_back(p);
                 in_run = false;
             }
@@ -212,6 +215,30 @@ std::vector<dpoint> or_dpoint(const std::vector<dpoint>& a, const std::vector<dp
     return res;
 }
 
+
+unsigned int count_dpoint(const std::vector<dpoint>& a) {
+    unsigned int count = 0;
+    for (const auto& p : a) {
+        count += (p.second - p.first);
+    }
+    return count;
+}
+
+uint8_t dot_dpoint(const std::vector<dpoint>& a, const std::vector<dpoint>& b) {
+    return (count_dpoint(and_dpoint(a, b)));
+}
+
+std::vector<uint8_t> dpoint_to_vec(const std::vector<dpoint>& points, size_t n_qubits) {
+    std::vector<uint8_t> vec(n_qubits, 0);
+    for (const auto& p : points) {
+        for (unsigned int i = p.first; i < p.second; ++i) {
+            vec[i] = 1;
+        }
+    }
+    return vec;
+}
+
+
 void overlap_dpoint(const std::vector<dpoint>& a, const std::vector<dpoint>& b) {
     size_t i = 0, j = 0;
     if (a.empty() || b.empty()) {
@@ -240,12 +267,4 @@ void overlap_dpoint(const std::vector<dpoint>& a, const std::vector<dpoint>& b) 
             ++j;
         }
     }
-}
-
-unsigned int popcount_dpoint(const std::vector<dpoint>& a) {
-    unsigned int count = 0;
-    for (const auto& p : a) {
-        count += (p.second - p.first);
-    }
-    return count;
 }

@@ -1,5 +1,6 @@
 import cProfile
 import io
+import os
 import pstats
 import time
 from pstats import SortKey
@@ -191,6 +192,7 @@ def collect_z_run_lengths(qubit_hamiltonien):
 
 
 def main():
+    
     label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions,
                   c2h2_labels_positions, c2h4_labels_positions, n2_labels_positions, c3h8_labels_positions]
     # label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions,
@@ -205,9 +207,7 @@ def main():
 
     reps = 1
     laps = np.zeros(reps)
-    pr = cProfile.Profile()
-    pr.enable()
-    start = time.time()
+    
 
     for mol_idx, mol_labels_position in enumerate(label_list):
         n_x, n_z, n_y, n_i = 0, 0, 0, 0
@@ -278,7 +278,6 @@ def main():
         z_void_ratios.append(z_void_ratio)
         x_void_ratios.append(x_void_ratio)
 
-    pr.disable()
 
     print("========== Analyse PauliArray ==========")
     print(f"Time taken : {time.time() - start:.3f} seconds")
@@ -298,11 +297,20 @@ def main():
     for key in sorted(all_nbr_qubits.keys()):
         print(f"  {key} qubits: {all_nbr_qubits[key]} instances")
 
-    s = io.StringIO()
-    sortby = SortKey.CUMULATIVE
-    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    
 
 
 
 if __name__ == "__main__":
+    pr = cProfile.Profile()
+    pr.enable()
+    start = time.time()
+
     main()
+    pr.disable()
+
+    s = io.StringIO()
+    sortby = SortKey.CUMULATIVE
+    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    print(os.getcwd())
+    ps.dump_stats(f"./results/molecules/prof-{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}.prof")

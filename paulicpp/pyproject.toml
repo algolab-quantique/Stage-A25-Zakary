@@ -1,6 +1,6 @@
 [build-system]
-requires = ["flit_core>=3.2"]
-build-backend = "flit_core.buildapi"
+requires = ["scikit-build-core", "pybind11"]
+build-backend = "scikit_build_core.build"
 
 [project]
 name = "pauliarray"

@@ -14,5 +14,5 @@ PYBIND11_MODULE(sparsepaulicpp, m) {
     m.def("or_dpoint", &or_dpoint, "awdwadwadwddd");
     m.def("not_dpoint", &not_dpoint, "awdwadwadwddd");
     m.def("overlap_dpoint", &overlap_dpoint, "awdwadwadwddd");
-    m.def("popcount_dpoint", &popcount_dpoint, "awdwadwadwddd");
+    m.def("count_dpoint", &count_dpoint, "awdwadwadwddd");
 }
