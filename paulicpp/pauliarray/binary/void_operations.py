@@ -5,7 +5,12 @@ try:
     from ..src.build import voidops as vcpp
     C_CCP = True
 except ImportError:
-    C_CCP = False
+    try:
+        # If voidops was merged into the main paulicpp module, try importing that
+        from ..src.build import paulicpp as vcpp
+        C_CCP = True
+    except ImportError:
+        C_CCP = False
 
 INTSIZE_TO_UINTTYPE = {1: np.uint8, 2: np.uint16, 4: np.uint32, 8: np.uint64}
 

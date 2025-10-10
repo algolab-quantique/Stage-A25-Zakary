@@ -193,10 +193,10 @@ def collect_z_run_lengths(qubit_hamiltonien):
 
 def main():
     
-    label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions,
-                  c2h2_labels_positions, c2h4_labels_positions, n2_labels_positions, c3h8_labels_positions]
     # label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions,
-    #               c2h2_labels_positions, c2h4_labels_positions, n2_labels_positions]
+    #               c2h2_labels_positions, c2h4_labels_positions, n2_labels_positions, c3h8_labels_positions]
+    label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions,
+                  c2h2_labels_positions, c2h4_labels_positions, n2_labels_positions]
     # molecule_names = [
     #     # "H2", "LiH", "H2O", "NH3", "C2H2", "C2H4", "C3H8", "N2"
     #     "H2", "LiH", "H2O", "NH3", "C2H2", "C2H4", "N2"
