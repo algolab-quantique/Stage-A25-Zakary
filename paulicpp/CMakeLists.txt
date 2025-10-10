@@ -22,20 +22,30 @@ set(PAULI_COMPILE_OPTIONS
     -fPIC
 )
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    list(APPEND PAULI_COMPILE_OPTIONS -fopenmp=libomp)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    list(APPEND PAULI_COMPILE_OPTIONS -fopenmp)
+find_package(OpenMP)
+
+if(NOT OpenMP_CXX_FOUND AND APPLE)
+    find_library(LIBOMP_LIBRARY NAMES omp libomp PATHS /opt/homebrew/opt/libomp/lib /usr/local/opt/libomp/lib /usr/lib)
+    find_path(LIBOMP_INCLUDE_DIR omp.h PATHS /opt/homebrew/opt/libomp/include /usr/local/opt/libomp/include /usr/include)
+
+    if(LIBOMP_LIBRARY AND LIBOMP_INCLUDE_DIR)
+        message(STATUS "Found libomp: ${LIBOMP_LIBRARY}, include: ${LIBOMP_INCLUDE_DIR}")
+
+        set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${LIBOMP_INCLUDE_DIR}")
+        set(OpenMP_CXX_LIBRARIES ${LIBOMP_LIBRARY})
+        set(OpenMP_CXX_FOUND TRUE)
+    else()
+        message(WARNING "OpenMP not found!")
+    endif()
 endif()
 
-target_compile_options(pauliarray PRIVATE ${PAULI_COMPILE_OPTIONS})
-target_compile_options(voidops PRIVATE ${PAULI_COMPILE_OPTIONS})
+if(OpenMP_CXX_FOUND)
+    target_compile_options(pauliarray PRIVATE ${OpenMP_CXX_FLAGS})
+    target_compile_options(voidops PRIVATE ${OpenMP_CXX_FLAGS})
+    target_link_libraries(pauliarray PRIVATE ${OpenMP_CXX_LIBRARIES})
+    target_link_libraries(voidops PRIVATE ${OpenMP_CXX_LIBRARIES})
+endif()
 
-target_link_libraries(pauliarray PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(voidops PRIVATE OpenMP::OpenMP_CXX)
-
-# target_link_options(pauliarray PRIVATE -flto=auto)
-# target_link_options(voidops PRIVATE -flto=auto)
 
 set_target_properties(voidops PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/pauliarray/src/build
