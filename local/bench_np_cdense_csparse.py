@@ -16,10 +16,12 @@ if _old_pauli not in sys.path:
 from old_pauliarray.pauliarray.binary import void_operations as np_vops # pyright: ignore[reportMissingImports]
 
 
-DENSITY = 0.05
-PROXIMITY = 0.993
-OPTION = "COUNT"
-sizes = np.logspace(0, 7, 50, dtype=int)
+DENSITY = 0.5
+PROXIMITY = 0.5
+OPTION = "XOR"
+LIBS = ["NP", "C_DENSE", "C_SPARSE"]
+LIBS = ["NP", "C_DENSE"]
+sizes = np.logspace(0, 9, 50, dtype=int)
 # sizes = [20]
 
 # def random_bits(size):
@@ -108,64 +110,65 @@ def main():
     numpy_times = []
     sparse_times = []
     dense_times = []
-    results = []
-    nbr_1s = []
+
     assert c_vops.get_backend() == "C++", "C++ backend not set!"
 
     for size in sizes:
         print(f"\n\n========== Testing size: {size} ==========")
-        ran_bits1 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
-        ran_bits2 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
-        _1s = sum(ran_bits1) + sum(ran_bits2)
-        nbr_1s.append(_1s)
-        print(f"Number of 1s in both vectors: { _1s }")
-        print(f"Density: {_1s/(2*size):.4f}")
-        # ran_bits3 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
-        # ran_bits4 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
+        if "C_SPARSE" in LIBS:
+            ran_bits1 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
+            ran_bits2 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
+        else:
+            ran_bits1 = np.random.randint(0, 2, size=(size,), dtype=np.uint8)
+            ran_bits2 = np.random.randint(0, 2, size=(size,), dtype=np.uint8)
 
-        print("---- Numpy Dense ----")
-        arr1 = np_vops.bit_strings_to_voids(ran_bits1)
-        arr2 = np_vops.bit_strings_to_voids(ran_bits2)
-        np_dense_time, np_dense_result = np_dense(arr1, arr2, OPTION)
-        print(f"NPy execution time: {np_dense_time:.7f} seconds")
+        if "NP" in LIBS:
+            print("---- Numpy Dense ----")
+            arr1 = np_vops.bit_strings_to_voids(ran_bits1)
+            arr2 = np_vops.bit_strings_to_voids(ran_bits2)
+            np_dense_time, np_dense_result = np_dense(arr1, arr2, OPTION)
+            print(f"NPy execution time: {np_dense_time:.7f} seconds")
+            numpy_times.append(np_dense_time)
     
-
-        print("\n---- Dense ----")
-        arr1 = c_vops.bit_strings_to_voids(ran_bits1)
-        arr2 = c_vops.bit_strings_to_voids(ran_bits2)
-        dense_time, dense_result = dense(arr1, arr2, OPTION)
-        print(f"Dense execution time: {dense_time:.7f} seconds")
-
-
-        print("\n---- Sparse ----")
-        dpoint1 = spc.make_dpoint(ran_bits1)
-        dpoint2 = spc.make_dpoint(ran_bits2)
-
-        # print("random1: \n",ran_bits1)
-        # print("random2: \n",ran_bits2)
-        # print("\ndpoint1:")
-        # spc.show_dpoints(dpoint1)
-        # print("dpoint2:")
-        # spc.show_dpoints(dpoint2)
-        # spc.overlap_dpoint(dpoint1, dpoint2)
-        sparse_time, sparse_result = sparse(dpoint1, dpoint2, OPTION)
-        # print("\nresult dpoint:")
-        # spc.show_dpoints(sparse_result)
-        print(f"C++ execution time: {sparse_time:.7f} seconds")
+        if "C_DENSE" in LIBS:
+            print("\n---- Dense ----")
+            arr1 = c_vops.bit_strings_to_voids(ran_bits1)
+            arr2 = c_vops.bit_strings_to_voids(ran_bits2)
+            dense_time, dense_result = dense(arr1, arr2, OPTION)
+            print(f"Dense execution time: {dense_time:.7f} seconds")
+            dense_times.append(dense_time)
 
 
-        numpy_times.append(np_dense_time)
-        dense_times.append(dense_time)
-        sparse_times.append(sparse_time)
+        if "C_SPARSE" in LIBS:
+            print("\n---- Sparse ----")
+            dpoint1 = spc.make_dpoint(ran_bits1)
+            dpoint2 = spc.make_dpoint(ran_bits2)
+
+            # print("random1: \n",ran_bits1)
+            # print("random2: \n",ran_bits2)
+            # print("\ndpoint1:")
+            # spc.show_dpoints(dpoint1)
+            # print("dpoint2:")
+            # spc.show_dpoints(dpoint2)
+            # spc.overlap_dpoint(dpoint1, dpoint2)
+            sparse_time, sparse_result = sparse(dpoint1, dpoint2, OPTION)
+            # print("\nresult dpoint:")
+            # spc.show_dpoints(sparse_result)
+            print(f"C++ execution time: {sparse_time:.7f} seconds")
+            sparse_times.append(sparse_time)
+
+
         # results.append((py_result, cpp_result))
-    print(f"\nOverall density: {sum(nbr_1s)/(sum(sizes)*2):.4f}")
     
 
     # Plotting
     plt.figure(figsize=(10, 6))
-    plt.plot(sizes, numpy_times, label='Numpy Dense', marker='o')
-    plt.plot(sizes, dense_times, label='Dense', marker='o')
-    plt.plot(sizes, sparse_times, label='Sparse', marker='o')
+    if "NP" in LIBS:
+        plt.plot(sizes, numpy_times, label='Numpy Dense', marker='o')
+    if "C_DENSE" in LIBS:
+        plt.plot(sizes, dense_times, label='Dense', marker='o')
+    if "C_SPARSE" in LIBS:
+        plt.plot(sizes, sparse_times, label='Sparse', marker='o')
     plt.xscale('log')
     plt.yscale('log')
     # plt.semilogx()
@@ -176,7 +179,8 @@ def main():
     plt.grid()
     plt.tight_layout()
 
-    plt.savefig(f"results/np_cdense_csparse/voids_{OPTION}_density{f2d2s(DENSITY)}_proximity{f2d2s(PROXIMITY)}.png")
+    if os.path.exists("results/np_cdense_csparse"):
+        plt.savefig(f"results/np_cdense_csparse/voids_{OPTION}_density{f2d2s(DENSITY)}_proximity{f2d2s(PROXIMITY)}.png")
     plt.show()
 
 

@@ -133,26 +133,26 @@ std::vector<dpoint> xor_dpoint(const std::vector<dpoint>& a, const std::vector<d
 std::vector<dpoint> and_dpoint(const std::vector<dpoint>& a, const std::vector<dpoint>& b) {
     std::vector<dpoint> res;
     size_t i = 0, j = 0;
-    if (a.empty() || b.empty()) return res;
+    const size_t na = a.size(), nb = b.size();
+    if (na == 0 || nb == 0) return res;
 
-    while (i < a.size() && j < b.size()) {
-        unsigned a_begin = a[i].first;
-        unsigned a_end   = a[i].second;
-        unsigned b_begin = b[j].first;
-        unsigned b_end   = b[j].second;
+    res.reserve(std::min(na, nb)); // heuristic
 
-        unsigned start = std::max(a_begin, b_begin);
-        unsigned end   = std::min(a_end, b_end);
+    while (i < na && j < nb) {
+        const auto a_begin = a[i].first;
+        const auto a_end   = a[i].second;
+        const auto b_begin = b[j].first;
+        const auto b_end   = b[j].second;
 
-        if (start < end) {
-            res.push_back({start, end});
-        }
+        if (a_end <= b_begin) { ++i; continue; }
+        if (b_end <= a_begin) { ++j; continue; }
 
-        if (a_end < b_end) {
-            ++i;
-        } else {
-            ++j;
-        }
+        const unsigned start = (a_begin > b_begin) ? a_begin : b_begin;
+        const unsigned end   = (a_end   < b_end)   ? a_end   : b_end;
+
+        res.emplace_back(start, end); // myb more eff than push_back?
+
+        if (a_end < b_end) ++i; else ++j;
     }
 
     return res;

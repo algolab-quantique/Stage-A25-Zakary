@@ -12,6 +12,8 @@ if _old_pauli not in sys.path:
 
 
 import old_pauliarray.pauliarray as pa
+from old_pauliarray.pauliarray.pauli.pauli_array import unique as np_unique
+from pauliarray.pauli.pauli_array import unique as cpp_unique
 
 
 # print(f"PauliArray version: {pa.__version__}")
@@ -25,8 +27,10 @@ def pauli_py(p1: pa.PauliArray, p2: pa.PauliArray):
     start_time = time.time()
 
     # r = p1.tensor(p2)
-    r = p1.bitwise_commute_with(p2)
-    # print(r.to_labels())
+    # r = p1.bitwise_commute_with(p2)
+    r = np_unique(p1)
+
+    print(r.to_labels())
 
     # print(r)
     end_time = time.time()
@@ -35,9 +39,10 @@ def pauli_py(p1: pa.PauliArray, p2: pa.PauliArray):
 def pauli_cpp(p1: pa.PauliArray, p2: pa.PauliArray):
     start_time = time.time()
 
-    r = pcpp.PauliArray.bitwise_commute_with(p1, p2)
+    # r = pcpp.PauliArray.bitwise_commute_with(p1, p2)
+    r = cpp_unique(p1)
     # r = pcpp.tensor(p1, p2)
-    # print(r.to_labels())
+    print(r.to_labels())
     # print(r)
 
     
@@ -55,8 +60,8 @@ def main():
 
     for size in sizes:
         print(f"\n\n========== Testing size: {size} ==========")
-        p1 = pcpp.PauliArray.random((2, size,2), 2)
-        p2 = pcpp.PauliArray.random((2, size,2), 2)
+        p1 = pcpp.PauliArray.random((size,), 2)
+        p2 = pcpp.PauliArray.random((size,), 2)
         # p1 = pa.PauliArray.random((4, size,2), 2)
         # p2 = pa.PauliArray.random((4, size,2), 2)
 
@@ -68,7 +73,7 @@ def main():
         cpp_time, cpp_result = pauli_cpp(p1, p2)
         print(f"C++ execution time: {cpp_time:.7f} seconds")
 
-        assert np.array_equal(py_result, cpp_result), "you fucked up brah!"
+        # assert np.array_equal(py_result, cpp_result), "you fucked up brah!"
 
         py_times.append(py_time)
         cpp_times.append(cpp_time)

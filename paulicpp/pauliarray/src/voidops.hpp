@@ -28,12 +28,13 @@ namespace py = pybind11;
 #include <iostream>
 #include <cstring>
 #include <omp.h>
+#include <bit>
 
-#ifdef _MSC_VER
-    #include <intrin.h>
-    #define __builtin_popcount __popcnt
-    #define __builtin_popcountll __popcnt64
-#endif
+// #ifdef _MSC_VER
+//     #include <intrin.h>
+//     #define __builtin_popcount __popcnt
+//     #define __builtin_popcountll __popcnt64
+// #endif
 
 // This threshold is completely arbitrary and can be tuned for performance depending on the hardware.
 #define VOPS_THRESHOLD_PARALLEL 10'000'000
@@ -67,9 +68,9 @@ inline py::array bitwise_core(py::array voids_1, py::array voids_2, Op op) {
 
     // Cut the data into 64-bit chunks for faster processing 
     // ptr1_64 and ptr2_64 are the pointers to the input data, ptr_out_64 is the pointer to the output data
-    const uint64_t* __restrict__ ptr1_64 = static_cast<const uint64_t*>(buf1.ptr);
-    const uint64_t* __restrict__ ptr2_64 = static_cast<const uint64_t*>(buf2.ptr);
-    uint64_t* __restrict__ ptr_out_64 = static_cast<uint64_t*>(buf_out.ptr);
+    const uint64_t*  ptr1_64 = static_cast<const uint64_t*>(buf1.ptr);
+    const uint64_t*  ptr2_64 = static_cast<const uint64_t*>(buf2.ptr);
+    uint64_t*  ptr_out_64 = static_cast<uint64_t*>(buf_out.ptr);
 
     size_t num_64bit_chunks = total_bytes / 8;
 
@@ -82,9 +83,9 @@ inline py::array bitwise_core(py::array voids_1, py::array voids_2, Op op) {
     // Handle any bytes that don't fit into a 64-bit chunk (the tail)
     size_t remaining_bytes = total_bytes % 8;
     if (remaining_bytes > 0) {
-        const uint8_t* __restrict__ ptr1_8 = static_cast<const uint8_t*>(buf1.ptr);
-        const uint8_t* __restrict__ ptr2_8 = static_cast<const uint8_t*>(buf2.ptr);
-        uint8_t* __restrict__ ptr_out_8 = static_cast<uint8_t*>(buf_out.ptr);
+        const uint8_t*  ptr1_8 = static_cast<const uint8_t*>(buf1.ptr);
+        const uint8_t*  ptr2_8 = static_cast<const uint8_t*>(buf2.ptr);
+        uint8_t*  ptr_out_8 = static_cast<uint8_t*>(buf_out.ptr);
 
         size_t start_byte = num_64bit_chunks * 8;
         for (size_t i = 0; i < remaining_bytes; ++i) {
@@ -144,8 +145,8 @@ inline py::array bitwise_not(py::array voids) {
     py::array res_voids = py::array(voids.dtype(), buf.shape);
     auto buf_out = res_voids.request();
 
-    const uint64_t* __restrict__ ptr_64 = static_cast<const uint64_t*>(buf.ptr);
-    uint64_t* __restrict__ ptr_out_64 = static_cast<uint64_t*>(buf_out.ptr);
+    const uint64_t*  ptr_64 = static_cast<const uint64_t*>(buf.ptr);
+    uint64_t*  ptr_out_64 = static_cast<uint64_t*>(buf_out.ptr);
 
     size_t num_64bit_chunks = total_bytes / 8;
 
@@ -156,8 +157,8 @@ inline py::array bitwise_not(py::array voids) {
 
     size_t remaining_bytes = total_bytes % 8;
     if (remaining_bytes > 0) {
-        const uint8_t* __restrict__ ptr_8 = static_cast<const uint8_t*>(buf.ptr);
-        uint8_t* __restrict__ ptr_out_8 = static_cast<uint8_t*>(buf_out.ptr);
+        const uint8_t*  ptr_8 = static_cast<const uint8_t*>(buf.ptr);
+        uint8_t*  ptr_out_8 = static_cast<uint8_t*>(buf_out.ptr);
         
         size_t start_byte = num_64bit_chunks * 8;
         for (size_t i = 0; i < remaining_bytes; ++i) {
@@ -185,8 +186,8 @@ inline py::array bitwise_count(py::array voids_1) {
     py::array_t<int64_t> result(buf1.size);
     auto buf_out = result.request();
 
-    const uint8_t* __restrict__ ptr1 = static_cast<const uint8_t*>(buf1.ptr);
-    int64_t* __restrict__ ptr_out = static_cast<int64_t*>(buf_out.ptr);
+    const uint8_t* ptr1 = static_cast<const uint8_t*>(buf1.ptr);
+    int64_t*  ptr_out = static_cast<int64_t*>(buf_out.ptr);
 
     size_t itemsize = buf1.itemsize;
     size_t n = buf1.size;
@@ -202,10 +203,10 @@ inline py::array bitwise_count(py::array voids_1) {
         for (size_t k = 0; k < n64; ++k) {
             uint64_t word;
             std::memcpy(&word, base + k * 8, 8);
-            count += __builtin_popcountll(word);
+            count += std::popcount(word);
         }
         for (size_t t = 0; t < tail; ++t) {
-            count += __builtin_popcount(base[n64 * 8 + t]);
+            count += std::popcount(static_cast<uint8_t>(base[n64 * 8 + t]));
         }
         ptr_out[i] = count;
     }
@@ -243,9 +244,9 @@ inline py::array bitwise_dot(py::array voids_1, py::array voids_2) {
     py::array_t<int64_t> result(buf1.shape);
     auto buf_out = result.request();
 
-    const uint8_t* __restrict__ ptr1 = static_cast<const uint8_t*>(buf1.ptr);
-    const uint8_t* __restrict__ ptr2 = static_cast<const uint8_t*>(buf2.ptr);
-    int64_t* __restrict__ ptr_out = static_cast<int64_t*>(buf_out.ptr);
+    const uint8_t* ptr1 = static_cast<const uint8_t*>(buf1.ptr);
+    const uint8_t* ptr2 = static_cast<const uint8_t*>(buf2.ptr);
+    int64_t*  ptr_out = static_cast<int64_t*>(buf_out.ptr);
 
     size_t itemsize = buf1.itemsize;
     size_t n = buf1.size;
@@ -262,10 +263,10 @@ inline py::array bitwise_dot(py::array voids_1, py::array voids_2) {
             uint64_t w1, w2;
             std::memcpy(&w1, base1 + k * 8, 8);
             std::memcpy(&w2, base2 + k * 8, 8);
-            count += __builtin_popcountll(w1 & w2);
+            count += std::popcount(w1 & w2);
         }
         for (size_t t = 0; t < tail; ++t) {
-            count += __builtin_popcount( (base1[n64 * 8 + t] & base2[n64 * 8 + t]) );
+            count += std::popcount(static_cast<uint8_t>(base1[n64 * 8 + t] & base2[n64 * 8 + t]));
         }
         ptr_out[i] = count;
     }
