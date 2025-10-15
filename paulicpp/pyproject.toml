@@ -4,8 +4,8 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "pauliarray"
-version = "0.1.0"
-description = "projet"
+version = "0.1.1"
+description = "Efficient Pauli operators manipulation toolbox, with an optimied C++ backend."
 requires-python = ">=3.10"
 dependencies = [
     "numpy",

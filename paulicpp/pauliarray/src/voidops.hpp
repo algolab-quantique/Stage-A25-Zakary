@@ -4,13 +4,16 @@
  * @brief This is a C++ implementation of PauliArray's bitwise operations (found in pauliarray/binary/void_operations.py)
  * The main goal of this file is to provide fast implementations of bitwise operations on NumPy void arrays.
  * 
- * @attention It is NECESSARY to have gcc/clang in order to compile this file, as it uses OpenMP and some gcc/clang intrinsics.
+ * @attention It is NECESSARY to have OpenMP installed and enabled in the compiler to use this file.
+ * In addition, the compiler must support C++20 standard.
+ * 
+ * @todo Add SIMD support
+ * @todo Add support for older C++ standards by using __builtin_popcountll instead of std::popcount
+ * 
  * It is assumed that both of the input arrays are contiguous, of the dtype |V{N}, and the exacte same shape. No checks are performed to ensure this is the case.
- * Any broadcasting and contiguity checks must be performed in Python before calling any of these functions.
+ * Any broadcasting and contiguity checks MUST be performed in Python before calling any of these functions.
  * Any computers which are not 64-bit architectures will lead to undefined behavior due to the casting to uint64_t*.
  * 
- * @todo Convert from C++17 to C++20 in order to use std::popcount from <bit> instead of compiler intrinsic __builtin_popcountll. 
- * This would make the code actually portable to MSVC.
  * 
  * @version 0.1.0
  * @date 2025-10-01
@@ -29,16 +32,13 @@ namespace py = pybind11;
 #include <cstring>
 #include <omp.h>
 #include <bit>
-
-// #ifdef _MSC_VER
-//     #include <intrin.h>
-//     #define __builtin_popcount __popcnt
-//     #define __builtin_popcountll __popcnt64
-// #endif
+#include <vector>
 
 // This threshold is completely arbitrary and can be tuned for performance depending on the hardware.
-#define VOPS_THRESHOLD_PARALLEL 10'000'000
-\
+#define VOPS_THRESHOLD_PARALLEL 1'000'000
+
+
+
 /**
  * @brief This templated function performs an element-wise, bitwise operation onto two NumPy contiguous (C-like) arrays.
  * Any other type of operators or type of arrays will lead to undefined behavior.
@@ -50,8 +50,10 @@ namespace py = pybind11;
  * @param op The bitwise operator to apply
  * @return py::array A NumPy contiguous array of the same shape and dtype as the inputs, containing the result of the operation
  */
+// * Bon resultats
+//TODO: rendre ca vite
 template <typename Op>
-inline py::array bitwise_core(py::array voids_1, py::array voids_2, Op op) {
+inline py::object bitwise_core(py::array voids_1, py::array voids_2, Op op) {
     auto buf1 = voids_1.request();
     auto buf2 = voids_2.request();
 
@@ -74,6 +76,7 @@ inline py::array bitwise_core(py::array voids_1, py::array voids_2, Op op) {
 
     size_t num_64bit_chunks = total_bytes / 8;
 
+
     #pragma omp parallel for if(num_64bit_chunks >= VOPS_THRESHOLD_PARALLEL) schedule(static)
     for (size_t i = 0; i < num_64bit_chunks; ++i) {
         // Applies the bitwise operation.
@@ -93,11 +96,18 @@ inline py::array bitwise_core(py::array voids_1, py::array voids_2, Op op) {
         }
     }
 
+    // If the input arrays were actually scalars (shape == ()), return a scalar as well
+    if (buf1.size == 1) {
+        std::vector<ssize_t> shape0{};// zero-dim
+        std::vector<ssize_t> strides0{}; // must match ndim (0)
+        py::array scalar(voids_out.dtype(), shape0, strides0, buf_out.ptr, voids_out); //TODO: Check if this is zero-copy
+        return scalar;
+    }
+
     return voids_out;
 }
 
-// * Bon resultats
-//TODO: rendre ca vite
+
 /**
  * @brief Performs an element-wise bitwise AND operation on two NumPy contiguous (C-like) arrays element-wise.
  * 
@@ -139,6 +149,7 @@ inline py::array bitwise_or(py::array voids_1, py::array voids_2) {
  * @param voids the input array
  * @return py::array A NumPy contiguous array of the same shape and dtype as the input, containing the result of the bitwise NOT operation
  */
+//TODO: update to reflect new changes in bitwise_core for scalars
 inline py::array bitwise_not(py::array voids) {
     auto buf = voids.request();
     size_t total_bytes = buf.size * buf.itemsize;
@@ -173,14 +184,10 @@ inline py::array bitwise_not(py::array voids) {
  * @brief Counts the number of set bits in each element of a NumPy contiguous (C-like) array.
  * In other words, it returns the number of 1s found inside each element of the array.
  * 
- * @attention 
- * This function uses the gcc/clang intrinsic __builtin_popcount() as its core operation.
- * Thus, whilst very fast, it is NOT PORTABLE to non-gcc/clang compilers
- * 
  * @param voids_1 the input array
  * @return py::array An array of the number of set bits in each element of the input array
  */
-inline py::array bitwise_count(py::array voids_1) {
+inline py::object bitwise_count(py::array voids_1) {
     auto buf1 = voids_1.request();
 
     py::array_t<int64_t> result(buf1.size);
@@ -195,6 +202,24 @@ inline py::array bitwise_count(py::array voids_1) {
     size_t tail = itemsize % 8;
 
     size_t total_64_chunks = n * n64;
+
+    if (n==1){
+        // Specila case for when the NumPy array is one-dimensional.
+        // This is necessary in order to return the exact same output as the Python version of this function.
+        // i.e. a single integer instead of a one-element array.
+        const uint8_t* base = ptr1;
+        int64_t count = 0;
+        #pragma omp parallel for if (n64 >= VOPS_THRESHOLD_PARALLEL) schedule(static) reduction(+:count)
+        for (size_t k = 0; k < n64; ++k) {
+            uint64_t word;
+            std::memcpy(&word, base + k * 8, 8);
+            count += std::popcount(word);
+        }
+        for (size_t t = 0; t < tail; ++t) {
+            count += std::popcount(static_cast<uint8_t>(base[n64 * 8 + t]));
+        }
+        return py::int_(count);
+    }
 
     #pragma omp parallel for if (total_64_chunks >= VOPS_THRESHOLD_PARALLEL) schedule(static)
     for (size_t i = 0; i < n; ++i) {
@@ -220,15 +245,11 @@ inline py::array bitwise_count(py::array voids_1) {
 /**
  * @brief Computes the bitwise dot product between corresponding elements of two NumPy contiguous (C-like) arrays.
  * 
- * @attention 
- * This function uses the gcc/clang intrinsic __builtin_popcount() as its core operation.
- * Thus, whilst very fast, it is NOT PORTABLE to non-gcc/clang compilers
- * 
  * @param voids_1 the first input array
  * @param voids_2 the second input array
  * @return py::array A NumPy contiguous array of the same shape as the inputs, containing the bitwise dot product.
  */
-inline py::array bitwise_dot(py::array voids_1, py::array voids_2) {
+inline py::object bitwise_dot(py::array voids_1, py::array voids_2) {
     auto buf1 = voids_1.request();
     auto buf2 = voids_2.request();
 
@@ -254,6 +275,27 @@ inline py::array bitwise_dot(py::array voids_1, py::array voids_2) {
     size_t tail = itemsize % 8;
     size_t total_64_chunks = n * n64;
 
+    if (n==1){
+        // Specila case for when the NumPy array is one-dimensional.
+        // This is necessary in order to return the exact same output as the Python version of this function.
+        // i.e. a single integer instead of a one-element array.
+        const uint8_t* base1 = ptr1;
+        const uint8_t* base2 = ptr2;
+        int64_t count = 0;
+        #pragma omp parallel for if (n64 >= VOPS_THRESHOLD_PARALLEL) schedule(static) reduction(+:count)
+        for (size_t k = 0; k < n64; ++k) {
+            uint64_t w1, w2;
+            std::memcpy(&w1, base1 + k * 8, 8);
+            std::memcpy(&w2, base2 + k * 8, 8);
+            count += std::popcount(w1 & w2);
+        }
+        for (size_t t = 0; t < tail; ++t) {
+            count += std::popcount(static_cast<uint8_t>(base1[n64 * 8 + t] & base2[n64 * 8 + t]));
+        }
+        return py::int_(count);
+    }
+
+    
     #pragma omp parallel for if (total_64_chunks >= VOPS_THRESHOLD_PARALLEL) schedule(static)
     for (size_t i = 0; i < n; ++i) {
         const uint8_t* base1 = ptr1 + i * itemsize;

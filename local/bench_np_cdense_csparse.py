@@ -18,10 +18,12 @@ from old_pauliarray.pauliarray.binary import void_operations as np_vops # pyrigh
 
 DENSITY = 0.5
 PROXIMITY = 0.5
-OPTION = "COUNT"
+OPTION = "XOR"
 LIBS = ["NP", "C_DENSE", "C_SPARSE"]
 LIBS = ["NP", "C_DENSE"]
-sizes = np.logspace(0, 9, 50, dtype=int)
+sizes = np.logspace(0, 8, 50, dtype=int)
+VERBOSE = False
+shapes = [(s,) for s in sizes]
 # sizes = [2, 5, 10]
 
 # def random_bits(size):
@@ -53,7 +55,8 @@ def np_dense(void1, void2, option):
         case _:
             print(f"Unknown option: {option}")
 
-
+    if VERBOSE:
+        print("Result:\n", res)
     end_time = time.time()
     return end_time - start_time, res
 
@@ -77,6 +80,8 @@ def dense(void1, void2, option):
             print(f"Unknown option: {option}")
 
 
+    if VERBOSE:
+        print("Result:\n", res)
     end_time = time.time()
     return end_time - start_time, res
 
@@ -111,17 +116,22 @@ def main():
     sparse_times = []
     dense_times = []
 
+    start = time.time()
     assert c_vops.get_backend() == "C++", "C++ backend not set!"
 
-    for size in sizes:
-        print(f"\n\n========== Testing size: {size} ==========")
+    for shape in shapes:
+        print(f"\n\n========== Testing size: {shape} ==========")
         if "C_SPARSE" in LIBS:
-            ran_bits1 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
-            ran_bits2 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
+            # ran_bits1 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
+            # ran_bits2 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
+            pass
         else:
-            # ran_bits1 = np.random.randint(0, 2, size=(size,2), dtype=np.uint8)
-            # ran_bits2 = np.random.randint(0, 2, size=(size,2), dtype=np.uint8)
-            ran_bits1, ran_bits2 = c_vops.random_zx_strings((size,))
+            # ran_bits1 = np.random.randint(0, 2, size=shape, dtype=np.uint8)
+            # ran_bits2 = np.random.randint(0, 2, size=shape, dtype=np.uint8)
+            ran_bits1, ran_bits2 = c_vops.random_zx_strings(shape)
+            if VERBOSE:
+                print("ran_bits1: \n",ran_bits1)
+                print("ran_bits2: \n",ran_bits2)
             # print("random1: \n",ran_bits1)
             # print("random2: \n",ran_bits2)
 
@@ -165,6 +175,8 @@ def main():
 
         # results.append((py_result, cpp_result))
     
+    end = time.time()
+    print(f"\n\nTotal execution time for all sizes: {end - start:.7f} seconds")
 
     # Plotting
     plt.figure(figsize=(10, 6))

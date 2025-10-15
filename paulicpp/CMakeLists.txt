@@ -1,7 +1,12 @@
 cmake_minimum_required(VERSION 3.15)
 project(pauliarray LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 20) #TODO: Change enventually to 20. See voidops.hpp to see why
+# TODO: Test with other computers, notably Windows and Apple Silicon
+# Current tests are on:
+# OS: Linux Mint 22.2      || COMPILER: gcc 13.3.0            || CPU: AMD Ryzen 7 6800H
+# OS: macOS Sequoia 15.7.1 || COMPILER: Homebrew clang 21.1.2 || CPU: i7 (quad core?)
+
+set(CMAKE_CXX_STANDARD 20) 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(PYBIND11_FINDPYTHON ON)
@@ -21,13 +26,20 @@ pybind11_add_module(sparsepaulicpp
     pauliarray/src/bindings/sparsepaulicpp_bindings.cpp
 )
 
+# MUST-HAVES FLAGS
+# O3 is the most aggressive optimization level that is not likely to break things. Ofast may break things, and is not a whole lot faster.
+# march=native enables all instruction sets supported by the local machine. This causes non-portable binaries, but is faster in local builds.
+# fPIC is needed for shared libraries.
+
+# OPTIONAL FLAGS
+# flto=auto enables "Link Time Optimization", which supposedly allows for better optimization across the board. However, i've not seen any gain nor loss in performance with it on or off.
+# finroll-loops lets the compiler unroll loops. For now i wouldnt use it as i fear it may slow down things for giant NumPy arrays.
 set(PAULI_COMPILE_OPTIONS
-    -O3
-    # -flto=auto
+    -O3 
+    -flto=auto
     -march=native
     -fPIC
-    -fno-exceptions
-    -fno-rtti
+    # -funroll-loops
 )
 
 # macOS: force libc++ and set rpath to avoid linking against an incompatible libstdc++
