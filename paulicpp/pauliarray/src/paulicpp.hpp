@@ -97,15 +97,15 @@ inline py::array_t<bool> bitwise_commute_with(py::array z1, py::array x1, py::ar
 }
 
 
-inline py::tuple random_zx_strings(const std::vector<size_t>& shape, size_t num_qubits) {
+inline py::tuple random_zx_strings(const std::vector<size_t>& shape) { //, size_t num_qubits) {
     size_t total_size = 1;
     for (size_t dim : shape) {
         total_size *= dim;
     }
-    total_size *= num_qubits;
+    // total_size *= num_qubits;
 
     std::vector<size_t> full_shape = shape;
-    full_shape.push_back(num_qubits);
+    // full_shape.push_back(num_qubits);
 
     py::array_t<bool> z_strings(full_shape);
     py::array_t<bool> x_strings(full_shape);
@@ -118,7 +118,8 @@ inline py::tuple random_zx_strings(const std::vector<size_t>& shape, size_t num_
 
     // Random number generation
     std::random_device rd;
-    std::mt19937 gen(rd());
+    // std::mt19937 gen(rd());
+    std::minstd_rand gen(rd());
     std::uniform_int_distribution<int> dist(0, 1);
 
     for (size_t i = 0; i < total_size; ++i) {

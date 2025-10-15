@@ -288,3 +288,9 @@ def pad_int_strings_to_commensurate_itemsize(int_strings: NDArray[np.uint], new_
 
 def get_backend():
     return "C++" if C_CCP else "Python"
+
+def random_zx_strings(shape):
+    if C_CCP:
+        return vcpp.random_zx_strings(shape)
+    else:
+        raise RuntimeError("C++ backend not available.")

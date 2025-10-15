@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(pauliarray LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17) #TODO: Change enventually to 20. See voidops.hpp to see why
+set(CMAKE_CXX_STANDARD 20) #TODO: Change enventually to 20. See voidops.hpp to see why
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(PYBIND11_FINDPYTHON ON)
@@ -20,9 +20,11 @@ pybind11_add_module(paulicpp
 
 set(PAULI_COMPILE_OPTIONS
     -O3
-    -flto=auto
+    # -flto=auto
     -march=native
     -fPIC
+    -fno-exceptions
+    -fno-rtti
 )
 
 # macOS: force libc++ and set rpath to avoid linking against an incompatible libstdc++

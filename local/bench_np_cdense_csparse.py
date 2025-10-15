@@ -18,11 +18,11 @@ from old_pauliarray.pauliarray.binary import void_operations as np_vops # pyrigh
 
 DENSITY = 0.5
 PROXIMITY = 0.5
-OPTION = "XOR"
+OPTION = "COUNT"
 LIBS = ["NP", "C_DENSE", "C_SPARSE"]
 LIBS = ["NP", "C_DENSE"]
 sizes = np.logspace(0, 9, 50, dtype=int)
-# sizes = [20]
+# sizes = [2, 5, 10]
 
 # def random_bits(size):
 #         a = np.random.randint(0, 2, size=size, dtype=np.uint8).tolist()
@@ -119,15 +119,18 @@ def main():
             ran_bits1 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
             ran_bits2 = spc.generate_random_vec(size, DENSITY, PROXIMITY)
         else:
-            ran_bits1 = np.random.randint(0, 2, size=(size,), dtype=np.uint8)
-            ran_bits2 = np.random.randint(0, 2, size=(size,), dtype=np.uint8)
+            # ran_bits1 = np.random.randint(0, 2, size=(size,2), dtype=np.uint8)
+            # ran_bits2 = np.random.randint(0, 2, size=(size,2), dtype=np.uint8)
+            ran_bits1, ran_bits2 = c_vops.random_zx_strings((size,))
+            # print("random1: \n",ran_bits1)
+            # print("random2: \n",ran_bits2)
 
         if "NP" in LIBS:
             print("---- Numpy Dense ----")
             arr1 = np_vops.bit_strings_to_voids(ran_bits1)
             arr2 = np_vops.bit_strings_to_voids(ran_bits2)
             np_dense_time, np_dense_result = np_dense(arr1, arr2, OPTION)
-            print(f"NPy execution time: {np_dense_time:.7f} seconds")
+            print(f"NPy execution time:   {np_dense_time:.7f} seconds")
             numpy_times.append(np_dense_time)
     
         if "C_DENSE" in LIBS:
@@ -157,6 +160,8 @@ def main():
             print(f"C++ execution time: {sparse_time:.7f} seconds")
             sparse_times.append(sparse_time)
 
+        if "NP" in LIBS and "C_DENSE" in LIBS:
+            assert np.array_equal(np_dense_result, dense_result), "Results do not match between Numpy and C_Dense!"
 
         # results.append((py_result, cpp_result))
     
