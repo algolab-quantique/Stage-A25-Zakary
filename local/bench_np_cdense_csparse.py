@@ -5,7 +5,6 @@ import os
 import sys
 import json
 
-from pauliarray.src.build import sparsepaulicpp as spc
 import pauliarray.binary.void_operations as c_vops
 import pauliarray as pa
 
