@@ -8,7 +8,7 @@ This project uses [pybind11](https://github.com/pybind/pybind11) as its translat
 | void_operations.py            | Speedup  | 1-to-1 ? | Notes |
 |-----------------              |-------   |----------|------------|
 | _xor(), _and(), _or(), _not() | 1x to 5x | Yes      | n/a |
-| _count(), _dot()              | 3x to 7x | Yes      | n/a   |
+| _count(), _dot()              | 2x to 7x | Yes      | n/a   |
 
 | pauli_array.py          | Speedup  | 1-to-1 ? | Notes |
 |-----------------        |-------   |----------|------------|
@@ -84,7 +84,7 @@ Navigate to the `paulicpp` directory, create a virtual environment and install t
 ```console
 $ cd paulicpp
 $ python -m venv .venv
-$ pip install -e .
+$ pip install .
 ```
 This should automatically compile the C++ code based on your machine and link place it to the correct path.
 
