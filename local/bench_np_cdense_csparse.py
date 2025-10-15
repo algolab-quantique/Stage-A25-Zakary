@@ -5,7 +5,6 @@ import os
 import sys
 import json
 
-from pauliarray.src.build import sparsepaulicpp as spc
 import pauliarray.binary.void_operations as c_vops
 import pauliarray as pa
 
@@ -21,7 +20,11 @@ PROXIMITY = 0.5
 OPTION = "COUNT"
 LIBS = ["NP", "C_DENSE", "C_SPARSE"]
 LIBS = ["NP", "C_DENSE"]
-sizes = np.logspace(0, 9, 50, dtype=int)
+
+if "C_SPARSE" in LIBS:
+    from pauliarray.src.build import sparsepaulicpp as spc
+
+sizes = np.logspace(0, 8, 50, dtype=int)
 # sizes = [2, 5, 10]
 
 # def random_bits(size):
@@ -111,7 +114,18 @@ def main():
     sparse_times = []
     dense_times = []
 
-    assert c_vops.get_backend() == "C++", "C++ backend not set!"
+    backend = c_vops.get_backend()
+    backend_err = None
+    try:
+        backend_err = c_vops.get_backend_error()
+    except Exception:
+        backend_err = None
+
+    print(f"Detected void_operations backend: {backend}")
+    if backend_err:
+        print(f"Backend import error: {backend_err}")
+
+    assert backend == "C++", "C++ backend not set! See printed backend import error for details."
 
     for size in sizes:
         print(f"\n\n========== Testing size: {size} ==========")

@@ -23,33 +23,57 @@ pybind11_add_module(sparsepaulicpp
 
 set(PAULI_COMPILE_OPTIONS
     -O3
-    # -flto=auto
+    -flto=auto
     -march=native
     -fPIC
-    -fno-exceptions
-    -fno-rtti
+    # -fno-exceptions
+    # -fno-rtti
 )
 
 # macOS: force libc++ and set rpath to avoid linking against an incompatible libstdc++
 if(APPLE)
     message(STATUS "Applying macOS specific compile/link flags: use libc++ and set rpath")
     foreach(target IN LISTS CMAKE_STATIC_LIBRARY_PREFIX)
-        # 
+        # giogiogighgfhghjhkgjkghk>.jhumgjyhtgy
     endforeach()
     # Add flags to compile with libc++ when using Apple clang
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
     set(CMAKE_INSTALL_RPATH "@loader_path")
     set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
-endif()
 
-if(APPLE)
-    # Ensure we explicitly link against the system libc++ to make runtime symbols available
+
+    # Link against the system libc++ to make runtime symbols available
     find_library(SYSTEM_LIBCPP NAMES c++ libc++ PATHS /usr/lib /usr/local/lib)
     if(SYSTEM_LIBCPP)
         message(STATUS "Linking against system C++ library: ${SYSTEM_LIBCPP}")
         target_link_libraries(paulicpp PRIVATE ${SYSTEM_LIBCPP})
     else()
         message(WARNING "System libc++ not found; runtime C++ symbols may be missing")
+    endif()
+
+
+    # Attempt to link libc++abi too
+    find_library(SYSTEM_LIBCPPABI NAMES c++abi libc++abi PATHS /usr/lib /usr/local/lib)
+    if(SYSTEM_LIBCPPABI)
+        message(STATUS "Linking against system C++ ABI library: ${SYSTEM_LIBCPPABI}")
+        target_link_libraries(paulicpp PRIVATE ${SYSTEM_LIBCPPABI})
+    else()
+        message(STATUS "System libc++abi not found; continuing without explicit libc++abi link")
+    endif()
+
+    # Use Homebrew's LLVM libc++ if available
+    find_library(HOMEBREW_LIBCPP NAMES libc++.1.0.dylib libc++.1.dylib libc++.dylib libc++ PATHS /usr/local/opt/llvm/lib/c++ /opt/homebrew/opt/llvm/lib/c++ /usr/local/opt/llvm/lib)
+    if(HOMEBREW_LIBCPP)
+        message(STATUS "Linking against Homebrew/LLVM libc++: ${HOMEBREW_LIBCPP}")
+        # Link both modules against this explicit dylib so the symbol provider is available at runtime
+        target_link_libraries(paulicpp PRIVATE ${HOMEBREW_LIBCPP})
+        target_link_libraries(sparsepaulicpp PRIVATE ${HOMEBREW_LIBCPP})
+        set(HOMEBREW_LIBCPP_DIR "${CMAKE_MATCH_LIBRARIES}/../c++" CACHE STRING "Calculated Homebrew libc++ dir" FORCE)
+
+        set_target_properties(paulicpp PROPERTIES INSTALL_RPATH "@loader_path;/usr/local/opt/llvm/lib/c++")
+        set_target_properties(sparsepaulicpp PROPERTIES INSTALL_RPATH "@loader_path;/usr/local/opt/llvm/lib/c++")
+    else()
+        message(STATUS "Homebrew libc++ not found in standard locations; will rely on system libc++")
     endif()
 endif()
 
