@@ -17,6 +17,9 @@ pybind11_add_module(paulicpp
     pauliarray/src/bindings/paulicpp_bindings.cpp
     pauliarray/src/bindings/voidops_bindings.cpp
 )
+pybind11_add_module(sparsepaulicpp
+    pauliarray/src/bindings/sparsepaulicpp_bindings.cpp
+)
 
 set(PAULI_COMPILE_OPTIONS
     -O3
@@ -89,4 +92,10 @@ set_target_properties(paulicpp PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/pauliarray/src/build
 )
 
+set_target_properties(sparsepaulicpp PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/pauliarray/src/build
+)
+
 install(TARGETS paulicpp DESTINATION pauliarray/src/build)
+
+install(TARGETS sparsepaulicpp DESTINATION pauliarray/src/build)

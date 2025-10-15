@@ -58,3 +58,4 @@ perf.data
 *.png
 /local/results
 .DS_Store
+*.pyc
