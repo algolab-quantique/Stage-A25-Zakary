@@ -5,6 +5,8 @@ import os
 import sys
 import json
 
+
+from pauliarray.src.build import sparsepaulicpp as spc
 import pauliarray.binary.void_operations as c_vops
 import pauliarray as pa
 
@@ -22,8 +24,10 @@ LIBS = ["NP", "C_DENSE", "C_SPARSE"]
 LIBS = ["NP", "C_DENSE"]
 sizes = np.logspace(0, 8, 50, dtype=int)
 VERBOSE = False
-shapes = [(s,) for s in sizes]
+shapes = [(10, s,) for s in sizes]
 # sizes = [2, 5, 10]
+
+
 
 # def random_bits(size):
 #         a = np.random.randint(0, 2, size=size, dtype=np.uint8).tolist()

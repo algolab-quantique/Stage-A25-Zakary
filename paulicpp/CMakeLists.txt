@@ -29,10 +29,11 @@ pybind11_add_module(sparsepaulicpp
 # MUST-HAVES FLAGS
 # O3 is the most aggressive optimization level that is not likely to break things. Ofast may break things, and is not a whole lot faster.
 # march=native enables all instruction sets supported by the local machine. This causes non-portable binaries, but is faster in local builds.
+#   Disabling the march flag may be useful when building pre-built binaries for distribution. 
 # fPIC is needed for shared libraries.
 
 # OPTIONAL FLAGS
-# flto=auto enables "Link Time Optimization", which supposedly allows for better optimization across the board. However, i've not seen any gain nor loss in performance with it on or off.
+# flto=auto enables "Link Time Optimization", which supposedly allows for better optimization across the board (?). However, i've not seen any gain nor loss in performance with it on or off.
 # finroll-loops lets the compiler unroll loops. For now i wouldnt use it as i fear it may slow down things for giant NumPy arrays.
 set(PAULI_COMPILE_OPTIONS
     -O3 
@@ -44,7 +45,6 @@ set(PAULI_COMPILE_OPTIONS
 
 # macOS: force libc++ and set rpath to avoid linking against an incompatible libstdc++
 if(APPLE)
-    message(STATUS "Applying macOS specific compile/link flags: use libc++ and set rpath")
     foreach(target IN LISTS CMAKE_STATIC_LIBRARY_PREFIX)
         # giogiogighgfhghjhkgjkghk>.jhumgjyhtgy
     endforeach()

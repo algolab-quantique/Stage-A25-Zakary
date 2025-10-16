@@ -34,6 +34,14 @@ namespace py = pybind11;
 #include <bit>
 #include <vector>
 
+// #ifdef USE_OPENMP
+//     #include <omp.h>
+//     #define 
+// #else
+//     #warning "OpenMP is not enabled"
+// #endif
+
+
 // This threshold is completely arbitrary and can be tuned for performance depending on the hardware.
 #define VOPS_THRESHOLD_PARALLEL 1'000'000
 
@@ -70,13 +78,14 @@ inline py::object bitwise_core(py::array voids_1, py::array voids_2, Op op) {
 
     // Cut the data into 64-bit chunks for faster processing 
     // ptr1_64 and ptr2_64 are the pointers to the input data, ptr_out_64 is the pointer to the output data
-    const uint64_t*  ptr1_64 = static_cast<const uint64_t*>(buf1.ptr);
-    const uint64_t*  ptr2_64 = static_cast<const uint64_t*>(buf2.ptr);
-    uint64_t*  ptr_out_64 = static_cast<uint64_t*>(buf_out.ptr);
+    //TODO: With C++20, we could use std::assume_aligned, which could potentially lead to better auto-vectorization by the compiler?
+    //? Since NumPy cant guarantee alignement and we cant afford to copy the data just to get better SIMD, I dont know if assume_aligned is worth anything.
+    const uint64_t* ptr1_64 = std::bit_cast<uint64_t*>(buf1.ptr); //this is stupid
+    const uint64_t* ptr2_64 = std::bit_cast<uint64_t*>(buf2.ptr);
+    uint64_t* ptr_out_64 = std::bit_cast<uint64_t*>(buf_out.ptr);
 
     size_t num_64bit_chunks = total_bytes / 8;
-
-
+    
     #pragma omp parallel for if(num_64bit_chunks >= VOPS_THRESHOLD_PARALLEL) schedule(static)
     for (size_t i = 0; i < num_64bit_chunks; ++i) {
         // Applies the bitwise operation.
@@ -86,9 +95,9 @@ inline py::object bitwise_core(py::array voids_1, py::array voids_2, Op op) {
     // Handle any bytes that don't fit into a 64-bit chunk (the tail)
     size_t remaining_bytes = total_bytes % 8;
     if (remaining_bytes > 0) {
-        const uint8_t*  ptr1_8 = static_cast<const uint8_t*>(buf1.ptr);
-        const uint8_t*  ptr2_8 = static_cast<const uint8_t*>(buf2.ptr);
-        uint8_t*  ptr_out_8 = static_cast<uint8_t*>(buf_out.ptr);
+        const uint8_t* ptr1_8 = std::bit_cast<uint8_t*>(buf1.ptr);
+        const uint8_t* ptr2_8 = std::bit_cast<uint8_t*>(buf2.ptr);
+        uint8_t* ptr_out_8 = std::bit_cast<uint8_t*>(buf_out.ptr);
 
         size_t start_byte = num_64bit_chunks * 8;
         for (size_t i = 0; i < remaining_bytes; ++i) {

@@ -6,7 +6,6 @@ try:
     C_CCP = True
 except ImportError:
     try:
-        # If voidops was merged into the main paulicpp module, try importing that
         from ..src.build import paulicpp as vcpp
         C_CCP = True
     except ImportError:
