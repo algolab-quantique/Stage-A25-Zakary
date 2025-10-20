@@ -40,10 +40,8 @@ Anything outside of `/paulicpp` is subject to deletion. The project structure is
 |   │   │   └── {MODULE}_bindings.cpp
 |   │   ├── build
 |   │   │   └── {MODULE}.{dynamic_lib_extension}
+|   │   │   └── {MODULE}.pyi
 |   │   └── {MODULE}.hpp
-|   │
-|   ├── stubs
-|   │   └── {MODULE}.pyi
 |   │
 |   └── utils
 |
@@ -52,54 +50,62 @@ Anything outside of `/paulicpp` is subject to deletion. The project structure is
 
 - `/src` Contains the C++ source code (.hpp) for every modules.
 - `/src/bindings` Contains the necessary pybind11 bindings necessary for the translation to and from Python.
-- `src/build` Contains the dynamic shared libraries. 
+- `src/build` Contains the dynamic shared libraries and stub files.
     <br>Linux/macOS -> xyz.so
     <br>Windows -> xyz.dll
-- `/stubs` Contains the stub files which are used to provide hints to the IDE about the various C++ functions.
-- `compiler.py` Tries to compile every module using g++.
+- `compiler.py` Deprecated file.
 
 
 
 
 
 
-## Requirements
+### Requirements
 - Python 3.10+
-- Having `g++` or `clang` is ***fundamental*** to this project, as it uses the gcc/clang intrinsic *__builtin_popcount()* as one of its core operation. This is one of the reason why the C++ implementation is faster compared to pure python or even NumPy
-- Pre-installing in a venv `mypy` is not *necessary*, but not having it means the stub files will not be generated when compiling the source code.
+- Unix system
 - Having lots of time to waste to debug this library.
 
-## Installation
-If you are on macOS, please be sure to install OpenMP. This can easily be done with [brew](https://brew.sh/)
-```console
-$ brew install llvm
-$ brew install libomp
-```
+# Installation
+If you are on macOS, it is highly recommended to use OpenMP, as it provides multithreading to the C++ library. Whilst it is not ***necessary*** to do so, you may notice worst performance.
 
-<!--
-```console
-$ python3 compiler.py
-``` -->
-Navigate to the `paulicpp` directory, create a virtual environment and install the project with:
-```console
-$ cd paulicpp
-$ python -m venv .venv
-$ pip install .
+| Platform | Official support? | 
+|----------|-------   |
+| Windows | No |
+| Windows (ARM) | No |
+| Linux  | Yes |
+| Linux (ARM) | No |
+| Mac (Intel CPU) | Yes |
+| Mac (Apple Silicon) | Yes |
+
+
+### With OpenMP
+Please install [Brew](https://brew.sh/), then paste the following into your terminal: 
+```
+brew install llvm libomp
+```
+Then, clone this repo and navigate to the `paulicpp` directory. You may need to create a virtual environment depending on your needs. After that, do:
+```
+pip install .
 ```
 This should automatically compile the C++ code based on your machine and link place it to the correct path.
 
-Once done, you may call the library as usual within a python script with `import pauliarray`.
-<br> If you want to check what backend the library uses (C++ or a Python fallback), try:
-``` python
-import pauliarray.binary.void_operations as vops
-print("Using", vops.get_backend(), "backend.")
+
+
+### Without OpenMP
+Again, this is **not** the recommended way to install this library! You have been warned.
+
+Then, clone this repo and navigate to the `paulicpp` directory. You may need to create a virtual environment depending on your needs. After that, do:
+```
+ pip install . --config-settings=cmake.define.USE_OPENMP=OFF
 ```
 
-<!-- ## Compiler.py
-COMPILER.PY IS CURRENTLY DEPRECATED.
+## Verification
 
-You may call this script with the following arguments:
-- `-m` or `--module` : Choose which module(s) to compile. Default is `all`.
-<br> Accepted values are ["all", "pa", "dpa", "voidops"]
-- `-c` or `--compiler` : Choose which compiler to use. Default is `g++`. 
-<br> Accepted values are ["g++", "gcc", "clang++", "clang"].  -->
+Once installed, you may call the library as usual within a Python script with `import pauliarray`.
+<br> If you want to check what backend the library uses (C++ or a Python fallback), try inside a Python file:
+``` python
+import pauliarray.binary.void_operations as vops
+print(vops.get_backend())
+```
+If you get 'C++*', congrats, the library has been sucessfully installed and compiled!
+<br> If you get '*Python*', something went terribly wrong with the installation. Try to install with the other way (i.e Try WITHOUT OpenMP if you tried to install it WITH and vice-versa). If it still doesnt work, please contact me or submit an issue

@@ -20,9 +20,9 @@ from old_pauliarray.pauliarray.binary import void_operations as np_vops # pyrigh
 DENSITY = 0.5
 PROXIMITY = 0.5
 OPTION = "XOR"
-LIBS = ["NP", "C_DENSE", "C_SPARSE"]
-# LIBS = ["NP", "C_DENSE"]
-sizes = np.logspace(0, 7, 50, dtype=int)
+# LIBS = ["NP", "C_DENSE", "C_SPARSE"]
+LIBS = ["NP", "C_DENSE"]
+sizes = np.logspace(0, 8, 50, dtype=int)
 VERBOSE = False
 shapes = [(s,) for s in sizes]
 # sizes = [2, 5, 10]

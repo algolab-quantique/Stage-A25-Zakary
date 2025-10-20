@@ -5,6 +5,7 @@ project(pauliarray LANGUAGES CXX)
 # Current tests are on:
 # OS: Linux Mint 22.2      || COMPILER: gcc 13.3.0            || CPU: AMD Ryzen 7 6800H
 # OS: macOS Sequoia 15.7.1 || COMPILER: Homebrew clang 21.1.2 || CPU: i7 (quad core?)
+# OS: macOS Sequoia 15.7.1 || COMPILER: Apple clang 17.0.0    || CPU: M1
 
 set(CMAKE_CXX_STANDARD 20) 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -14,9 +15,9 @@ find_package(pybind11 CONFIG REQUIRED)
 
 # Option to require OpenMP. Set -DBUILD_WITH_OPENMP=ON to fail if OpenMP is not available.
 # I dont know what happens when OpenMP is not found, with this option OFF.
-option(BUILD_WITH_OPENMP "Require OpenMP for builds (fail if not found)" ON)
+# option(BUILD_WITH_OPENMP "Require OpenMP for builds (fail if not found)" ON)
+option(USE_OPENMP "Enable OpenMP support" ON)
 
-find_package(OpenMP)
 
 pybind11_add_module(paulicpp
     pauliarray/src/bindings/paulicpp_bindings.cpp
@@ -87,41 +88,48 @@ if(APPLE)
         set_target_properties(paulicpp PROPERTIES INSTALL_RPATH "@loader_path;/usr/local/opt/llvm/lib/c++")
         set_target_properties(sparsepaulicpp PROPERTIES INSTALL_RPATH "@loader_path;/usr/local/opt/llvm/lib/c++")
     else()
-        message(STATUS "Homebrew libc++ not found in standard locations; will rely on system libc++")
+        message(STATUS "Homebrew libc++ not found in standard locations; will rely on system libcpython++")
     endif()
 endif()
 
-find_package(OpenMP)
 
-if(NOT OpenMP_CXX_FOUND AND APPLE)
-    find_library(LIBOMP_LIBRARY NAMES omp libomp PATHS /opt/homebrew/opt/libomp/lib /usr/local/opt/libomp/lib /usr/lib)
-    find_path(LIBOMP_INCLUDE_DIR omp.h PATHS /opt/homebrew/opt/libomp/include /usr/local/opt/libomp/include /usr/include)
+if(USE_OPENMP)
+    find_package(OpenMP REQUIRED)
 
-    if(LIBOMP_LIBRARY AND LIBOMP_INCLUDE_DIR)
-        message(STATUS "Found libomp: ${LIBOMP_LIBRARY}, include: ${LIBOMP_INCLUDE_DIR}")
-        # Provide flags as a CMake list so each token is passed separately to the compiler
-        set(OpenMP_CXX_FLAGS -Xpreprocessor -fopenmp -I${LIBOMP_INCLUDE_DIR})
-        set(OpenMP_CXX_LIBRARIES ${LIBOMP_LIBRARY})
-        set(OpenMP_CXX_FOUND TRUE)
-    else()
-        if(BUILD_WITH_OPENMP)
-            message(FATAL_ERROR "OpenMP not found. Install libomp (e.g. 'brew install libomp').")
+    if(NOT OpenMP_CXX_FOUND AND APPLE)
+        find_library(LIBOMP_LIBRARY NAMES omp libomp PATHS /opt/homebrew/opt/libomp/lib /usr/local/opt/libomp/lib /usr/lib)
+        find_path(LIBOMP_INCLUDE_DIR omp.h PATHS /opt/homebrew/opt/libomp/include /usr/local/opt/libomp/include /usr/include)
+
+        if(LIBOMP_LIBRARY AND LIBOMP_INCLUDE_DIR)
+            message(STATUS "Found libomp: ${LIBOMP_LIBRARY}, include: ${LIBOMP_INCLUDE_DIR}")
+            # Provide flags as a CMake list so each token is passed separately to the compiler
+            set(OpenMP_CXX_FLAGS -fopenmp -I${LIBOMP_INCLUDE_DIR} -DUSE_OPENMP)
+            set(OpenMP_CXX_LIBRARIES ${LIBOMP_LIBRARY})
+            set(OpenMP_CXX_FOUND TRUE)
         else()
-            message(WARNING "OpenMP not found! Trying to build without OpenMP parallelization.")
+            message(FATAL_ERROR "OpenMP not found. Install libomp (e.g. 'brew install libomp').")
         endif()
     endif()
-endif()
 
-if(OpenMP_CXX_FOUND)
-    target_compile_options(paulicpp PRIVATE ${OpenMP_CXX_FLAGS})
-    # Ensure the OpenMP include dir is added so the -I flag points to something
-    if(DEFINED LIBOMP_INCLUDE_DIR)
-        target_include_directories(paulicpp PRIVATE ${LIBOMP_INCLUDE_DIR})
-    endif()
-    target_link_libraries(paulicpp PRIVATE ${OpenMP_CXX_LIBRARIES})
-else()
-    if(BUILD_WITH_OPENMP)
-        message(FATAL_ERROR "OpenMP was requested (BUILD_WITH_OPENMP=ON) but could not be enabled.")
+    if(OpenMP_CXX_FOUND)
+        # prefer modern importing if available
+        if(TARGET OpenMP::OpenMP_CXX)
+            target_link_libraries(paulicpp PRIVATE OpenMP::OpenMP_CXX)
+            target_link_libraries(sparsepaulicpp PRIVATE OpenMP::OpenMP_CXX)
+        else() # old maniere
+            target_compile_options(paulicpp PRIVATE ${OpenMP_CXX_FLAGS})
+            target_link_libraries(paulicpp PRIVATE ${OpenMP_CXX_LIBRARIES})
+            target_compile_options(sparsepaulicpp PRIVATE ${OpenMP_CXX_FLAGS})
+            target_link_libraries(sparsepaulicpp PRIVATE ${OpenMP_CXX_LIBRARIES})
+        endif()
+
+        target_compile_definitions(paulicpp PRIVATE USE_OPENMP)
+        target_compile_definitions(sparsepaulicpp PRIVATE USE_OPENMP)
+
+        if(DEFINED LIBOMP_INCLUDE_DIR)
+            target_include_directories(paulicpp PRIVATE ${LIBOMP_INCLUDE_DIR})
+            target_include_directories(sparsepaulicpp PRIVATE ${LIBOMP_INCLUDE_DIR})
+        endif()
     endif()
 endif()
 
@@ -135,7 +143,6 @@ set_target_properties(sparsepaulicpp PROPERTIES
 )
 
 install(TARGETS paulicpp DESTINATION pauliarray/src/build)
-
 install(TARGETS sparsepaulicpp DESTINATION pauliarray/src/build)
 
 
