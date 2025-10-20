@@ -30,7 +30,6 @@ namespace py = pybind11;
 #include <cstdint> // uint8_t
 #include <iostream>
 #include <cstring>
-#include <omp.h>
 #include <bit>
 #include <vector>
 
