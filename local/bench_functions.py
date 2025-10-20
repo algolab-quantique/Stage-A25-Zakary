@@ -12,43 +12,69 @@ if _old_pauli not in sys.path:
 
 
 import old_pauliarray.pauliarray as pa
-from old_pauliarray.pauliarray.pauli.pauli_array import unique as np_unique
-from pauliarray.pauli.pauli_array import unique as cpp_unique
+from old_pauliarray.pauliarray.pauli import pauli_array as np_pa_fn
+from pauliarray.pauli import pauli_array as pcpp_pa_fn
 
 
 # print(f"PauliArray version: {pa.__version__}")
 # print(f"Old PauliArray version: {old_pa.__version__}")
 
 
-sizes = np.logspace(0, 7, 50, dtype=int)
-# sizes= [2, 5, 10]
+OPTION = "UNIQUE"
+LIBS = ["UNIQUE", "COMMUTE", "TENSOR"]
+# sizes = np.logspace(0, 6, 50, dtype=int)
+sizes = [2]
+shapes = [(size,) for size in sizes]
+VERBOSE = True
 
 def pauli_py(p1: pa.PauliArray, p2: pa.PauliArray):
     start_time = time.time()
+    res = None
+    match OPTION:
+        case "COMMUTE":
+            res = np_pa_fn.bitwise_commute_with(p1, p2)
+        case "UNIQUE":
+            res = np_pa_fn.unique(p1)
+            if VERBOSE:
+                print("Result:", res.inspect())
+        case "TENSOR":
+            res = np_pa_fn.tensor(p1, p2)
+        case _:
+            print(f"Unknown option: {OPTION}")
 
-    # r = p1.tensor(p2)
-    # r = p1.bitwise_commute_with(p2)
-    r = np_unique(p1)
-
-    print(r.to_labels())
-
-    # print(r)
+    
     end_time = time.time()
-    return end_time - start_time, r
+    return end_time - start_time, res
+
+
 
 def pauli_cpp(p1: pa.PauliArray, p2: pa.PauliArray):
     start_time = time.time()
 
-    # r = pcpp.PauliArray.bitwise_commute_with(p1, p2)
-    r = cpp_unique(p1)
-    # r = pcpp.tensor(p1, p2)
-    print(r.to_labels())
-    # print(r)
+    res = None
+    match OPTION:
+        case "COMMUTE":
+            res = pcpp_pa_fn.bitwise_commute_with(p1, p2)
+        case "UNIQUE":
+            uniques = pcpp_pa_fn.unordered_unique(p1)
 
+            if VERBOSE:
+                # print("Input:", p1.inspect())
+                # print(uniques.inspect())
+                # print(index)
+                # print(inverse)
+                print("Result:", res.inspect())
+
+        case "TENSOR":
+            res = pcpp_pa_fn.tensor(p1, p2)
+        case _:
+            print(f"Unknown option: {OPTION}")
     
-
     end_time = time.time()
-    return end_time - start_time, r
+    return end_time - start_time, res
+
+
+
 
 def main():
     # import pauliarray.binary.void_operations as vops
@@ -58,11 +84,13 @@ def main():
     cpp_times = []
     results = []
 
-    for size in sizes:
-        print(f"\n\n========== Testing size: {size} ==========")
-        p1 = pcpp.PauliArray.random((size,), 2)
-        p2 = pcpp.PauliArray.random((size,), 2)
-        # p1 = pa.PauliArray.random((4, size,2), 2)
+    i = 0
+    for i in range(len(sizes)):
+        print(f"\n\n========== Testing size: {sizes[i]} ==========")
+
+        p1 = pa.PauliArray.random(shapes[i], sizes[i])
+        p2 = pa.PauliArray.random(shapes[i], sizes[i])
+     # p1 = pa.PauliArray.random((4, size,2), 2)
         # p2 = pa.PauliArray.random((4, size,2), 2)
 
         print("---- Python ----")
@@ -78,6 +106,7 @@ def main():
         py_times.append(py_time)
         cpp_times.append(cpp_time)
         results.append((py_result, cpp_result))
+        i += 1
     
     end = time.time()
     print(f"\n\nTotal execution time for all sizes: {end - start:.7f} seconds")

@@ -2,7 +2,6 @@
 #include <vector>
 #include <cstdint>
 #include <iostream>
-#include <omp.h>
 #include <cstring>
 // #include <algorithm>
 #include <random>
@@ -17,11 +16,16 @@ using pauli_t = uint8_t;
 
 using dpoint = std::pair<unsigned int, unsigned int>; // first = begin, second = end (exclusive)
 
+#ifdef USE_OPENMP
+#include <omp.h>
+#endif
+
+
 
 #define THRESHOLD_PARALLEL 1'000
 
 
-std::vector<dpoint> make_dpoint(const std::vector<uint8_t>& vec){
+inline std::vector<dpoint> make_dpoint(const std::vector<uint8_t>& vec){
     std::vector<dpoint> points;
     bool in_run = false;
     unsigned run_start = 0;
@@ -47,7 +51,7 @@ std::vector<dpoint> make_dpoint(const std::vector<uint8_t>& vec){
     return points;
 }
 
-std::vector<uint8_t> generate_random_vec(int size, float density=0.1, float proximity=0.0) {
+inline std::vector<uint8_t> generate_random_vec(int size, float density=0.1, float proximity=0.0) {
     if (size <= 0) return {};
     // clamp parameters to [0,1]
     double p = std::min(std::max(static_cast<double>(density), 0.0), 1.0);
@@ -79,7 +83,7 @@ void show_dpoints(const std::vector<dpoint>& points) {
 }
 
 
-std::vector<dpoint> xor_dpoint(const std::vector<dpoint>& a, const std::vector<dpoint>& b) {
+inline std::vector<dpoint> xor_dpoint(const std::vector<dpoint>& a, const std::vector<dpoint>& b) {
     std::vector<dpoint> res;
     size_t i = 0, j = 0;
     if (a.empty() && b.empty()) return res;
@@ -130,7 +134,7 @@ std::vector<dpoint> xor_dpoint(const std::vector<dpoint>& a, const std::vector<d
     return res;
 }
 
-std::vector<dpoint> and_dpoint(const std::vector<dpoint>& a, const std::vector<dpoint>& b) {
+inline std::vector<dpoint> and_dpoint(const std::vector<dpoint>& a, const std::vector<dpoint>& b) {
     std::vector<dpoint> res;
     size_t i = 0, j = 0;
     const size_t na = a.size(), nb = b.size();
@@ -159,7 +163,7 @@ std::vector<dpoint> and_dpoint(const std::vector<dpoint>& a, const std::vector<d
 }
 
 
-std::vector<dpoint> not_dpoint(const std::vector<dpoint>& a, size_t n_qubits) {
+inline std::vector<dpoint> not_dpoint(const std::vector<dpoint>& a, size_t n_qubits) {
     std::vector<dpoint> res;
     if (a.empty()) {
         res.push_back({0, static_cast<unsigned>(n_qubits)});
@@ -180,7 +184,7 @@ std::vector<dpoint> not_dpoint(const std::vector<dpoint>& a, size_t n_qubits) {
     return res;
 }
 
-std::vector<dpoint> or_dpoint(const std::vector<dpoint>& a, const std::vector<dpoint>& b) {
+inline std::vector<dpoint> or_dpoint(const std::vector<dpoint>& a, const std::vector<dpoint>& b) {
     std::vector<dpoint> res;
     size_t i = 0, j = 0;
     if (a.empty()) return b;
@@ -224,11 +228,11 @@ unsigned int count_dpoint(const std::vector<dpoint>& a) {
     return count;
 }
 
-uint8_t dot_dpoint(const std::vector<dpoint>& a, const std::vector<dpoint>& b) {
+inline uint8_t dot_dpoint(const std::vector<dpoint>& a, const std::vector<dpoint>& b) {
     return (count_dpoint(and_dpoint(a, b)));
 }
 
-std::vector<uint8_t> dpoint_to_vec(const std::vector<dpoint>& points, size_t n_qubits) {
+inline std::vector<uint8_t> dpoint_to_vec(const std::vector<dpoint>& points, size_t n_qubits) {
     std::vector<uint8_t> vec(n_qubits, 0);
     for (const auto& p : points) {
         for (unsigned int i = p.first; i < p.second; ++i) {

@@ -8,10 +8,17 @@ namespace py = pybind11;
 #include <cstdint> // uint8_t
 #include <iostream>
 #include <cstring>
-#include <omp.h>
 #include <vector>
 #include <random>
 #include <numeric>
+#include <unordered_map>
+
+
+#ifdef USE_OPENMP
+    #include <omp.h>
+#else
+    #warning "OpenMP is not enabled"
+#endif
 
 #include "voidops.hpp"
 
@@ -87,7 +94,9 @@ inline py::array_t<bool> bitwise_commute_with(py::array z1, py::array x1, py::ar
     const uint8_t* ptr1 = static_cast<const uint8_t*>(buf1.ptr);
     size_t n = buf1.size;
 
+    #ifdef USE_OPENMP
     #pragma omp parallel for if (n >= VOPS_THRESHOLD_PARALLEL) schedule(static)
+    #endif
     for (size_t i = 0; i < n; ++i) {
         ptr_result[i] = ptr1[i] == 0;
     }
@@ -262,4 +271,59 @@ inline py::object unique(py::array zx_voids, bool return_index = false, bool ret
         return ret;
     }
     return unique;
+}
+
+py::object unordered_unique(py::array zx_voids) {
+auto buf = zx_voids.request();
+    // handle scalar
+    if (buf.ndim == 0) {
+        py::array_t<int64_t> idx(1);
+        py::array_t<int64_t> inv(1);
+        auto ib = idx.request(); auto rb = inv.request();
+        int64_t* ip = static_cast<int64_t*>(ib.ptr);
+        int64_t* rp = static_cast<int64_t*>(rb.ptr);
+        ip[0] = 0;
+        rp[0] = 0;
+        return py::make_tuple(idx, inv);
+    }
+
+    const uint8_t* base = static_cast<const uint8_t*>(buf.ptr);
+    size_t nrows = static_cast<size_t>(buf.shape[0]);
+
+    // compute bytes per row: use stride[0] when ndim>1, else itemsize
+    size_t row_bytes = (buf.ndim > 1) ? static_cast<size_t>(std::llabs(buf.strides[0])) : static_cast<size_t>(buf.itemsize);
+
+    std::unordered_map<std::string, size_t> table;
+    table.reserve(nrows);
+
+    std::vector<size_t> indices;
+    indices.reserve(nrows);
+    std::vector<size_t> inverses(nrows);
+
+    for (size_t i = 0; i < nrows; ++i) {
+        const char* ptr = reinterpret_cast<const char*>(base + i * row_bytes);
+        std::string key(ptr, row_bytes); //dd
+        auto it = table.find(key);
+        if (it != table.end()) {
+            inverses[i] = it->second;
+        } else {
+            size_t new_id = table.size();
+            table.emplace(std::move(key), new_id);
+            inverses[i] = new_id;
+            indices.push_back(i);
+        }
+    }
+
+    py::array_t<int64_t> py_indices(indices.size());
+    auto ib = py_indices.request();
+    int64_t* iptr = static_cast<int64_t*>(ib.ptr);
+    for (size_t k = 0; k < indices.size(); ++k) iptr[k] = static_cast<int64_t>(indices[k]);
+
+    py::array_t<int64_t> py_inverse(nrows);
+    auto rb = py_inverse.request();
+    int64_t* rptr = static_cast<int64_t*>(rb.ptr);
+    for (size_t i = 0; i < nrows; ++i) rptr[i] = static_cast<int64_t>(inverses[i]);
+
+
+    return py::make_tuple(py_indices, py_inverse);
 }

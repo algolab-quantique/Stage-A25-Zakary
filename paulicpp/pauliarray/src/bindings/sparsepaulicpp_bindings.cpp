@@ -4,6 +4,8 @@
 
 namespace py = pybind11;
 
+void register_setsparse(py::module_ &m);
+
 PYBIND11_MODULE(sparsepaulicpp, m) {
     m.doc() = "Python bindings for the SparsePauliArray class using Pybind11";
     m.def("generate_random_vec", &generate_random_vec, "awdwadwadwddd");
@@ -15,4 +17,6 @@ PYBIND11_MODULE(sparsepaulicpp, m) {
     m.def("not_dpoint", &not_dpoint, "awdwadwadwddd");
     m.def("overlap_dpoint", &overlap_dpoint, "awdwadwadwddd");
     m.def("count_dpoint", &count_dpoint, "awdwadwadwddd");
+
+    register_setsparse(m);
 }

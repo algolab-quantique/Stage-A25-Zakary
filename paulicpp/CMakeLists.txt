@@ -24,7 +24,9 @@ pybind11_add_module(paulicpp
 )
 pybind11_add_module(sparsepaulicpp
     pauliarray/src/bindings/sparsepaulicpp_bindings.cpp
+    pauliarray/src/bindings/setsparse_bindings.cpp
 )
+
 
 # MUST-HAVES FLAGS
 # O3 is the most aggressive optimization level that is not likely to break things. Ofast may break things, and is not a whole lot faster.
@@ -135,3 +137,37 @@ set_target_properties(sparsepaulicpp PROPERTIES
 install(TARGETS paulicpp DESTINATION pauliarray/src/build)
 
 install(TARGETS sparsepaulicpp DESTINATION pauliarray/src/build)
+
+
+
+
+
+# Generate stub files
+find_package(Python COMPONENTS Interpreter REQUIRED)
+
+add_custom_command(TARGET paulicpp POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
+          ${Python_EXECUTABLE} -m pybind11_stubgen
+          pauliarray.src.build.paulicpp
+          -o ${CMAKE_SOURCE_DIR}
+          )
+
+add_custom_command(TARGET sparsepaulicpp POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
+          ${Python_EXECUTABLE} -m pybind11_stubgen
+          pauliarray.src.build.sparsepaulicpp
+          -o ${CMAKE_SOURCE_DIR}
+          )
+
+# add_custom_command(TARGET paulicpp POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
+#                     ${Python_EXECUTABLE} -m mypy.stubgen --module
+#                     pauliarray.src.build.paulicpp
+#                     -o ${CMAKE_SOURCE_DIR}
+# )
+# add_custom_command(TARGET sparsepaulicpp POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
+#                     ${Python_EXECUTABLE} -m mypy.stubgen --module
+#                     pauliarray.src.build.sparsepaulicpp
+#                     -o ${CMAKE_SOURCE_DIR}
+# )

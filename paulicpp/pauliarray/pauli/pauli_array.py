@@ -1354,7 +1354,7 @@ def unique(
         # axis=axis,
         return_index=return_index,
         return_inverse=return_inverse,
-        return_counts=return_counts,
+        return_counts=return_counts
     )
         
 
@@ -1368,5 +1368,18 @@ def unique(
 
     return out
 
+def unordered_unique(paulis: PauliArray, return_index: bool = False, return_inverse: bool = False, return_counts: bool = False,):
     
+    if C_CCP:
+        idx, inv = pcpp.unordered_unique(paulis.zx_voids)
+        
+        unique_zx_voids = paulis.zx_voids[idx]
+        uniques = PauliArray.from_zx_voids(unique_zx_voids, paulis.num_qubits)
 
+        if return_index or return_inverse or return_counts:
+            return uniques, idx, inv, len(idx)
+    
+        else:
+            return uniques
+    else:
+        print("No C++!!!!!!")

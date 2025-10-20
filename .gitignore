@@ -49,7 +49,7 @@ perf.data
 /.venv
 /c_pauliarray
 # /local
-/build
+paulicpp/pauliarray/src/build/*.*
 *.prof
 /paulicpp/.venv
 /.vscode
