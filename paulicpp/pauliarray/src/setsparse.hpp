@@ -6,7 +6,11 @@ namespace py = pybind11;
 #include <cstdint> // uint8_t
 #include <iostream>
 #include <cstring>
+
+#ifdef USE_OPENMP
 #include <omp.h>
+#endif
+
 #include <bit>
 #include <set>
 
