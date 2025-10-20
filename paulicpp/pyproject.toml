@@ -11,7 +11,7 @@ dependencies = [
     "numpy",
     "pybind11",
     "pybind11-stubgen",
-    "mypy"
+    "mypy",
 ]
 
 [project.optional-dependencies]
