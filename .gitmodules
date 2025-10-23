@@ -7,3 +7,8 @@
 	path = extern/eigen
 	url = https://gitlab.com/libeigen/eigen.git
 	branch = master
+
+[submodule "extern/xxhash"]
+	path = extern/eigen
+	url = https://github.com/Cyan4973/xxHash.git
+	branch = master
