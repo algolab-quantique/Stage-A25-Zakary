@@ -27,9 +27,6 @@ pybind11_add_module(sparsepaulicpp
     pauliarray/src/bindings/sparsepaulicpp_bindings.cpp
     pauliarray/src/bindings/setsparse_bindings.cpp
 )
-
-
-
 # MUST-HAVES FLAGS
 # O3 is the most aggressive optimization level that is not likely to break things. Ofast may break things, and is not a whole lot faster.
 # march=native enables all instruction sets supported by the local machine. This causes non-portable binaries, but is faster in local builds.

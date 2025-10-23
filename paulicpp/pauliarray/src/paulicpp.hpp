@@ -299,7 +299,7 @@ py::object unordered_unique(py::array zx_voids) {
     const size_t nrows = static_cast<size_t>(buf.shape[0]);
     const size_t row_bytes = (buf.ndim > 1) ? static_cast<size_t>(std::llabs(buf.strides[0])) : static_cast<size_t>(buf.itemsize);
 
-    std::vector<std::string_view> keys;
+    std::vector<std::string> keys;
     keys.resize(nrows);
     
     // move these out so they survive after the GIL is reacquired
@@ -316,10 +316,10 @@ py::object unordered_unique(py::array zx_voids) {
         #endif
         for (size_t i = 0; i < nrows; ++i) {
             const char* ptr = reinterpret_cast<const char*>(base + i * row_bytes);
-            keys[i] = std::string_view(ptr, row_bytes);
+            keys[i] = std::string(ptr, row_bytes);
         }
 
-        std::unordered_map<std::string_view, size_t> table;
+        std::unordered_map<std::string, size_t> table;
         // std::unordered_map<std::string, size_t, XXH3StringHash> table;
         table.reserve(nrows);
 

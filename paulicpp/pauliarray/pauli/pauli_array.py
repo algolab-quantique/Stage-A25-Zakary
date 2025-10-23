@@ -17,8 +17,9 @@ if TYPE_CHECKING:
 try:
     from ..src.build import paulicpp as pcpp
     C_CCP = True
-except ImportError:
+except ImportError as e:
     C_CCP = False
+    print("C++ backend not available:", e)
 
 PAULI_LABELS = "IZXY"
 PAULI_TO_ZX_BITS = {
@@ -1380,23 +1381,21 @@ def unique(
     return out
 
 def unordered_unique(paulis: PauliArray, return_index: bool = False, return_inverse: bool = False, return_counts: bool = False) -> Union[PauliArray, Tuple[PauliArray, NDArray]]:
+    assert C_CCP, "C++ backend is not available."
+
+    idx, inv = pcpp.unordered_unique(paulis.zx_voids)
     
-    if C_CCP:
-        idx, inv = pcpp.unordered_unique(paulis.zx_voids)
-        
-        uniques = PauliArray.from_zx_voids(paulis.zx_voids[idx], paulis.num_qubits)
+    uniques = PauliArray.from_zx_voids(paulis.zx_voids[idx], paulis.num_qubits)
 
-        # print("Uniques:", uniques)
+    # print("Uniques:", uniques)
 
-        if return_index:
-            return uniques, idx
-        elif return_inverse:
-            return uniques, inv
-        elif return_counts:
-            return uniques
-        else:
-            return uniques
-        
-        
+    if return_index:
+        return uniques, idx
+    elif return_inverse:
+        return uniques, inv
+    elif return_counts:
+        return uniques
     else:
-        print("No C++!!!!!!")
+        return uniques
+        
+        
