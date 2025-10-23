@@ -133,29 +133,45 @@ inline std::vector<dpoint> xor_dpoint(const std::vector<dpoint>& a, const std::v
 
     return res;
 }
+#include <algorithm>
 
 inline std::vector<dpoint> and_dpoint(const std::vector<dpoint>& a, const std::vector<dpoint>& b) {
     std::vector<dpoint> res;
-    size_t i = 0, j = 0;
     const size_t na = a.size(), nb = b.size();
     if (na == 0 || nb == 0) return res;
 
     res.reserve(std::min(na, nb)); // heuristic
 
+    size_t i = 0, j = 0;
     while (i < na && j < nb) {
-        const auto a_begin = a[i].first;
-        const auto a_end   = a[i].second;
-        const auto b_begin = b[j].first;
-        const auto b_end   = b[j].second;
+        const unsigned a_begin = a[i].first;
+        const unsigned a_end   = a[i].second;
+        const unsigned b_begin = b[j].first;
+        const unsigned b_end   = b[j].second;
 
-        if (a_end <= b_begin) { ++i; continue; }
-        if (b_end <= a_begin) { ++j; continue; }
+        // no overlap and a finishes before b starts -> skip forward in a
+        if (a_end <= b_begin) {
+            // find first interval in 'a' with end > b_begin (galloping via binary search)
+            auto it = std::upper_bound(a.begin() + i + 1, a.end(), b_begin,
+                                       [](unsigned val, const dpoint& p) { return val < p.second; });
+            i = (it == a.end()) ? na : static_cast<size_t>(std::distance(a.begin(), it));
+            continue;
+        }
 
+        // no overlap and b finishes before a starts -> skip forward in b
+        if (b_end <= a_begin) {
+            auto it = std::upper_bound(b.begin() + j + 1, b.end(), a_begin,
+                                       [](unsigned val, const dpoint& p) { return val < p.second; });
+            j = (it == b.end()) ? nb : static_cast<size_t>(std::distance(b.begin(), it));
+            continue;
+        }
+
+        // there is overlap
         const unsigned start = (a_begin > b_begin) ? a_begin : b_begin;
-        const unsigned end   = (a_end   < b_end)   ? a_end   : b_end;
+        const unsigned end   = (a_end < b_end) ? a_end : b_end;
+        res.emplace_back(start, end);
 
-        res.emplace_back(start, end); // myb more eff than push_back?
-
+        // advance the interval that finishes first
         if (a_end < b_end) ++i; else ++j;
     }
 

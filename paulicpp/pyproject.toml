@@ -8,18 +8,7 @@ version = "0.1.1"
 description = "Efficient Pauli operators manipulation toolbox, with an optimized C++ backend."
 requires-python = ">=3.10"
 dependencies = [
-    "numpy",
+    "numpy >=2.2.0",
     "pybind11",
     "pybind11-stubgen",
-    "mypy"
-]
-
-[project.optional-dependencies]
-dev = [
-    "pytest",
-    "mypy",
-]
-test = [
-    "pytest",
-    "numpy",
 ]

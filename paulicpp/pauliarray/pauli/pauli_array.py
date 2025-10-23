@@ -1002,6 +1002,17 @@ class PauliArray(object):
         x_strings = np.random.choice([False, True], new_shape)
 
         return PauliArray.from_z_strings_and_x_strings(z_strings, x_strings)
+    
+
+    @classmethod
+    def random_cpp(cls, shape: Tuple[int, ...]) -> "PauliArray":
+
+        assert C_CCP, "C++ backend is not available."
+
+        z, x = pcpp.random_zx_strings(shape)
+        # print("z:", z)
+        # print("x:", x)
+        return PauliArray.from_z_strings_and_x_strings(z, x)
 
     @staticmethod
     def labels_to_z_strings_x_strings(
@@ -1373,15 +1384,19 @@ def unordered_unique(paulis: PauliArray, return_index: bool = False, return_inve
     if C_CCP:
         idx, inv = pcpp.unordered_unique(paulis.zx_voids)
         
-        unique_zx_voids = paulis.zx_voids[idx]
-        uniques = PauliArray.from_zx_voids(unique_zx_voids, paulis.num_qubits)
+        uniques = PauliArray.from_zx_voids(paulis.zx_voids[idx], paulis.num_qubits)
 
-      
+        # print("Uniques:", uniques)
 
-        if return_index or return_inverse or return_counts:
-            return uniques, idx, inv, len(idx)
-    
+        if return_index:
+            return uniques, idx
+        elif return_inverse:
+            return uniques, inv
+        elif return_counts:
+            return uniques
         else:
             return uniques
+        
+        
     else:
         print("No C++!!!!!!")

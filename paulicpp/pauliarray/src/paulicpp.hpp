@@ -13,7 +13,6 @@ namespace py = pybind11;
 #include <numeric>
 #include <unordered_map>
 
-
 #ifdef USE_OPENMP
     #include <omp.h>
 #else
@@ -22,18 +21,8 @@ namespace py = pybind11;
 
 #include "voidops.hpp"
 
+#define FUNC_THRESHOLD_PARALLEL 100000
 
-#define I 0  // 0b00
-#define X 1  // 0b01  
-#define Z 2  // 0b10
-#define Y 3  // 0b11
-
-static const std::complex<double> phase_lookup[4] = {
-    {1.0, 0.0},      // 0 -> 1
-    {0.0, -1.0},     // 1 -> -1j
-    {-1.0, 0.0},     // 2 -> -1
-    {0.0, 1.0}       // 3 -> 1j
-};
 
 inline py::tuple tensor(py::array z1, py::array x1, py::array z2, py::array x2) {
     // auto buf_z1 = z1.request();
@@ -273,9 +262,28 @@ inline py::object unique(py::array zx_voids, bool return_index = false, bool ret
     return unique;
 }
 
+// #include "xxhash/xxhash.h"
+// #include "xxhash.h"
+
+// struct XXH3StringHash {
+//     size_t operator()(const std::string& s) const noexcept {
+//         return static_cast<size_t>(XXH3_64bits(s.data(), s.size()));
+//     }
+// };
+
+/**
+ * @brief This is a very early test implementation of unordered unique. It finds unique rows in a NumPy 2D array.
+ * Does not work for higher dimensions.
+ * This function is heavily inspired by Qiskit's Rust function of the same name. 
+ *
+ * @see https://github.com/Qiskit/qiskit/blob/main/crates/quantum_info/src/sparse_pauli_op.rs#L54
+ * @param zx_voids 
+ * @return py::object 
+ */
 py::object unordered_unique(py::array zx_voids) {
-auto buf = zx_voids.request();
-    // handle scalar
+    auto buf = zx_voids.request();
+
+    //TODO: Fix this cause its not working ! Ahah!! 
     if (buf.ndim == 0) {
         py::array_t<int64_t> idx(1);
         py::array_t<int64_t> inv(1);
@@ -288,32 +296,48 @@ auto buf = zx_voids.request();
     }
 
     const uint8_t* base = static_cast<const uint8_t*>(buf.ptr);
-    size_t nrows = static_cast<size_t>(buf.shape[0]);
+    const size_t nrows = static_cast<size_t>(buf.shape[0]);
+    const size_t row_bytes = (buf.ndim > 1) ? static_cast<size_t>(std::llabs(buf.strides[0])) : static_cast<size_t>(buf.itemsize);
 
-    // compute bytes per row: use stride[0] when ndim>1, else itemsize
-    size_t row_bytes = (buf.ndim > 1) ? static_cast<size_t>(std::llabs(buf.strides[0])) : static_cast<size_t>(buf.itemsize);
-
-    std::unordered_map<std::string, size_t> table;
-    table.reserve(nrows);
-
+    std::vector<std::string_view> keys;
+    keys.resize(nrows);
+    
+    // move these out so they survive after the GIL is reacquired
     std::vector<size_t> indices;
     indices.reserve(nrows);
     std::vector<size_t> inverses(nrows);
 
-    for (size_t i = 0; i < nrows; ++i) {
-        const char* ptr = reinterpret_cast<const char*>(base + i * row_bytes);
-        std::string key(ptr, row_bytes); //dd
-        auto it = table.find(key);
-        if (it != table.end()) {
-            inverses[i] = it->second;
-        } else {
-            size_t new_id = table.size();
-            table.emplace(std::move(key), new_id);
-            inverses[i] = new_id;
-            indices.push_back(i);
-        }
-    }
+    {
+        // dont really know if releasing the GIL helps here but whatever
+        py::gil_scoped_release release;
 
+        #ifdef USE_OPENMP
+        #pragma omp parallel for if(nrows >= FUNC_THRESHOLD_PARALLEL) schedule(static)
+        #endif
+        for (size_t i = 0; i < nrows; ++i) {
+            const char* ptr = reinterpret_cast<const char*>(base + i * row_bytes);
+            keys[i] = std::string_view(ptr, row_bytes);
+        }
+
+        std::unordered_map<std::string_view, size_t> table;
+        // std::unordered_map<std::string, size_t, XXH3StringHash> table;
+        table.reserve(nrows);
+
+        for (size_t i = 0; i < nrows; ++i) {
+            const auto& key = keys[i];
+            auto it = table.find(key);
+            if (it != table.end()) {
+                inverses[i] = it->second;
+            } else {
+                size_t new_id = indices.size();
+                table.emplace(key, new_id);
+                indices.push_back(i);
+                inverses[i] = new_id;
+            }
+        }
+    } // GIL reacquired here
+
+    // Build numpy outputs (must run with GIL)
     py::array_t<int64_t> py_indices(indices.size());
     auto ib = py_indices.request();
     int64_t* iptr = static_cast<int64_t*>(ib.ptr);
@@ -324,6 +348,7 @@ auto buf = zx_voids.request();
     int64_t* rptr = static_cast<int64_t*>(rb.ptr);
     for (size_t i = 0; i < nrows; ++i) rptr[i] = static_cast<int64_t>(inverses[i]);
 
-
     return py::make_tuple(py_indices, py_inverse);
 }
+
+

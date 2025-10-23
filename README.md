@@ -12,13 +12,18 @@ This project uses [pybind11](https://github.com/pybind/pybind11) as its translat
 
 | pauli_array.py          | Speedup  | 1-to-1 ? | Notes |
 |-----------------        |-------   |----------|------------|
-| unique()                | 1.5x to 3x | Almost...      | 'axes' parameter is not implemented.   |
+| unique()                | 1.5x to 3x | Almost...      | - 'axes' parameter is not implemented. da  |
+| unordered_unique()      | 2-10x | Nope! | - 'axes' parameter is not implemented. <br/>- If i get parralization to work, we get up to 7x consistently. <br/>- Only works for 2D arrays  |
 | bitwise_commute_with()  | 1x to 4x | Yes          | Weird Numpy array stuff going on. |
+
+
 
 #### Sparse structure tests
 | Sparse                  | Speedup  | 1-to-1 ? | Notes |
 |-----------------        |-------   |----------|------------|
-| _xor(), _and(), _or(), _not(), _count(), _dot()  | 0.002x to 40x | NO!      | Speedup (or slowdown, in many cases) depends entirely on the proximity of 1s in the binary void blobs.   |
+| std::vector<dpoint>  | 0.002x to 40x | NO!      | Time complexity depends on the proximity of the 1s. This ranges from Ω(1) to O(n) |
+| std::set<dpoint> | even slower than vectors | NO!          | Since a vector's index lookup is O(1) and a set's (red-black tree) is O(log n), we get slowed more and more as comlexity increases such that in the worst case, the operations can take up to O(n log n). |
+
 
 
 
@@ -28,6 +33,8 @@ This project uses [pybind11](https://github.com/pybind/pybind11) as its translat
 
 ## Structure
 Anything outside of `/paulicpp` is subject to deletion. The project structure is the exact same as PauliArray, with the following additions:
+
+saliu
 ```
 ├── pauliarray
 |   ├── binary
@@ -62,6 +69,7 @@ Anything outside of `/paulicpp` is subject to deletion. The project structure is
 
 ### Requirements
 - Python 3.10+
+- GCC or Clang, with versions that support at least C++20
 - Unix system
 - Having lots of time to waste to debug this library.
 
@@ -95,17 +103,18 @@ This should automatically compile the C++ code based on your machine and link pl
 Again, this is **not** the recommended way to install this library! You have been warned.
 
 Then, clone this repo and navigate to the `paulicpp` directory. You may need to create a virtual environment depending on your needs. After that, do:
-```
- pip install . --config-settings=cmake.define.USE_OPENMP=OFF
+``` console
+pip install . --config-settings=cmake.define.USE_OPENMP=OFF
 ```
 
 ## Verification
 
 Once installed, you may call the library as usual within a Python script with `import pauliarray`.
 <br> If you want to check what backend the library uses (C++ or a Python fallback), try inside a Python file:
+
 ``` python
 import pauliarray.binary.void_operations as vops
 print(vops.get_backend())
 ```
-If you get 'C++*', congrats, the library has been sucessfully installed and compiled!
+If you get *'C++*', congrats, the library has been sucessfully installed and compiled!
 <br> If you get '*Python*', something went terribly wrong with the installation. Try to install with the other way (i.e Try WITHOUT OpenMP if you tried to install it WITH and vice-versa). If it still doesnt work, please contact me or submit an issue

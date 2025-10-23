@@ -56,8 +56,6 @@ namespace py = pybind11;
  * @param op The bitwise operator to apply
  * @return py::array A NumPy contiguous array of the same shape and dtype as the inputs, containing the result of the operation
  */
-// * Bon resultats
-//TODO: rendre ca vite
 template <typename Op>
 inline py::object bitwise_core(py::array voids_1, py::array voids_2, Op op) {
     auto buf1 = voids_1.request();

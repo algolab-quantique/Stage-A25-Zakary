@@ -1,0 +1,14 @@
+- Compilation
+    Compile sur Mac M1 avec Apple clang 17, mais ne peut pas activer multithreading avec OpenMP. 
+    Soit faire des threads a la main, ou des guards #ifdef. Si option 2, aucun boost multithreading pour ceux qui on pas installer libomp avec brew
+    Also pip install . install pas les dependances du .toml sauf pour pybind11
+
+- Qiskit
+    Pas du vrai sparse, utilise la meme structure que PA
+
+- Sets
+    Pire que les vecteurs. On tombe a du O(n log n)...
+
+- Unique
+    unique en C++     --> 4.5s = ~4x boost, pratiquement 1-to-1 sauf pour axis parameter
+    unordered_unique  --> 1.6s = ~10x boost, mais fonctionne seulement sur 2D, et a pas de axis.
