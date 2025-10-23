@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(pauliarray LANGUAGES CXX)
+project(pauliarray LANGUAGES C CXX)
 
 # TODO: Test with other computers, notably Windows and Apple Silicon
 # Current tests are on:
@@ -27,6 +27,7 @@ pybind11_add_module(sparsepaulicpp
     pauliarray/src/bindings/sparsepaulicpp_bindings.cpp
     pauliarray/src/bindings/setsparse_bindings.cpp
 )
+
 
 
 # MUST-HAVES FLAGS
@@ -172,6 +173,7 @@ add_custom_command(TARGET sparsepaulicpp POST_BUILD
 #                     pauliarray.src.build.paulicpp
 #                     -o ${CMAKE_SOURCE_DIR}
 # )
+
 # add_custom_command(TARGET sparsepaulicpp POST_BUILD
 #     COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
 #                     ${Python_EXECUTABLE} -m mypy.stubgen --module

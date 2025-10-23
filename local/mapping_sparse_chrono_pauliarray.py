@@ -1,13 +1,16 @@
 import cProfile
 import io
 import os
+import sys
 import pstats
 import time
 from pstats import SortKey
 import matplotlib.pyplot as plt
 import numpy as np
+
 from pauliarray.conversion.qiskit import operator_to_sparse_pauli
 from pauliarray.mapping.fermion import JordanWigner
+
 from qiskit_nature.second_q.drivers import PySCFDriver
 import datetime
 import json
@@ -193,10 +196,10 @@ def collect_z_run_lengths(qubit_hamiltonien):
 
 def main():
     
-    # label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions,
-    #               c2h2_labels_positions, c2h4_labels_positions, n2_labels_positions, c3h8_labels_positions]
     label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions,
-                  c2h2_labels_positions, c2h4_labels_positions, n2_labels_positions]
+                  c2h2_labels_positions, c2h4_labels_positions, n2_labels_positions, c3h8_labels_positions]
+    # label_list = [h2_labels_positions, lih_labels_positions, h2o_labels_positions, nh3_labels_positions,
+    #               c2h2_labels_positions, c2h4_labels_positions, n2_labels_positions]
     # molecule_names = [
     #     # "H2", "LiH", "H2O", "NH3", "C2H2", "C2H4", "C3H8", "N2"
     #     "H2", "LiH", "H2O", "NH3", "C2H2", "C2H4", "N2"
@@ -313,4 +316,4 @@ if __name__ == "__main__":
     sortby = SortKey.CUMULATIVE
     ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
     print(os.getcwd())
-    ps.dump_stats(f"./results/molecules/prof-{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}.prof")
+    ps.dump_stats(f"/home/zwouklebleu/Documents/STAGES/T1/Stage-A25-Zakary/local/results/molecules/prof-{datetime.datetime.now().strftime('%Y-%m-%d---%Hh%Mm')}.prof")

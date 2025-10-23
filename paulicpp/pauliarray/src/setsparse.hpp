@@ -47,10 +47,5 @@ std::set<dpoint> set;
 }
 
 std::set<dpoint> xor_set(const std::set<dpoint>& a, const std::set<dpoint>& b) {
-    std::set<dpoint> res;
-    std::set<dpoint>::iterator it_a = a.begin();
-    std::set<dpoint>::iterator it_b = b.begin();
-
-
-    return res;
+    return std::set<dpoint> (); 
 }

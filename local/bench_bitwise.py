@@ -17,12 +17,12 @@ if _old_pauli not in sys.path:
 from old_pauliarray.pauliarray.binary import void_operations as np_vops # pyright: ignore[reportMissingImports]
 
 
-DENSITY = 0.5
-PROXIMITY = 0.5
-OPTION = "XOR"
-# LIBS = ["NP", "C_DENSE", "C_SPARSE"]
-LIBS = ["NP", "C_DENSE"]
-sizes = np.logspace(0, 8, 50, dtype=int)
+DENSITY = 0.1
+PROXIMITY = 0.95
+OPTION = "AND"
+LIBS = ["NP", "C_DENSE", "C_SPARSE"]
+# LIBS = ["NP", "C_DENSE"]
+sizes = np.logspace(0, 7, 50, dtype=int)
 VERBOSE = False
 shapes = [(s,) for s in sizes]
 # sizes = [2, 5, 10]
