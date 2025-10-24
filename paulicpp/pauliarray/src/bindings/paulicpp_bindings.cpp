@@ -16,6 +16,7 @@ PYBIND11_MODULE(paulicpp, m) {
     m.def("unique", &unique, "Unique arrays 1", 
         py::arg("zx_voids"), py::arg("return_index") = false, py::arg("return_inverse") = false, py::arg("return_counts") = false);
     m.def("unordered_unique", &unordered_unique, "Returns unordered unique rows of the input array");
+    m.def("compose", &compose, "Compose two Pauli arrays");
 
     // register voidops bindings into this module
     register_voidops(m);

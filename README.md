@@ -86,11 +86,18 @@ If you are on macOS, it is highly recommended to use OpenMP, as it provides mult
 | Mac (Apple Silicon) | Yes |
 
 
-### With OpenMP
-Please install [Brew](https://brew.sh/), then paste the following into your terminal: 
+## With OpenMP
+
+### Step 1:
+#### MacOS
+If you are on MacOS, please install [Brew](https://brew.sh/), then paste the following into your terminal: 
 ```
 brew install llvm libomp
 ```
+#### Linux
+Most linux distros come with with GCC or Clang pre-installed. Check that your compiler is compliant with the C++20 standard and that you have OpenMP installed. 
+
+### Step 2:
 Then, clone this repo and navigate to the `paulicpp` directory. You may need to create a virtual environment depending on your needs. After that, do:
 ```
 pip install .
@@ -100,9 +107,11 @@ This should automatically compile the C++ code based on your machine and link pl
 
 
 ### Without OpenMP
+This method is agnostic to your operating system, you juste need GCC or Clang that can compile C++20.
+
 Again, this is **not** the recommended way to install this library! You have been warned.
 
-Then, clone this repo and navigate to the `paulicpp` directory. You may need to create a virtual environment depending on your needs. After that, do:
+Clone this repo and navigate to the `paulicpp` directory. You may need to create a virtual environment depending on your needs. After that, do:
 ``` console
 pip install . --config-settings=cmake.define.USE_OPENMP=OFF
 ```

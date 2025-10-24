@@ -27,8 +27,8 @@ def _contiguous(a):
     
 def _bc(a, b):
     if a.shape == b.shape:
-        a2 = np.ascontiguousarray(a)
-        b2 = np.ascontiguousarray(b)
+        a2 = _contiguous(a)
+        b2 = _contiguous(b)
         return a2, b2
     tmp = np.broadcast_arrays(a, b)
     return np.ascontiguousarray(tmp[0]), np.ascontiguousarray(tmp[1])

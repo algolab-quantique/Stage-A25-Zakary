@@ -16,9 +16,9 @@ if TYPE_CHECKING:
 
 try:
     from ..src.build import paulicpp as pcpp
-    C_CCP = True
+    C_CPP = True
 except ImportError as e:
-    C_CCP = False
+    C_CPP = False
     print("C++ backend not available:", e)
 
 PAULI_LABELS = "IZXY"
@@ -40,6 +40,22 @@ ZX_BITS_TO_PAULI_MAT = {
     (True, True): np.array([[0, -1j], [1j, 0]]),
     (True, False): np.array([[1, 0], [0, -1]]),
 }
+
+
+def _contiguous(a):
+    if a.flags.c_contiguous:
+    # if a.flags['C_CONTIGUOUS']:
+        return a
+    else:
+        return np.ascontiguousarray(a)
+    
+def _bc(a, b):
+    if a.shape == b.shape:
+        a2 = _contiguous(a)
+        b2 = _contiguous(b)
+        return a2, b2
+    tmp = np.broadcast_arrays(a, b)
+    return np.ascontiguousarray(tmp[0]), np.ascontiguousarray(tmp[1])
 
 
 class PauliArray(object):
@@ -372,22 +388,28 @@ class PauliArray(object):
             PauliArray: The result of the composition.
             "np.ndarray[np.complex]" : Phases resulting from the composition.
         """
-        assert self.num_qubits == other.num_qubits
-        assert is_broadcastable(self.shape, other.shape)
+        if C_CPP:
+            assert self.num_qubits == other.num_qubits
+            assert is_broadcastable(self.shape, other.shape)
+            z, x, phase = pcpp.compose(self.z_voids, self.x_voids, other.z_voids, other.x_voids)
+            return PauliArray(z, x, self.num_qubits), phase
+        else:
+            assert self.num_qubits == other.num_qubits
+            assert is_broadcastable(self.shape, other.shape)
 
-        new_z_voids = vops.bitwise_xor(self.z_voids, other.z_voids)
-        new_x_voids = vops.bitwise_xor(self.x_voids, other.x_voids)
+            new_z_voids = vops.bitwise_xor(self.z_voids, other.z_voids)
+            new_x_voids = vops.bitwise_xor(self.x_voids, other.x_voids)
 
-        self_phase_power = vops.bitwise_dot(self.z_voids, self.x_voids)
-        other_phase_power = vops.bitwise_dot(other.z_voids, other.x_voids)
-        new_phase_power = vops.bitwise_dot(new_z_voids, new_x_voids)
-        commutation_phase_power = 2 * vops.bitwise_dot(self.x_voids, other.z_voids)
+            self_phase_power = vops.bitwise_dot(self.z_voids, self.x_voids)
+            other_phase_power = vops.bitwise_dot(other.z_voids, other.x_voids)
+            new_phase_power = vops.bitwise_dot(new_z_voids, new_x_voids)
+            commutation_phase_power = 2 * vops.bitwise_dot(self.x_voids, other.z_voids)
 
-        phase_power = commutation_phase_power + self_phase_power + other_phase_power - new_phase_power
+            phase_power = commutation_phase_power + self_phase_power + other_phase_power - new_phase_power
 
-        phases = np.choose(phase_power, [1, -1j, -1, 1j], mode="wrap")
+            phases = np.choose(phase_power, [1, -1j, -1, 1j], mode="wrap")
 
-        return PauliArray(new_z_voids, new_x_voids, self.num_qubits), phases
+            return PauliArray(new_z_voids, new_x_voids, self.num_qubits), phases
 
     def mul_weights(self, other: Union[Number, NDArray]) -> "WeightedPauliArray":
         """
@@ -424,10 +446,15 @@ class PauliArray(object):
         Returns:
             PauliArray: The result of the tensor product.
         """
-        new_z_strings = np.concatenate((self.z_strings, other.z_strings), axis=-1)
-        new_x_strings = np.concatenate((self.x_strings, other.x_strings), axis=-1)
+        if C_CPP:
+            z, x = pcpp.tensor(_contiguous(self.z_voids), _contiguous(self.x_voids), _contiguous(other.z_voids), _contiguous(other.x_voids))
+            return PauliArray(z, x, self.num_qubits + other.num_qubits)
+        
+        else:
+            new_z_strings = np.concatenate((self.z_strings, other.z_strings), axis=-1)
+            new_x_strings = np.concatenate((self.x_strings, other.x_strings), axis=-1)
 
-        return PauliArray.from_z_strings_and_x_strings(new_z_strings, new_x_strings)
+            return PauliArray.from_z_strings_and_x_strings(new_z_strings, new_x_strings)
 
     def add_pauli_array(self, other: "PauliArray") -> "OperatorArrayType1":
         """
@@ -494,7 +521,7 @@ class PauliArray(object):
         Returns:
             "np.ndarray[np.bool]": An array of bool set to true for bitwise commuting Pauli string, and false otherwise.
         """
-        if C_CCP:
+        if C_CPP:
             return pcpp.bitwise_commute_with(self.z_voids, self.x_voids, other.z_voids, other.x_voids)
         else:    
             ovlp_1 = vops.bitwise_and(self.z_voids, other.x_voids)
@@ -1008,7 +1035,7 @@ class PauliArray(object):
     @classmethod
     def random_cpp(cls, shape: Tuple[int, ...]) -> "PauliArray":
 
-        assert C_CCP, "C++ backend is not available."
+        assert C_CPP, "C++ backend is not available."
 
         z, x = pcpp.random_zx_strings(shape)
         # print("z:", z)
@@ -1381,7 +1408,7 @@ def unique(
     return out
 
 def unordered_unique(paulis: PauliArray, return_index: bool = False, return_inverse: bool = False, return_counts: bool = False) -> Union[PauliArray, Tuple[PauliArray, NDArray]]:
-    assert C_CCP, "C++ backend is not available."
+    assert C_CPP, "C++ backend is not available."
 
     idx, inv = pcpp.unordered_unique(paulis.zx_voids)
     

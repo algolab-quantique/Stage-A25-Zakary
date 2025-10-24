@@ -12,6 +12,7 @@ namespace py = pybind11;
 #include <random>
 #include <numeric>
 #include <unordered_map>
+#include <complex>
 
 #ifdef USE_OPENMP
     #include <omp.h>
@@ -23,52 +24,122 @@ namespace py = pybind11;
 
 #define FUNC_THRESHOLD_PARALLEL 100000
 
+//  new_z_strings = np.concatenate((self.z_strings, other.z_strings), axis=-1)
+    // new_x_strings = np.concatenate((self.x_strings, other.x_strings), axis=-1)
+//todo: this aint working 
+py::tuple tensor(py::array z2, py::array x2, py::array z1, py::array x1) {
+    auto buf_z1 = z1.request();
+    auto buf_x1 = x1.request();
+    auto buf_z2 = z2.request();
+    auto buf_x2 = x2.request();
 
-inline py::tuple tensor(py::array z1, py::array x1, py::array z2, py::array x2) {
-    // auto buf_z1 = z1.request();
-    // auto buf_x1 = x1.request();
-    // auto buf_z2 = z2.request();
-    // auto buf_x2 = x2.request();
+    std::vector<ssize_t> new_shape = buf_z1.shape;
+    new_shape.back() += buf_z2.shape.back();
+    py::array new_z = py::array(z1.dtype(), new_shape);
+    py::array new_x = py::array(x1.dtype(), new_shape);
+    auto buf_new_z = new_z.request();
+    auto buf_new_x = new_x.request();
 
-    // std::vector<size_t> shape1(buf_z1.shape.begin(), buf_z1.shape.end());
-    // std::vector<size_t> shape2(buf_z2.shape.begin(), buf_z2.shape.end());
+    const uint8_t* z1_ptr = static_cast<const uint8_t*>(buf_z1.ptr);
+    const uint8_t* z2_ptr = static_cast<const uint8_t*>(buf_z2.ptr);
+    const uint8_t* x1_ptr = static_cast<const uint8_t*>(buf_x1.ptr);
+    const uint8_t* x2_ptr = static_cast<const uint8_t*>(buf_x2.ptr);
+    uint8_t* new_z_ptr = static_cast<uint8_t*>(buf_new_z.ptr);
+    uint8_t* new_x_ptr = static_cast<uint8_t*>(buf_new_x.ptr);
 
-    // if (shape1.size() != shape2.size()) {
-    //     throw std::invalid_argument("Input arrays must have the same number of dimensions for concatenation.");
-    // }
-    // for (size_t i = 0; i < shape1.size() - 1; ++i) {
-    //     if (shape1[i] != shape2[i]) {
-    //         throw std::invalid_argument("Input arrays must have matching dimensions (except the last one).");
-    //     }
-    // }
+    ssize_t n1 = buf_z1.shape.back();
+    ssize_t n2 = buf_z2.shape.back();
+    ssize_t outer = buf_z1.size / n1;
+    size_t itemsize = buf_z1.itemsize;
 
+    // use byte offsets to be safe when itemsize != 1
+    size_t row_bytes_new = static_cast<size_t>(n1 + n2) * itemsize;
+    size_t row_bytes1 = static_cast<size_t>(n1) * itemsize;
+    size_t row_bytes2 = static_cast<size_t>(n2) * itemsize;
 
-    // std::vector<size_t> combined_shape = shape1;
-    // combined_shape.back() += shape2.back();
+    for (ssize_t j = 0; j < outer; ++j) {
+        size_t dst_row_byte = static_cast<size_t>(j) * row_bytes_new;
+        size_t src1_row_byte = static_cast<size_t>(j) * row_bytes1;
+        size_t src2_row_byte = static_cast<size_t>(j) * row_bytes2;
 
-    // py::array new_z(z1.dtype(), combined_shape);
-    // py::array new_x(z1.dtype(), combined_shape);
+        std::memcpy(new_z_ptr + dst_row_byte,       z1_ptr + src1_row_byte, row_bytes1);
+        std::memcpy(new_z_ptr + dst_row_byte + row_bytes1, z2_ptr + src2_row_byte, row_bytes2);
+        std::memcpy(new_x_ptr + dst_row_byte,       x1_ptr + src1_row_byte, row_bytes1);
+        std::memcpy(new_x_ptr + dst_row_byte + row_bytes1, x2_ptr + src2_row_byte, row_bytes2);
+    }
 
-    // auto buf_new_z = new_z.request();
-    // auto buf_new_x = new_x.request();
-
-    // void* ptr_new_z = buf_new_z.ptr;
-    // void* ptr_new_x = buf_new_x.ptr;
-
-    // const void* ptr_z1 = buf_z1.ptr;
-    // const void* ptr_x1 = buf_x1.ptr;
-    // const void* ptr_z2 = buf_z2.ptr;
-    // const void* ptr_x2 = buf_x2.ptr;
-
-    return py::make_tuple(1, 2);
+    return py::make_tuple(new_z, new_x);
 }
 
-inline py::tuple compose(py::array z1, py::array x1, py::array z2, py::array x2){
-    return py::make_tuple(1, 2);
+/*  
+    assert self.num_qubits == other.num_qubits
+    assert is_broadcastable(self.shape, other.shape)
+
+    new_z_voids = vops.bitwise_xor(self.z_voids, other.z_voids)
+    new_x_voids = vops.bitwise_xor(self.x_voids, other.x_voids)
+
+    self_phase_power = vops.bitwise_dot(self.z_voids, self.x_voids)
+    other_phase_power = vops.bitwise_dot(other.z_voids, other.x_voids)
+    new_phase_power = vops.bitwise_dot(new_z_voids, new_x_voids)
+    commutation_phase_power = 2 * vops.bitwise_dot(self.x_voids, other.z_voids)
+
+    phase_power = commutation_phase_power + self_phase_power + other_phase_power - new_phase_power
+
+    phases = np.choose(phase_power, [1, -1j, -1, 1j], mode="wrap")
+
+    return PauliArray(new_z_voids, new_x_voids, self.num_qubits), phases
+*/
+py::tuple compose(py::array z1, py::array x1, py::array z2, py::array x2){
+    py::array new_z = bitwise_xor(z1, z2);
+    py::array new_x = bitwise_xor(x1, x2);
+
+    py::array self_phase_power = bitwise_dot(z1, x1);
+    py::array other_phase_power = bitwise_dot(z2, x2);
+    py::array new_phase_power = bitwise_dot(new_z, new_x);
+    py::array commutation_phase_power = bitwise_dot(x1, z2);
+
+    // phase_power = commutation_phase_power + self_phase_power + other_phase_power - new_phase_power
+    py::array_t<std::complex<double>> phase_power = py::array_t<std::complex<double>>(new_z.request().shape);
+
+    auto buf_comm = commutation_phase_power.request();
+    auto buf_self = self_phase_power.request();
+    auto buf_other = other_phase_power.request();
+    auto buf_new = new_phase_power.request();
+    auto buf_phase = phase_power.request();
+
+    auto n = buf_phase.size;
+    const int64_t* ptr_comm = static_cast<const int64_t*>(buf_comm.ptr);
+    const int64_t* ptr_self = static_cast<const int64_t*>(buf_self.ptr);
+    const int64_t* ptr_other = static_cast<const int64_t*>(buf_other.ptr);
+    const int64_t* ptr_new = static_cast<const int64_t*>(buf_new.ptr);
+    std::complex<double>* ptr_phase = static_cast<std::complex<double>*>(buf_phase.ptr);
+
+    #ifdef USE_OPENMP
+    #pragma omp parallel for if (n >= FUNC_THRESHOLD_PARALLEL) schedule(static)
+    #endif
+    for (ssize_t i = 0; i < n; ++i) {
+        uint8_t tmp = (ptr_comm[i] * 2 + ptr_self[i] + ptr_other[i] - ptr_new[i]) % 4;
+        switch (tmp) {
+            case 0:
+                ptr_phase[i] = std::complex<double>(1.0, 0.0);
+                break;
+            case 1:
+                ptr_phase[i] = std::complex<double>(0.0, -1.0);
+                break;
+            case 2:
+                ptr_phase[i] = std::complex<double>(-1.0, 0.0);
+                break;
+            case 3:
+                ptr_phase[i] = std::complex<double>(0.0, 1.0);
+                break;
+        }
+    }
+    return py::make_tuple(new_z, new_x, phase_power);
+
 }
 
 
-inline py::array_t<bool> bitwise_commute_with(py::array z1, py::array x1, py::array z2, py::array x2) {
+py::array_t<bool> bitwise_commute_with(py::array z1, py::array x1, py::array z2, py::array x2) {
     py::array ovlp_1 = bitwise_and(z1, x2);
     py::array ovlp_2 = bitwise_and(x1, z2);
     py::array ovlp_3 = bitwise_xor(ovlp_1, ovlp_2);
@@ -95,7 +166,7 @@ inline py::array_t<bool> bitwise_commute_with(py::array z1, py::array x1, py::ar
 }
 
 
-inline py::tuple random_zx_strings(const std::vector<size_t>& shape) { //, size_t num_qubits) {
+py::tuple random_zx_strings(const std::vector<size_t>& shape) { //, size_t num_qubits) {
     size_t total_size = 1;
     for (size_t dim : shape) {
         total_size *= dim;
@@ -129,7 +200,7 @@ inline py::tuple random_zx_strings(const std::vector<size_t>& shape) { //, size_
 }
 
 
-inline py::object unique(py::array zx_voids, bool return_index = false, bool return_inverse = false, bool return_counts = false) {
+py::object unique(py::array zx_voids, bool return_index = false, bool return_inverse = false, bool return_counts = false) {
     auto buf = zx_voids.request();
     if (buf.ndim == 0) {
         if (return_index || return_inverse || return_counts) {
@@ -272,15 +343,20 @@ inline py::object unique(py::array zx_voids, bool return_index = false, bool ret
 // };
 
 /**
- * @brief This is a very early test implementation of unordered unique. It finds unique rows in a NumPy 2D array.
- * Does not work for higher dimensions.
+ * @brief This is a very early test implementation of unordered unique. 
+ * It finds unique rows in a NumPy 2D array by mapping the zx_voids to a hashmap. Two identical rows
+ * will h
+ * 
  * This function is heavily inspired by Qiskit's Rust function of the same name. 
  *
+ * @attention Does not work for higher dimensions.
  * @see https://github.com/Qiskit/qiskit/blob/main/crates/quantum_info/src/sparse_pauli_op.rs#L54
- * @param zx_voids 
- * @return py::object 
+ * @param zx_voids Both Z and X voids stiched together to make 
+ * @return py::tuple Returns (indices, inverse). 
+ * Indices gives the index of each unique row from zx_voids. 
+ * Inverse is the indices to remake the input array from only its unique elements.
  */
-py::object unordered_unique(py::array zx_voids) {
+py::tuple unordered_unique(py::array zx_voids) {
     auto buf = zx_voids.request();
 
     //TODO: Fix this cause its not working ! Ahah!! 
@@ -301,8 +377,8 @@ py::object unordered_unique(py::array zx_voids) {
 
     std::vector<std::string_view> keys;
     keys.resize(nrows);
-    
-    // move these out so they survive after the GIL is reacquired
+
+    // these need to be out of the GIL scope to survive the release
     std::vector<size_t> indices;
     indices.reserve(nrows);
     std::vector<size_t> inverses(nrows);
@@ -337,7 +413,7 @@ py::object unordered_unique(py::array zx_voids) {
         }
     } // GIL reacquired here
 
-    // Build numpy outputs (must run with GIL)
+    // Build numpy outputs
     py::array_t<int64_t> py_indices(indices.size());
     auto ib = py_indices.request();
     int64_t* iptr = static_cast<int64_t*>(ib.ptr);

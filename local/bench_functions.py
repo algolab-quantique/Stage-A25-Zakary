@@ -10,73 +10,99 @@ _old_pauli = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..",
 if _old_pauli not in sys.path:
     sys.path.insert(0, _old_pauli)
 
+from old_pauliarray.pauliarray.pauli import pauli_array as old_pa # type: ignore
+ 
+from old_pauliarray.pauliarray.pauli.pauli_array import unique as old_unique # type: ignore
+from pauliarray.pauli.pauli_array import unique as c_unique
+from pauliarray.pauli.pauli_array import unordered_unique as c_unordered_unique
+import pauliarray as pa
 
-from old_pauliarray.pauliarray.pauli import pauli_array as old_pa
-from pauliarray.pauli import pauli_array as pcpp
+
+# print(f"PauliArray version: {pa.__version__}")
 
 
-# print(f"PauliArray version: {pcpp.__version__}")
-# print(f"Old PauliArray version: {old_pa.__version__}")
+OPTION = "TENSOR"  # UNIQUE, COMMUTE, TENSOR
+LIBS = ["UNIQUE", "COMMUTE", "TENSOR", "COMPOSE"]
+sizes = np.logspace(1, 6, 30, dtype=int)
+sizes = [2, 3]
+length = 2
+VERBOSE = True
 
-
-OPTION = "UNIQUE"
-LIBS = ["UNIQUE", "COMMUTE", "TENSOR"]
-sizes = np.logspace(1, 7, 30, dtype=int)
-length = 5
-
-# sizes = [2, 5, 10]
 # shapes = [(int(s),) for s in np.logspace(0, 7, num=10)]
 
 # shapes = [(size,) for size in sizes]
-VERBOSE = False
 
-def pauli_py(p1: pcpp.PauliArray, p2: pcpp.PauliArray):
+def pauli_py(p1: pa.PauliArray, p2: pa.PauliArray):
     start_time = time.time()
     res = None
     match OPTION:
         case "COMMUTE":
-            res = old_pa.bitwise_commute_with(p1, p2)
+            res = old_pa.PauliArray.bitwise_commute_with(p1, p2)
 
         case "UNIQUE":
-            res = old_pa.unique(p1)
+            res = old_unique(p1)
             print("Nbr unique:", res.shape[0])
             if VERBOSE:
                 print("Result:", res.inspect())
 
         case "TENSOR":
-            res = old_pa.tensor(p1, p2)
+            res = old_pa.PauliArray.tensor_pauli_array(p1, p2)
+
+        case "COMPOSE":
+            res, phase = old_pa.PauliArray.compose_pauli_array(p1, p2)
+
+            if VERBOSE:
+                print("Result:", res.inspect())
 
         case _:
             print(f"Unknown option: {OPTION}")
 
+    if VERBOSE:
+        print("Input 1:", p1.inspect())
+        print("Input 2:", p2.inspect())
+        print("\nResult:", res)
+        print("Inspect:", res.inspect())
     
     end_time = time.time()
     return end_time - start_time, res
 
 
 
-def pauli_cpp(p1: pcpp.PauliArray, p2: pcpp.PauliArray):
+def pauli_cpp(p1: pa.PauliArray, p2: pa.PauliArray):
     start_time = time.time()
 
     res = None
     match OPTION:
         case "COMMUTE":
-            res = pcpp.bitwise_commute_with(p1, p2)
+            res = pa.PauliArray.bitwise_commute_with(p1, p2)
 
         case "UNIQUE":
-            res = pcpp.unordered_unique(p1)
-            # res = pcpp.unique(p1)
+            res = c_unordered_unique(p1)
+            # res = c_unique(p1)
             print("Nbr unique:", res.shape[0])
 
             if VERBOSE:
                 print("Result:", res.inspect())
 
         case "TENSOR":
-            res = pcpp.tensor(p1, p2)
+            res = pa.PauliArray.tensor(p1, p2)
+
+        case "COMPOSE":
+            res, phase = pa.PauliArray.compose_pauli_array(p1, p2)
+            
+            if VERBOSE:
+                print("Result:", res.inspect())
 
         case _:
             print(f"Unknown option: {OPTION}")
     
+    if VERBOSE:
+        print("Input 1:", p1.inspect())
+        print("Input 2:", p2.inspect())
+        print("\nResult:", res)
+        print("Inspect:", res.inspect())
+
+
     end_time = time.time()
     return end_time - start_time, res
 
@@ -96,11 +122,11 @@ def main():
         print(f"\n\n========== Testing size: {size} ==========")
         shape = (size,)
 
-        p1 = pcpp.PauliArray.random(shape, length)
-        p2 = pcpp.PauliArray.random(shape, length)
+        p1 = pa.PauliArray.random(shape, length)
+        p2 = pa.PauliArray.random(shape, length)
 
-        # p1 = pcpp.PauliArray.random_cpp(shape)
-        # p2 = pcpp.PauliArray.random_cpp(shape)
+        # p1 = pa.PauliArray.random_cpp(shape)
+        # p2 = pa.PauliArray.random_cpp(shape)
         # print(p1.inspect())
 
         print("---- Python ----")
