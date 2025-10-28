@@ -1,14 +1,14 @@
 #pragma once
-#include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
 namespace py = pybind11;
 
 #include <cstdint> // uint8_t
-#include <iostream>
 #include <cstring>
+#include <iostream>
 
 #ifdef USE_OPENMP
-#include <omp.h>
+#    include <omp.h>
 #endif
 
 #include <bit>
@@ -16,12 +16,10 @@ namespace py = pybind11;
 
 using dpoint = std::pair<unsigned int, unsigned int>; // first = begin, second = end (exclusive)
 
-
 #define THRESHOLD_PARALLEL 1'000
 
-
-std::set<dpoint> make_dpoint_set(const std::vector<uint8_t>& vec){
-std::set<dpoint> set;
+std::set<dpoint> make_dpoint_set(const std::vector<uint8_t> &vec) {
+    std::set<dpoint> set;
     bool in_run = false;
     unsigned run_start = 0;
     for (size_t i = 0; i < vec.size(); ++i) {
@@ -46,6 +44,6 @@ std::set<dpoint> set;
     return set;
 }
 
-std::set<dpoint> xor_set(const std::set<dpoint>& a, const std::set<dpoint>& b) {
-    return std::set<dpoint> (); 
+std::set<dpoint> xor_set(const std::set<dpoint> &a, const std::set<dpoint> &b) {
+    return std::set<dpoint>();
 }

@@ -22,6 +22,7 @@ option(USE_OPENMP "Enable OpenMP support" ON)
 pybind11_add_module(paulicpp
     pauliarray/src/bindings/paulicpp_bindings.cpp
     pauliarray/src/bindings/voidops_bindings.cpp
+    pauliarray/src/xxhash/xxhash.c 
 )
 pybind11_add_module(sparsepaulicpp
     pauliarray/src/bindings/sparsepaulicpp_bindings.cpp
@@ -132,6 +133,7 @@ if(USE_OPENMP)
 endif()
 
 
+
 set_target_properties(paulicpp PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/pauliarray/src/build
 )
@@ -150,20 +152,27 @@ install(TARGETS sparsepaulicpp DESTINATION pauliarray/src/build)
 # Generate stub files
 find_package(Python COMPONENTS Interpreter REQUIRED)
 
-add_custom_command(TARGET paulicpp POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
-          ${Python_EXECUTABLE} -m pybind11_stubgen
-          pauliarray.src.build.paulicpp
-          -o ${CMAKE_SOURCE_DIR}
-          )
 
-add_custom_command(TARGET sparsepaulicpp POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
-          ${Python_EXECUTABLE} -m pybind11_stubgen
-          pauliarray.src.build.sparsepaulicpp
-          -o ${CMAKE_SOURCE_DIR}
-          )
+# TODO: Make this work with xxhash!
 
+# add_custom_command(TARGET paulicpp POST_BUILD
+#   COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
+#           ${Python_EXECUTABLE} -m pybind11_stubgen
+#           pauliarray.src.build.paulicpp
+#           -o ${CMAKE_SOURCE_DIR}
+#           )
+
+# add_custom_command(TARGET sparsepaulicpp POST_BUILD
+#   COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
+#           ${Python_EXECUTABLE} -m pybind11_stubgen
+#           pauliarray.src.build.sparsepaulicpp
+#           -o ${CMAKE_SOURCE_DIR}
+#           )
+
+
+
+
+# ========= DOES NOT WORK! USE PYBIND11_STUBGEN INSTEAD=========
 # add_custom_command(TARGET paulicpp POST_BUILD
 #     COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
 #                     ${Python_EXECUTABLE} -m mypy.stubgen --module

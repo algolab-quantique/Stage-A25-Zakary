@@ -106,7 +106,7 @@ This should automatically compile the C++ code based on your machine and link pl
 
 
 
-### Without OpenMP
+## Without OpenMP
 This method is agnostic to your operating system, you juste need GCC or Clang that can compile C++20.
 
 Again, this is **not** the recommended way to install this library! You have been warned.

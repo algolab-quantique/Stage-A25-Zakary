@@ -21,12 +21,12 @@ import pauliarray as pa
 # print(f"PauliArray version: {pa.__version__}")
 
 
-OPTION = "TENSOR"  # UNIQUE, COMMUTE, TENSOR
+OPTION = "UNIQUE"  # UNIQUE, COMMUTE, TENSOR
 LIBS = ["UNIQUE", "COMMUTE", "TENSOR", "COMPOSE"]
-sizes = np.logspace(1, 6, 30, dtype=int)
-sizes = [2, 3]
-length = 2
-VERBOSE = True
+# sizes = [2, 3]
+sizes = np.logspace(1, 7, 30, dtype=int)
+length = 4
+VERBOSE = False
 
 # shapes = [(int(s),) for s in np.logspace(0, 7, num=10)]
 

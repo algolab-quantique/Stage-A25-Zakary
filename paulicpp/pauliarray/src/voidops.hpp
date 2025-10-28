@@ -5,19 +5,16 @@
  * pauliarray/binary/void_operations.py) The main goal of this file is to provide fast
  * implementations of bitwise operations on NumPy void arrays.
  *
- * @attention It is NECESSARY to have OpenMP installed and enabled in the compiler to use this file.
- * In addition, the compiler must support C++20 standard.
+ * @attention Your compiler must support at least C++20 standard to properly compile this file.
  *
  * @todo Add SIMD support
- * @todo Add support for older C++ standards by using __builtin_popcountll instead of std::popcount
  *
  * It is assumed that both of the input arrays are contiguous, of the dtype |V{N}, and the exacte
  * same shape. No checks are performed to ensure this is the case. Any broadcasting and contiguity
  * checks MUST be performed in Python before calling any of these functions. Any computers which are
  * not 64-bit architectures will lead to undefined behavior due to the casting to uint64_t*.
  *
- *
- * @version 0.1.0
+ * @version 0.1.1
  * @date 2025-10-01
  *
  * @copyright Copyright (c) 2025
@@ -35,9 +32,9 @@ namespace py = pybind11;
 #include <vector>
 
 #ifdef USE_OPENMP
-#include <omp.h>
+    #include <omp.h>
 #else
-#warning "OpenMP is not enabled"
+    #warning "OpenMP is not enabled"
 #endif
 
 // This threshold is completely arbitrary and can be tuned for performance depending on the
@@ -76,16 +73,16 @@ template <typename Op> inline py::object bitwise_core(py::array voids_1, py::arr
     // output data
     // TODO: With C++20, we could use std::assume_aligned, which could potentially lead to better
     // auto-vectorization by the compiler? ? Since NumPy cant guarantee alignement and we cant
-    //afford to copy the data just to get better SIMD, I dont know if assume_aligned is worth
-    //anything.
-    const uint64_t *ptr1_64 = std::bit_cast<uint64_t *>(buf1.ptr); // this is stupid
+    // afford to copy the data just to get better SIMD, I dont know if assume_aligned is worth
+    // anything.
+    const uint64_t *ptr1_64 = std::bit_cast<uint64_t *>(buf1.ptr);
     const uint64_t *ptr2_64 = std::bit_cast<uint64_t *>(buf2.ptr);
     uint64_t *ptr_out_64 = std::bit_cast<uint64_t *>(buf_out.ptr);
 
     size_t num_64bit_chunks = total_bytes / 8;
 
 #ifdef USE_OPENMP
-#pragma omp parallel for if (num_64bit_chunks >= VOPS_THRESHOLD_PARALLEL) schedule(static)
+    #pragma omp parallel for if (num_64bit_chunks >= VOPS_THRESHOLD_PARALLEL) schedule(static)
 #endif
     for (size_t i = 0; i < num_64bit_chunks; ++i) {
         // Applies the bitwise operation.
@@ -169,13 +166,13 @@ inline py::array bitwise_not(py::array voids) {
     py::array res_voids = py::array(voids.dtype(), buf.shape);
     auto buf_out = res_voids.request();
 
-    const uint64_t *ptr_64 = static_cast<const uint64_t *>(buf.ptr);
-    uint64_t *ptr_out_64 = static_cast<uint64_t *>(buf_out.ptr);
+    const uint64_t *ptr_64 = std::bit_cast<uint64_t *>(buf.ptr);
+    uint64_t *ptr_out_64 = std::bit_cast<uint64_t *>(buf_out.ptr);
 
     size_t num_64bit_chunks = total_bytes / 8;
 
 #ifdef USE_OPENMP
-#pragma omp parallel for if (num_64bit_chunks >= VOPS_THRESHOLD_PARALLEL) schedule(static)
+    #pragma omp parallel for if (num_64bit_chunks >= VOPS_THRESHOLD_PARALLEL) schedule(static)
 #endif
     for (size_t i = 0; i < num_64bit_chunks; ++i) {
         ptr_out_64[i] = ~ptr_64[i];
@@ -183,8 +180,8 @@ inline py::array bitwise_not(py::array voids) {
 
     size_t remaining_bytes = total_bytes % 8;
     if (remaining_bytes > 0) {
-        const uint8_t *ptr_8 = static_cast<const uint8_t *>(buf.ptr);
-        uint8_t *ptr_out_8 = static_cast<uint8_t *>(buf_out.ptr);
+        const uint8_t *ptr_8 = std::bit_cast<const uint8_t *>(buf.ptr);
+        uint8_t *ptr_out_8 = std::bit_cast<uint8_t *>(buf_out.ptr);
 
         size_t start_byte = num_64bit_chunks * 8;
         for (size_t i = 0; i < remaining_bytes; ++i) {
@@ -205,11 +202,11 @@ inline py::array bitwise_not(py::array voids) {
 inline py::object bitwise_count(py::array voids_1) {
     auto buf1 = voids_1.request();
 
-    py::array_t<int64_t> result(buf1.size);
+    py::array_t<uint64_t> result(buf1.size);
     auto buf_out = result.request();
 
-    const uint8_t *ptr1 = static_cast<const uint8_t *>(buf1.ptr);
-    int64_t *ptr_out = static_cast<int64_t *>(buf_out.ptr);
+    const uint8_t *ptr1 = std::bit_cast<const uint8_t *>(buf1.ptr);
+    uint64_t *ptr_out = std::bit_cast<uint64_t *>(buf_out.ptr);
 
     size_t itemsize = buf1.itemsize;
     size_t n = buf1.size;
@@ -223,10 +220,11 @@ inline py::object bitwise_count(py::array voids_1) {
         // This is necessary in order to return the exact same output as the Python version of this
         // function. i.e. a single integer instead of a one-element array.
         const uint8_t *base = ptr1;
-        int64_t count = 0;
+        uint64_t count = 0;
 
 #ifdef USE_OPENMP
-#pragma omp parallel for if (n64 >= VOPS_THRESHOLD_PARALLEL) schedule(static) reduction(+ : count)
+    #pragma omp parallel for if (n64 >= VOPS_THRESHOLD_PARALLEL) schedule(static)                  \
+        reduction(+ : count)
 #endif
         for (size_t k = 0; k < n64; ++k) {
             uint64_t word;
@@ -240,11 +238,11 @@ inline py::object bitwise_count(py::array voids_1) {
     }
 
 #ifdef USE_OPENMP
-#pragma omp parallel for if (total_64_chunks >= VOPS_THRESHOLD_PARALLEL) schedule(static)
+    #pragma omp parallel for if (total_64_chunks >= VOPS_THRESHOLD_PARALLEL) schedule(static)
 #endif
     for (size_t i = 0; i < n; ++i) {
         const uint8_t *base = ptr1 + i * itemsize;
-        int64_t count = 0;
+        uint64_t count = 0;
         for (size_t k = 0; k < n64; ++k) {
             uint64_t word;
             std::memcpy(&word, base + k * 8, 8);
@@ -284,12 +282,12 @@ inline py::object bitwise_dot(py::array voids_1, py::array voids_2) {
                                  std::to_string(buf1.size) + " and " + std::to_string(buf2.size));
     }
 
-    py::array_t<int64_t> result(buf1.shape);
+    py::array_t<uint64_t> result(buf1.shape);
     auto buf_out = result.request();
 
-    const uint8_t *ptr1 = static_cast<const uint8_t *>(buf1.ptr);
-    const uint8_t *ptr2 = static_cast<const uint8_t *>(buf2.ptr);
-    int64_t *ptr_out = static_cast<int64_t *>(buf_out.ptr);
+    const uint8_t *ptr1 = std::bit_cast<const uint8_t *>(buf1.ptr);
+    const uint8_t *ptr2 = std::bit_cast<const uint8_t *>(buf2.ptr);
+    uint64_t *ptr_out = std::bit_cast<uint64_t *>(buf_out.ptr);
 
     size_t itemsize = buf1.itemsize;
     size_t n = buf1.size;
@@ -303,10 +301,11 @@ inline py::object bitwise_dot(py::array voids_1, py::array voids_2) {
         // function. i.e. a single integer instead of a one-element array.
         const uint8_t *base1 = ptr1;
         const uint8_t *base2 = ptr2;
-        int64_t count = 0;
+        uint64_t count = 0;
 
 #ifdef USE_OPENMP
-#pragma omp parallel for if (n64 >= VOPS_THRESHOLD_PARALLEL) schedule(static) reduction(+ : count)
+    #pragma omp parallel for if (n64 >= VOPS_THRESHOLD_PARALLEL) schedule(static)                  \
+        reduction(+ : count)
 #endif
         for (size_t k = 0; k < n64; ++k) {
             uint64_t w1, w2;
@@ -321,12 +320,12 @@ inline py::object bitwise_dot(py::array voids_1, py::array voids_2) {
     }
 
 #ifdef USE_OPENMP
-#pragma omp parallel for if (total_64_chunks >= VOPS_THRESHOLD_PARALLEL) schedule(static)
+    #pragma omp parallel for if (total_64_chunks >= VOPS_THRESHOLD_PARALLEL) schedule(static)
 #endif
     for (size_t i = 0; i < n; ++i) {
         const uint8_t *base1 = ptr1 + i * itemsize;
         const uint8_t *base2 = ptr2 + i * itemsize;
-        int64_t count = 0;
+        uint64_t count = 0;
         for (size_t k = 0; k < n64; ++k) {
             uint64_t w1, w2;
             std::memcpy(&w1, base1 + k * 8, 8);

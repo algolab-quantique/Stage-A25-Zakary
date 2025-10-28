@@ -1,3 +1,24 @@
+/**
+ * @file voidops.hpp
+ * @author Zakary Romdhane (zakaryromdhane@gmail.com)
+ * @brief This is a C++ implementation of PauliArray's class functions (found in
+ * pauliarray/pauli/pauli_array.py).
+ *
+ * @attention Your compiler must support at least C++20 standard to properly compile this file.
+ *
+ * @todo Add SIMD support
+ *
+ * It is assumed that all of the input arrays are contiguous, of the dtype |V{N}, and the exact
+ * same shape. No checks are performed to ensure this is the case. Any broadcasting and contiguity
+ * checks MUST be performed in Python before calling any of these functions. Any computers which are
+ * not 64-bit architectures will lead to undefined behavior due to the casting to uint64_t*.
+ *
+ * @version 0.1.1
+ * @date 2025-10-01
+ *
+ * @copyright Copyright (c) 2025
+ */
+
 #pragma once
 
 #include <pybind11/numpy.h>
@@ -14,9 +35,9 @@ namespace py = pybind11;
 #include <vector>
 
 #ifdef USE_OPENMP
-#include <omp.h>
+    #include <omp.h>
 #else
-#warning "OpenMP is not enabled"
+    #warning "OpenMP is not enabled"
 #endif
 
 #include "voidops.hpp"
@@ -116,7 +137,7 @@ py::tuple compose(py::array z1, py::array x1, py::array z2, py::array x2) {
     std::complex<double> *ptr_phase = static_cast<std::complex<double> *>(buf_phase.ptr);
 
 #ifdef USE_OPENMP
-#pragma omp parallel for if (n >= FUNC_THRESHOLD_PARALLEL) schedule(static)
+    #pragma omp parallel for if (n >= FUNC_THRESHOLD_PARALLEL) schedule(static)
 #endif
     for (ssize_t i = 0; i < n; ++i) {
         uint8_t tmp = (ptr_comm[i] * 2 + ptr_self[i] + ptr_other[i] - ptr_new[i]) % 4;
@@ -153,7 +174,7 @@ py::array_t<bool> bitwise_commute_with(py::array z1, py::array x1, py::array z2,
     size_t n = buf1.size;
 
 #ifdef USE_OPENMP
-#pragma omp parallel for if (n >= VOPS_THRESHOLD_PARALLEL) schedule(static)
+    #pragma omp parallel for if (n >= VOPS_THRESHOLD_PARALLEL) schedule(static)
 #endif
     for (size_t i = 0; i < n; ++i) {
         ptr_result[i] = ptr1[i] == 0;
@@ -339,14 +360,13 @@ py::object unique(py::array zx_voids, bool return_index = false, bool return_inv
     return unique;
 }
 
-// #include "xxhash/xxhash.h"
-// #include "xxhash.h"
-
-// struct XXH3StringHash {
-//     size_t operator()(const std::string& s) const noexcept {
-//         return static_cast<size_t>(XXH3_64bits(s.data(), s.size()));
-//     }
-// };
+// TODO: See if xxhash is faster than std::hash for this use case
+//  #include "xxhash/xxhash.h"
+//  struct XXH3StringViewHash {
+//      size_t operator()(const std::string_view& s) const noexcept {
+//          return static_cast<size_t>(XXH3_64bits(s.data(), s.size()));
+//      }
+//  };
 
 /**
  * @brief This is a very early test implementation of unordered unique.
@@ -364,8 +384,6 @@ py::object unique(py::array zx_voids, bool return_index = false, bool return_inv
  * Inverse is the indices to remake the input array from only its unique elements.
  */
 py::tuple unordered_unique(py::array zx_voids) {
-    // TODO: Make this work for higher dimensions
-    // TODO: Use a better hash function like XXH3 from xxhash
 
     auto buf = zx_voids.request();
     // TODO: Fix this cause its not working ! Ahah!!
@@ -399,7 +417,7 @@ py::tuple unordered_unique(py::array zx_voids) {
         py::gil_scoped_release release;
 
 #ifdef USE_OPENMP
-#pragma omp parallel for if (nrows >= FUNC_THRESHOLD_PARALLEL) schedule(static)
+    #pragma omp parallel for if (nrows >= FUNC_THRESHOLD_PARALLEL) schedule(static)
 #endif
         for (size_t i = 0; i < nrows; ++i) {
             const char *ptr = reinterpret_cast<const char *>(base + i * row_bytes);
@@ -407,7 +425,7 @@ py::tuple unordered_unique(py::array zx_voids) {
         }
 
         std::unordered_map<std::string_view, size_t> table;
-        // std::unordered_map<std::string, size_t, XXH3StringHash> table;
+        // std::unordered_map<std::string_view, size_t, XXH3StringViewHash> table;
         table.reserve(nrows);
 
         for (size_t i = 0; i < nrows; ++i) {
