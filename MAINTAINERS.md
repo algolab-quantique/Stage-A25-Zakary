@@ -83,7 +83,7 @@ Note: In theory, Windows can compile the entire project with no issues. However,
 
 ### Understanding Voids
 **Voids** (also called "void strings", "binary blobs" or "raw data") refer to the packed bit representation of lists of binary values. This is **not** related to the C/C++ `void` data type.
-Voids are usually represent *z, x* in a Pauli string.
+Voids usually represent *z, x* in a Pauli string.
 - Original Python representation: `z = [0, 1, 1, 0]` (List of booleans)
 - Voids representation: `z = 0b0110` or `z = 6` (Single integer)
   
@@ -93,7 +93,7 @@ This packed representation significantly reduces memory usage and enables effici
 ### General Coding Standards
 **Avoid Manual Broadcasting:** Broadcasting is a complex process that required substantial engineering effort from the NumPy team to implement efficiently. Rather than reimplementing ourself broadcasting in C++, either:
 - Perform broadcasting in Python before passing data to C++
-- Use pybind11's [vectorize()](https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html#vectorizing-functions) functionality when dealing with simple functions
+- Use pybind11's [vectorize](https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html#vectorizing-functions) functionality when dealing with simple functions
 
 **Avoid Noncontiguous Data**: The speedup made by this library is mainly due to the contiguity of NDArrays, and how this property can be exploited with extreme compiler optimizations (SIMD) or by careful implementation of certain patterns and structure. For uncontiguous data, either:
 - Rearange the data in Python before passing it to C++
@@ -109,7 +109,7 @@ This packed representation significantly reduces memory usage and enables effici
 - Use `py::array_t<TYPE>` for typed arrays (e.g., `py::array_t<float>` for NDArrays of floats)
 - Use generic `py::array` for voids (packed binary data)
 
-**Binary Data Types:** Since C++ has no native 'binary' type. To represent Voids, use these types because they guarantee exact bit lengths and support both arithmetic and binary operations:
+**Binary Data Types:** Since C++ has no native 'binary' type, a substitute one must be chosen instead. Use these types because they guarantee exact bit lengths and support both arithmetic and binary operations:
 - `uint64_t`: 64-bit unsigned integer (for large data)
 - `uint8_t`: 8-bit unsigned integer (for small data)
 
@@ -234,7 +234,7 @@ PYBIND11_MODULE(your_module_name, m) {
 ## Multi-threading
 To fully utilize available hardware, we implement multi-threading wherever safe and beneficial. OpenMP provides simple syntax with powerful results while maintaining code readability.
 ### Using OpenMP
-Before adding OpenMP, make it **certain** that your code is thread-safe. Data races and memory corruption are difficult to debug. While mutexes can provide thread safety, they often cause performance degradation in small functions (our primary use case). Use mutexes cautiously and verify they provide net benefits.
+Before adding OpenMP, make it **certain** that your code is thread-safe. Data races and memory corruption are difficult to debug. While mutexes can provide thread safety over otherwise unsafe operations, they often cause performance degradation in small functions (our primary use case). Use mutexes cautiously and verify they provide net benefits.
 
 As for the syntax, most *for(...)* loops in the project are prefaced with:
 ``` C++

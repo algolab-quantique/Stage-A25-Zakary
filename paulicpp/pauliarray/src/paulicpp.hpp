@@ -77,6 +77,9 @@ py::tuple tensor(py::array z2, py::array x2, py::array z1, py::array x1) {
     size_t row_bytes1 = static_cast<size_t>(n1) * itemsize;
     size_t row_bytes2 = static_cast<size_t>(n2) * itemsize;
 
+    //TODO: ==================== Fix this - prob a pointer issue ====================
+    //a = XY, b = ZZ
+    //a.tensor(b) = IIXY... Should be ZZXY !!
     for (ssize_t j = 0; j < outer; ++j) {
         size_t dst_row_byte = static_cast<size_t>(j) * row_bytes_new;
         size_t src1_row_byte = static_cast<size_t>(j) * row_bytes1;
