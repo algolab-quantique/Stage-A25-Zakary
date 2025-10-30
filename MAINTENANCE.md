@@ -179,21 +179,31 @@ namespace py = pybind11;
 Note: Omit `<pybind11/numpy.h>` if you don't use NumPy arrays.
 
 ### Writing Functions
-To create functions with pybind11, lets take a look and compare NumPy's `bitwise_invert` to our's
-  
+To create functions with pybind11, lets see NumPy's `bitwise_invert()` and how we could implement a function that flips each bit in an array:
+
+Python:
+https://numpy.org/doc/stable/reference/generated/numpy.bitwise_invert.html#numpy.bitwise_invert
+``` Python
+? 
+WIP
+```
+
+
 C++:
 ``` C++
-
 inline py::array bitwise_not(py::array voids) {
 	auto buffer = voids.request();
 	const uint64_t *ptr_64 = std::bit_cast<uint64_t *>(buffer.ptr);
 	py::array result_arr = py::array(voids.dtype(), buffer.shape);
+	// some boilerplate code
 	// ...
-	// [main code loop]
+	uint64_t *result_ptr_64 = std::bit_cast<uint64_t *>(result_arr.request().ptr);
 	// ...
+	for (int i = 0; i < TOTAL_NUM_64_CHUNKS; i++) {
+		result_ptr_64[i] = ~ptr_64[i];
+	}
 	return result_arr
 }
-
 ```
 Lets look at the function declaration:
 - `inline` means that the following function will be *expanded* instead of *called* from any other functions. What this means in practice is that the external call will be entirely replaced with the actual code of this function. This increases binary file sizes but reduces traditional function call overhead.
@@ -201,8 +211,9 @@ Lets look at the function declaration:
 
 And as for the code within the function:
 - `auto buffer = voids.request()`: Creates a buffer object with type inferred at compile time. The `request()` method returns a zero-copy view of the NDArray's data when possible.
+- `std::bit_cast<unint64_t *>` WIP
 - `py::array result_arr = py::array(voids.dtype(), buffer.shape)`: Creates a new NDArray with the same dtype and shape as the input. This array can be returned directly to Python.
-
+- `ptr_out_64[i] = ~ptr_64[i]` inverts the chunk of 64 bits and assigns the result to our result pointer 
 
 ### Exposing Functions to Python (Bindings)
 All C++ functions must be declared in their module's binding file to be accessible from Python.
