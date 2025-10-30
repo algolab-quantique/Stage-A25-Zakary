@@ -1,6 +1,6 @@
 This documentation assumes you have basic knowledge in C/C++ syntax and are familiar with PauliArray's Python code.
 
-There is currently a reformatting and renaming effort throughout the project. Names like 'paulicpp' will be changed to something more generic and appropriate in the near future.
+There is currently a reformatting and renaming effort throughout the project. Names like 'paulicpp' will be changed to something more agnostic and appropriate in the near future.
 
 ## Code Convention
 ### Structure
@@ -91,7 +91,7 @@ This packed representation significantly reduces memory usage and enables effici
 
 
 ### General Coding Standards
-**Avoid Manual Broadcasting:** Broadcasting is a complex process that required substantial engineering effort to implement efficiently. Rather than reimplementing broadcasting in C++, either:
+**Avoid Manual Broadcasting:** Broadcasting is a complex process that required substantial engineering effort from the NumPy team to implement efficiently. Rather than reimplementing ourself broadcasting in C++, either:
 - Perform broadcasting in Python before passing data to C++
 - Use pybind11's [vectorize()](https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html#vectorizing-functions) functionality when dealing with simple functions
 
