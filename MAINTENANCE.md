@@ -109,11 +109,11 @@ This packed representation significantly reduces memory usage and enables effici
 - Use `py::array_t<TYPE>` for typed arrays (e.g., `py::array_t<float>` for NDArrays of floats)
 - Use generic `py::array` for voids (packed binary data)
 
-**Binary Data Types:** Since C++ has no native 'binary' type, use these for void operations:
+**Binary Data Types:** Since C++ has no native 'binary' type, use these for void operations because they guarantee exact bit lengths and support both arithmetic and binary operations:
 - `uint64_t`: 64-bit unsigned integer (for large data)
 - `uint8_t`: 8-bit unsigned integer (for small data)
 
-These types guarantee exact bit lengths and support both arithmetic and binary operations. Avoid:
+Avoid:
 - `std::byte` (no arithmetic support)
 - `unsigned char` (no size guarantee)
 - `unsigned long long int` (unnecessarily verbose)
