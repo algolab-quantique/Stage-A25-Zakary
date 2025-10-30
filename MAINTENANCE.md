@@ -1,5 +1,7 @@
 This documentation assumes you have basic knowledge in C/C++ syntax and are familiar with PauliArray's Python code.
 
+There is currently a reformatting and renaming effort throughout the project. Names like 'paulicpp' will be changed to something more generic and appropriate in the near future.
+
 ## Code Convention
 ### Structure
 The project structure is the exact same as PauliArray's [Voids](https://github.com/algolab-quantique/pauliarray/tree/Voids) branch, with the following additions:
@@ -70,6 +72,14 @@ graph TB
     M --> D
 ```
 
+### Build Requirements
+To build this library from source, you will need:
+- Python 3.10+
+- GCC or Clang that supports at least C++20
+- A 64-bit Unix-like system
+- (Optional) libomp/OpenMP
+
+Note: In theory, Windows can compile the entire project with no issues. However, since MSVC is a completely different beast to GCC or Clang, no build options have been added to support it. MinGW would also probably work.
 
 ### Understanding Voids
 **Voids** (also called "void strings", "binary blobs" or "raw data") refer to the packed bit representation of lists of binary values. This is **not** related to the C/C++ `void` data type.
@@ -247,15 +257,23 @@ Releasing the GIL has some overhead, so it is only useful when code needs to be 
 - Operations are CPU-intensive and long-running
 - No Python API calls are needed
 - Using OpenMP or manual threading
-See `unordered_unique()`'s management of the GIL and OpenMP for more information.
+  
+See `unordered_unique()`'s management of the GIL and OpenMP for more information. It is the very last function inside of `paulicpp/pauliarray/src/paulicpp.hpp`
 
 ## Building
-
+WIP
 ### pyproject.toml
+`scikit-build-core` is the build backend as Flit not currently compatible with custom C++ compilation steps.
 
+sasssaaa
   
 
 ### CMake
-CMake is a cross-platform build tool that we use to automatically compile each C++ files as dynamic libraries for use inside Python files. Pybind11 works cleanly with it and has automatic integration to `pip install`s when using `scikit-build-core`.
+CMake is a cross-platform build tool. It has clean integration with pybind11 and `scikit-build-core` for `pip install` support.
 
-All of the configuration is done in `CMakeLists.txt`, located in the project's root. Users can decide to force CMake to build without OpenMP (no multithreading) by setting `USE_OPENMP` to `OFF`. This can be done manually, or by passing `--config-settings=cmake.define.USE_OPENMP=OFF` as an additional argument to pip.
+The configuration file is `CMakeLists.txt`, found in the project root.
+
+**Build Options:**
+- `USE_OPENMP`: Enable/disable OpenMP multi-threading
+    - Default: `ON`
+    - Disable manually in `CMakeLists.txt` or via pip: `pip install . --config-settings=cmake.define.USE_OPENMP=OFF`
