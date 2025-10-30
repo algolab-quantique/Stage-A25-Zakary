@@ -74,9 +74,9 @@ graph TB
 ### Understanding Voids
 **Voids** (also called "void strings", "binary blobs" or "raw data") refer to the packed bit representation of lists of binary values. This is **not** related to the C/C++ `void` data type.
 Voids are usually represent *z, x* in a Pauli string.
-**Example:**
 - Original Python representation: `z = [0, 1, 1, 0]` (List of booleans)
 - Voids representation: `z = 0b0110` or `z = 6` (Single integer)
+  
 This packed representation significantly reduces memory usage and enables efficient bitwise operations.
 
 
@@ -89,7 +89,7 @@ This packed representation significantly reduces memory usage and enables effici
 - Rearange the data in Python before passing it to C++
 - Explicitly state that slowdowns may occur (idk).
 
-**Memory Management:** C++ lacks garbage collection or Rust's borrow checker, so you must manually manage memory:
+**Memory Management:** C++ lacks garbage collection or Rust's borrow checker, so you must manually manage memory efficiently:
 - Track pointer lifetimes carefully to avoid dangling pointers
 - Avoid unnecessary copies of large Python objects (very expensive in time and memory)
 - Prefer zero-copy operations whenever possible
@@ -102,6 +102,7 @@ This packed representation significantly reduces memory usage and enables effici
 **Binary Data Types:** Since C++ has no native 'binary' type, use these for void operations:
 - `uint64_t`: 64-bit unsigned integer (for large data)
 - `uint8_t`: 8-bit unsigned integer (for small data)
+
 These types guarantee exact bit lengths and support both arithmetic and binary operations. Avoid:
 - `std::byte` (no arithmetic support)
 - `unsigned char` (no size guarantee)
