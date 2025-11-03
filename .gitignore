@@ -52,11 +52,11 @@ perf.data
 paulicpp/pauliarray/src/build/*.*
 *.prof
 /paulicpp/.venv
-/.vscode
+.vscode
 **/__pycache__
 # voids.json
 *.png
 /local/results
 .DS_Store
 *.pyc
-/.github
+.github

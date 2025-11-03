@@ -22,21 +22,22 @@ option(USE_OPENMP "Enable OpenMP support" ON)
 pybind11_add_module(paulicpp
     pauliarray/src/bindings/paulicpp_bindings.cpp
     pauliarray/src/bindings/voidops_bindings.cpp
-    pauliarray/src/xxhash/xxhash.c 
+    # pauliarray/src/xxhash/xxhash.c 
 )
 pybind11_add_module(sparsepaulicpp
     pauliarray/src/bindings/sparsepaulicpp_bindings.cpp
     pauliarray/src/bindings/setsparse_bindings.cpp
 )
 # MUST-HAVES FLAGS
-# O3 is the most aggressive optimization level that is not likely to break things. Ofast may break things, and is not a whole lot faster.
+# O3 is the most aggressive optimization level that is safe. Ofast may break things, and is not a whole lot faster.
 # march=native enables all instruction sets supported by the local machine. This causes non-portable binaries, but is faster in local builds.
-#   Disabling the march flag may be useful when building pre-built binaries for distribution. 
+#   Disabling the march flag may be useful when building pre-built binaries for distribution, but will kill any SIMD generation.
 # fPIC is needed for shared libraries.
 
 # OPTIONAL FLAGS
-# flto=auto enables "Link Time Optimization", which supposedly allows for better optimization across the board (?). However, i've not seen any gain nor loss in performance with it on or off.
-# finroll-loops lets the compiler unroll loops. For now i wouldnt use it as i fear it may slow down things for giant NumPy arrays.
+# flto=auto enables "Link Time Optimization", which supposedly allows for better optimization across the board (?). 
+# However, i've not seen any gain nor loss in performance with it on or off.
+# funroll-loops lets the compiler unroll loops. For now i wouldnt use it as i fear it may slow down things for giant NumPy arrays.
 set(PAULI_COMPILE_OPTIONS
     -O3 
     -flto=auto
@@ -153,26 +154,26 @@ install(TARGETS sparsepaulicpp DESTINATION pauliarray/src/build)
 find_package(Python COMPONENTS Interpreter REQUIRED)
 
 
+
 # TODO: Make this work with xxhash!
+add_custom_command(TARGET paulicpp POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
+          ${Python_EXECUTABLE} -m pybind11_stubgen
+          pauliarray.src.build.paulicpp
+          -o ${CMAKE_SOURCE_DIR}
+          )
 
-# add_custom_command(TARGET paulicpp POST_BUILD
-#   COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
-#           ${Python_EXECUTABLE} -m pybind11_stubgen
-#           pauliarray.src.build.paulicpp
-#           -o ${CMAKE_SOURCE_DIR}
-#           )
-
-# add_custom_command(TARGET sparsepaulicpp POST_BUILD
-#   COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
-#           ${Python_EXECUTABLE} -m pybind11_stubgen
-#           pauliarray.src.build.sparsepaulicpp
-#           -o ${CMAKE_SOURCE_DIR}
-#           )
-
+add_custom_command(TARGET sparsepaulicpp POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
+          ${Python_EXECUTABLE} -m pybind11_stubgen
+          pauliarray.src.build.sparsepaulicpp
+          -o ${CMAKE_SOURCE_DIR}
+          )
 
 
 
-# ========= DOES NOT WORK! USE PYBIND11_STUBGEN INSTEAD=========
+# ================== DOES NOT WORK! USE PYBIND11_STUBGEN INSTEAD ==================
+
 # add_custom_command(TARGET paulicpp POST_BUILD
 #     COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
 #                     ${Python_EXECUTABLE} -m mypy.stubgen --module

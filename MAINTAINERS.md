@@ -157,7 +157,7 @@ Additional Doxygen tags include `@deprecated`, `@attention`, and `@warning`, whi
   
 
 ### Auto-formatter
-Since Black is only usable for Python files, we instead use `clang-format`, a highly customizable formatter that we can adjust to look more or less like Black.
+Since Black is only usable for Python files, we instead use [clang-format](https://clang.llvm.org/docs/ClangFormat.html), a highly customizable formatter that we can adjust to look more or less like Black.
 
 All of the options are found inside of the `.clang-format` file. As a base, we use LLVM's coding format and override some specific options:
 - `UseTab: Never`: Always forces spaces for indentation
@@ -179,13 +179,18 @@ namespace py = pybind11;
 Note: Omit `<pybind11/numpy.h>` if you don't use NumPy arrays.
 
 ### Writing Functions
-To create functions with pybind11, lets see NumPy's `bitwise_invert()` and how we could implement a function that flips each bit in an array:
+C++ requirese a lot more work and boilerplate in order to get the same result as in Python. 
+The following functions both flip every bit of data inside of an NDArray:
 
 Python:
 https://numpy.org/doc/stable/reference/generated/numpy.bitwise_invert.html#numpy.bitwise_invert
-``` Python
-? 
-WIP
+``` python
+def bitwise_not(voids: NDArray) -> NDArray:
+    int_strings = voids_to_int_strings(voids)
+    new_int_strings = np.invert(int_strings)
+    new_voids = int_strings_to_voids(new_int_strings)
+
+    return new_voids
 ```
 
 
@@ -211,7 +216,7 @@ Lets look at the function declaration:
 
 And as for the code within the function:
 - `auto buffer = voids.request()`: Creates a buffer object with type inferred at compile time. The `request()` method returns a zero-copy view of the NDArray's data when possible.
-- `std::bit_cast<unint64_t *>` WIP
+- `std::bit_cast<uint64_t *>` is a near zero-overhead reinterpretation of the data underneath.
 - `py::array result_arr = py::array(voids.dtype(), buffer.shape)`: Creates a new NDArray with the same dtype and shape as the input. This array can be returned directly to Python.
 - `ptr_out_64[i] = ~ptr_64[i]` inverts the chunk of 64 bits and assigns the result to our result pointer 
 
@@ -229,6 +234,13 @@ PYBIND11_MODULE(your_module_name, m) {
           py::arg("voids"));
 }
 ```
+
+# Optimization Efforts
+## General
+In most cases, we cast the data of a Voids array to `uint64_t` via `std::bit_cast<>`. This is done because in most modern computers, 64 bits is the largest natively supported integer size. Even when an array’s dimension is smaller than 64 bits, treating it as a sequence of raw 64-bit blocks enables highly optimized bitwise manipulation and reduces overhead. Of course, if/when 128 bits becomes the standard, we'd use that instead.
+
+
+
 
 
 ## Multi-threading

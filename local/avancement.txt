@@ -1,33 +1,24 @@
-- Compilation
-    Compile sur Mac M1 avec Apple clang 17, mais ne peut pas activer multithreading avec OpenMP. 
-    Soit faire des threads a la main, ou des guards #ifdef. Si option 2, aucun boost multithreading pour ceux qui on pas installer libomp avec brew
-    Also pip install . install pas les dependances du .toml sauf pour pybind11
+Maintenance
+    MAINTAINERS.md en ecriture
+    Review?
 
-- Qiskit
-    Pas du vrai sparse, utilise la meme structure que PA
+Convention de noms
+    Avoir le nom exacte du fichier à accelerer, mais mettre un '_' avant (e.g. _void_operations)
 
-- Sets
-    Pire que les vecteurs. On tombe a du O(n log n)...
+    Voids:
+        - Garder "Voids" avec V maj. et 's'?
+        - bitfield(s)
+        - binarr / binarray(s)
+        
 
-- Unique
-    unique en C++     --> 4.5s = ~4x boost, pratiquement 1-to-1 sauf pour axis parameter
-        Unit tests indiquait un MAX de ~4x boost, average à 2.8-3.2x. Flawed tests?
-    unordered_unique  --> 1.6s = ~10x boost! Par contre, fonctionne seulement sur 2D, et a pas de axis.
 
-- Formattage
-    clang-format implementé manuellement, resterait à le mettre en bot sur le repo en CI/CD ou VS workspace settings
-    Couramment LLVM, ressemble a peut pret à Black
+        retirer mentions de "strings" (e.g. int_strings), meme dans Python?
 
 
 
+    Pauli[...]:
+        renommer fichier de src à core?
+        - corearray
+        - logic
 
 
-
-
-unordered_unique
-    PIRE CAS: x>0.9 ---> ~2x plus vite que unique()
-    BON CAS:  0.9>x>0.1  ---> ~7-9x
-    MEILLEUR CAS: x<0.1 ---> jusqua 15x!! 
-
-    Dépendance à xxhash incertaine; std::hash fonctionne presque exactement pour petites données
-    
