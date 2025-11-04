@@ -1,15 +1,12 @@
 # PauliArray, with a side of C++
-WIP project which converts some of [PauliArray](https://github.com/algolab-quantique/pauliarray)'s functions to C++ in order to speed up the library all the whilst retaining the easy-to-use Python structure and syntax.
+<img src = "https://github.com/algolab-quantique/Stage-A25-Zakary/blob/main/assets/pa_logo.svg" align="right" width="220">
+Accelerator project which converts some of [PauliArray](https://github.com/algolab-quantique/pauliarray) backend to C++ in order to speed up the library all the whilst retaining the easy-to-use Python structure and syntax.
 
-This project uses [pybind11](https://github.com/pybind/pybind11) as its translator between Python/Numpy and C++. 
-
-<img src =>
 
 ### Requirements
 - Python 3.10+
 - GCC or Clang, with versions that support at least C++20
 - Unix system
-- Having lots of time to waste to debug this library.
 
 # Installation
 If you are on macOS, it is highly recommended to use OpenMP, as it provides multithreading to the C++ library. Whilst it is not ***necessary*** to do so, you may notice worst performance.
