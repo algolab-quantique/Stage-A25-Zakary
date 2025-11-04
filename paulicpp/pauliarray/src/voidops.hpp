@@ -37,7 +37,7 @@ namespace py = pybind11;
     #warning "OpenMP is not enabled"
 #endif
 
-//bit_operations
+// bit_operations
 
 // This threshold is completely arbitrary and can be tuned for performance depending on the
 // hardware.
@@ -195,7 +195,7 @@ inline py::array bitwise_not(py::array voids) {
 }
 
 // ! THIS DOES NOT WORK AT ALL!!! DO NOT USE!
-//Todo: fix this 
+// Todo: fix this
 /**
  * @brief Performs an element-wise bitwise NOT operation on only the first `num_qubits` bits of a
  * NumPy contiguous (C-like) array. In other words, it flips the first `num_qubits` bits in the
@@ -207,7 +207,7 @@ inline py::array bitwise_not(py::array voids) {
  */
 inline py::array paded_bitwise_not(py::array voids, int num_qubits) {
     auto buf = voids.request();
-    size_t total_bytes = num_qubits*8;
+    size_t total_bytes = num_qubits * 8;
     py::array res_voids = py::array(voids.dtype(), buf.shape);
     auto buf_out = res_voids.request();
 
@@ -225,8 +225,8 @@ inline py::array paded_bitwise_not(py::array voids, int num_qubits) {
 
     size_t remaining_bytes = total_bytes % 8;
     if (remaining_bytes > 0) {
-        const uint8_t *ptr_8 = std::bit_cast<const uint8_t *>(buf.ptr); 
-        // 
+        const uint8_t *ptr_8 = std::bit_cast<const uint8_t *>(buf.ptr);
+        //
         int8_t *ptr_out_8 = std::bit_cast<int8_t *>(buf_out.ptr);
 
         size_t start_byte = num_64bit_chunks * 8;
@@ -236,9 +236,7 @@ inline py::array paded_bitwise_not(py::array voids, int num_qubits) {
     }
 
     return res_voids;
-
 }
-
 
 /**
  * @brief Counts the number of set bits in each element of a NumPy contiguous (C-like) array.
@@ -389,55 +387,55 @@ inline py::object bitwise_dot(py::array voids_1, py::array voids_2) {
     return result;
 }
 
-
 /**
  * @brief Transposes a technically 1D array of voids by interpreting it as a 2D array of bits.
  * In other words, if the input array has shape (M,) and each element has N bits, the output array
  * will have shape (N, M), where the rows correspond to the bits of the input elements.
- * 
+ *
  * If input is:
- * [0110, 
- *  1001, 
+ * [0110,
+ *  1001,
  *  1111]
- * 
+ *
  * then output will be:
  * [011,
  *  101,
  *  101,
  *  011]
- * 
+ *
  * @param voids Input array
  * @return py::array Transposed array with minimal dtype
  */
 inline py::array bitwise_transpose(py::array voids, int64_t num_bits = -1) {
     auto buf = voids.request();
-    
-    size_t M = buf.size;// Number of elements
+
+    size_t M = buf.size;                // Number of elements
     size_t max_bits = buf.itemsize * 8; // Maximum bits per element
-    
+
     // If num_bits not specified, use all bits in dtype
     // This will create trailing zero bits, but its better than nothing
     size_t N_bits = (num_bits > 0) ? static_cast<size_t>(num_bits) : max_bits;
-    
+
     if (N_bits > max_bits) {
         throw std::runtime_error("num_bits cannot exceed itemsize * 8");
     }
     // Calculate output dtype size (smallest possible to hold M bits)
-    size_t out_bytes = (M + 7) / 8;  // Ceiling division
-    
+    size_t out_bytes = (M + 7) / 8; // Ceiling division
+
     // Create output array with shape (N_bits,) and dtype |V{out_bytes}
-    std::string dtype_str = "|V" + std::to_string(out_bytes); //a revisiter, peux etre pas necessaire
+    std::string dtype_str =
+        "|V" + std::to_string(out_bytes); // a revisiter, peux etre pas necessaire
     py::dtype out_dtype(dtype_str);
     std::vector<ssize_t> out_shape = {static_cast<ssize_t>(N_bits)};
     py::array voids_out = py::array(out_dtype, out_shape);
     auto buf_out = voids_out.request();
-    
+
     const uint8_t *ptr_in = std::bit_cast<const uint8_t *>(buf.ptr);
     uint8_t *ptr_out = std::bit_cast<uint8_t *>(buf_out.ptr);
-    
+
     // Initialize output to zero
-    std::memset(ptr_out, 0, N_bits*out_bytes);
-    
+    std::memset(ptr_out, 0, N_bits * out_bytes);
+
     // Transpose: bit j of element i becomes bit i of element j
 #ifdef USE_OPENMP
     #pragma omp parallel for if (N_bits * M >= VOPS_THRESHOLD_PARALLEL) schedule(static)
@@ -445,33 +443,33 @@ inline py::array bitwise_transpose(py::array voids, int64_t num_bits = -1) {
     for (size_t j = 0; j < N_bits; ++j) {
         size_t byte_idx_in = j / 8;
         size_t bit_idx_in = j % 8;
-        
+
         for (size_t i = 0; i < M; ++i) {
             // Get bit j from element i
             uint8_t bit = (ptr_in[i * buf.itemsize + byte_idx_in] >> bit_idx_in) & 1;
-            
+
             // Set bit i in element j of output
             size_t byte_idx_out = i / 8;
             size_t bit_idx_out = i % 8;
-            
+
             if (bit) {
                 ptr_out[j * out_bytes + byte_idx_out] |= (1 << bit_idx_out);
             }
         }
     }
-    
+
     return voids_out;
 }
 
-
 /**
  * @brief Matrix multiplication of two void arrays (technically 1D), interpreted as 2D bit matrices.
- * 
- * @param voids_a 
- * @param voids_b 
- * @return py::array 
+ *
+ * @param voids_a
+ * @param voids_b
+ * @return py::array
  */
-inline py::array bitwise_matmul(py::array voids_a, py::array voids_b, int a_num_qubits,  int b_num_qubits) {
+inline py::array bitwise_matmul(py::array voids_a, py::array voids_b, int a_num_qubits,
+                                int b_num_qubits) {
     auto buf1 = voids_a.request();
     auto buf2 = voids_b.request();
 
@@ -490,17 +488,14 @@ inline py::array bitwise_matmul(py::array voids_a, py::array voids_b, int a_num_
     }
 
     size_t out_bytes = (b_cols + 7) / 8;
-    std::string dtype_str = "|V" + std::to_string(out_bytes);
+    std::string dtype_str =
+        "|V" + std::to_string(out_bytes); // a revisiter, peux etre pas necessaire
     py::dtype out_dtype(dtype_str);
 
     // output is 1-D array of a_rows elements, each a void of out_bytes
-    std::vector<ssize_t> out_shape = { static_cast<ssize_t>(a_rows) };
+    std::vector<ssize_t> out_shape = {static_cast<ssize_t>(a_rows)};
     py::array voids_out = py::array(out_dtype, out_shape);
     auto buf_out = voids_out.request();
-
-    // py::array voids_out = py::array(voids_a.dtype(), {a_rows, b_cols/8});
-    // auto buf_out = voids_out.request();
-
 
     std::memset(buf_out.ptr, 0, buf_out.size * buf_out.itemsize);
     // Output array with shape (a_rows, b_cols)
@@ -509,6 +504,7 @@ inline py::array bitwise_matmul(py::array voids_a, py::array voids_b, int a_num_
     const uint8_t *ptr_b = std::bit_cast<const uint8_t *>(buf2.ptr);
     int8_t *ptr_out = std::bit_cast<int8_t *>(buf_out.ptr);
 
+    //TODO: Parallelize this whole block
     for (size_t i = 0; i < a_rows; i++) {
         for (size_t j = 0; j < b_cols; j++) {
             int8_t bit_sum = 0;
@@ -531,11 +527,71 @@ inline py::array bitwise_matmul(py::array voids_a, py::array voids_b, int a_num_
             if (bit_sum % 2) { // Modulo 2 for bitwise addition
                 ptr_out[i * buf_out.itemsize + out_byte_idx] |= (1 << out_bit_idx);
             }
-
         }
     }
-
-
     return voids_out;
+}
 
+
+
+// def row_echelon(bit_matrix: "np.ndarray[np.bool]") -> "np.ndarray[np.bool]":
+//     """
+//     Applies Gauss-Jordan elimination on a binary matrix to produce row echelon form.
+
+//     Args:
+//         bit_matrix ("np.ndarray[np.bool]"): Input binary matrix.
+
+//     Returns:
+//         "np.ndarray[np.bool]": Row echelon form of the provided matrix.
+//     """
+//     re_bit_matrix = bit_matrix.copy().astype(bool)
+
+//     n_rows = re_bit_matrix.shape[0]
+//     n_cols = re_bit_matrix.shape[1]
+
+//     row_range = np.arange(n_rows)
+
+//     h_row = 0
+//     k_col = 0
+
+//     while h_row < n_rows and k_col < n_cols:
+//         if np.all(re_bit_matrix[h_row:, k_col] == 0):
+//             k_col += 1
+//         else:
+//             i_row = h_row + np.argmax(re_bit_matrix[h_row:, k_col])
+//             if i_row != h_row:
+//                 re_bit_matrix[[i_row, h_row], :] = re_bit_matrix[[h_row, i_row], :]
+
+//             cond_rows = np.logical_and(re_bit_matrix[:, k_col], (row_range != h_row))
+
+//             re_bit_matrix[cond_rows, :] = np.logical_xor(re_bit_matrix[cond_rows, :], re_bit_matrix[h_row, :][None, :])
+
+//             h_row += 1
+//             k_col += 1
+
+//     return re_bit_matrix
+
+/**
+ * @brief applies Gauss-Jordan elimination on a binary matrix to produce row echelon form
+ * 
+ * @param voids 
+ * @param num_qubits 
+ * @return py::array 
+ */
+py::array bitwise_row_echelon(py::array voids, int num_qubits){
+    auto buf = voids.request();
+
+    size_t n_rows = buf.size;
+    size_t n_cols = num_qubits;
+
+    py::array voids_out = py::array(voids.dtype(), buf.shape);
+    auto buf_out = voids_out.request();
+
+    const uint8_t *ptr_in = std::bit_cast<const uint8_t *>(buf.ptr);
+    uint8_t *ptr_out = std::bit_cast<uint8_t *>(buf_out.ptr);
+
+    // Copy input to output
+    std::memcpy(ptr_out, ptr_in, buf.size*buf.itemsize);
+
+    
 }
