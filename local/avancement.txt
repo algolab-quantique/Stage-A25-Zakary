@@ -1,20 +1,14 @@
-Maintenance
-    MAINTAINERS.md en ecriture
-    Review?
+MAINTAINERS.md
+    Convention de nom de PauliArray?
+    80, 100 ou 120 char/lignes
 
-Convention de noms
-    Avoir le nom exacte du fichier à accelerer, mais mettre un '_' avant (e.g. _void_operations)
+    
+
+Renommage
+    Avoir le nom exacte du fichier à accelerer, mais mettre un '_' avant (e.g. _void_operations.hpp)
 
     Voids:
-        - Garder "Voids" avec V maj. et 's'?
-        - bitfield(s)
-        - binarr / binarray(s)
-        
-
-
-        retirer mentions de "strings" (e.g. int_strings), meme dans Python?
-
-
+        retirer mentions de "strings" (e.g. int_strings), meme dans Python? Mene peut etre a confusion
 
     Pauli[...]:
         renommer fichier de src à core?
@@ -22,3 +16,7 @@ Convention de noms
         - logic
 
 
+Edge detection Sparse
+    - Pas eu le temps de coder toutes les operations, juste OR et AND, mais reviens pratiquement au
+        meme graphiques que avant; Je crois pas que ca soit la meilleur option
+    

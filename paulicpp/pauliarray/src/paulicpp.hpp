@@ -19,6 +19,18 @@
  * @copyright Copyright (c) 2025
  */
 
+ //bit_string_array
+ //bit_string_ndarray
+ // src/_binary
+ //binary_unique
+
+
+ //toute dans bit_ops
+ //to_matrix
+ //row_space
+//matmul
+//transposer sur les bits
+
 #pragma once
 
 #include <pybind11/numpy.h>
@@ -416,7 +428,6 @@ py::tuple unordered_unique(py::array zx_voids) {
     std::vector<size_t> inverses(nrows);
 
     {
-        // dont really know if releasing the GIL helps here but whatever
         py::gil_scoped_release release;
 
 #ifdef USE_OPENMP
@@ -428,6 +439,7 @@ py::tuple unordered_unique(py::array zx_voids) {
         }
 
         std::unordered_map<std::string_view, size_t> table;
+        table.max_load_factor(0.5);
         // std::unordered_map<std::string_view, size_t, XXH3StringViewHash> table;
         table.reserve(nrows);
 
@@ -438,7 +450,7 @@ py::tuple unordered_unique(py::array zx_voids) {
                 inverses[i] = it->second;
             } else {
                 size_t new_id = indices.size();
-                table.emplace(key, new_id);
+                table.try_emplace(key, new_id);
                 indices.push_back(i);
                 inverses[i] = new_id;
             }

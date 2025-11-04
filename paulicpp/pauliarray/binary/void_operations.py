@@ -208,6 +208,9 @@ def bitwise_or(
 
 def paded_bitwise_not(voids: NDArray, num_qubits: int) -> NDArray:
 
+    # if C_CCP:
+    #     return vcpp.paded_bitwise_not(_contiguous(voids), num_qubits)
+    # else:
     int_strings = voids_to_int_strings(voids)
     new_int_strings = np.invert(int_strings)
 
@@ -291,5 +294,33 @@ def get_backend():
 def random_zx_strings(shape):
     if C_CCP:
         return vcpp.random_zx_strings(shape)
+    else:
+        raise RuntimeError("C++ backend not available.")
+    
+
+def bitwise_transpose(voids: NDArray, num_qubits : int) -> NDArray:
+    if C_CCP:
+        
+        return vcpp.bitwise_transpose(_contiguous(voids), num_qubits)
+    
+    else:
+        raise RuntimeError("C++ backend not available.")
+    
+
+def pretty_print_voids(voids: NDArray, num_qubits: int) -> str:
+    bit_strings = voids_to_bit_strings(voids, num_qubits)
+
+    lines = []
+    for row in bit_strings:
+        row_flat = row.ravel()  # flatten to 1D
+        line = "".join(["1" if bit else "0" for bit in row_flat])
+        lines.append(line)
+
+    return "\n".join(lines)
+
+def bitwise_matmul(voids_1: NDArray, voids_2: NDArray, a_num_qubits: int, b_num_qubits: int) -> NDArray:
+    if C_CCP:
+        return vcpp.bitwise_matmul(_contiguous(voids_1), _contiguous(voids_2), a_num_qubits, b_num_qubits)
+    
     else:
         raise RuntimeError("C++ backend not available.")

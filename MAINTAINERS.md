@@ -96,18 +96,18 @@ This packed representation significantly reduces memory usage and enables effici
 - Use pybind11's [vectorize](https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html#vectorizing-functions) functionality when dealing with simple functions
 
 **Avoid Noncontiguous Data**: The speedup made by this library is mainly due to the contiguity of NDArrays, and how this property can be exploited with extreme compiler optimizations (SIMD) or by careful implementation of certain patterns and structure. For uncontiguous data, either:
+TODO: EXPLAIN CONTIGUITY IN DETAIL!
 - Rearange the data in Python before passing it to C++
 - Explicitly state that slowdowns may occur (idk).
 
 **Memory Management:** C++ lacks garbage collection or Rust's borrow checker, so you must manually manage memory efficiently:
 - Track pointer lifetimes carefully to avoid dangling pointers
-- Avoid unnecessary copies of large Python objects (very expensive in time and memory)
 - Prefer zero-copy operations whenever possible
 - Only allocate new memory when necessary
 
 **Type Specifications:**
 - Use `py::array_t<TYPE>` for typed arrays (e.g., `py::array_t<float>` for NDArrays of floats)
-- Use generic `py::array` for voids (packed binary data)
+- Use generic `py::array` for Voids (packed binary data)
 
 **Binary Data Types:** Since C++ has no native 'binary' type, a substitute one must be chosen instead. Use these types because they guarantee exact bit lengths and support both arithmetic and binary operations:
 - `uint64_t`: 64-bit unsigned integer (for large data)
@@ -115,6 +115,7 @@ This packed representation significantly reduces memory usage and enables effici
 
 Avoid:
 - `std::byte` (no arithmetic support)
+TODO: Clarify size garantees
 - `unsigned char` (no size guarantee)
 - `unsigned long long int` (unnecessarily verbose)
 

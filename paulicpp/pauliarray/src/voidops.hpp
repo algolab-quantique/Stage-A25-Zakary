@@ -37,6 +37,8 @@ namespace py = pybind11;
     #warning "OpenMP is not enabled"
 #endif
 
+//bit_operations
+
 // This threshold is completely arbitrary and can be tuned for performance depending on the
 // hardware.
 #define VOPS_THRESHOLD_PARALLEL 1'000'000
@@ -77,7 +79,7 @@ template <typename Op> inline py::object bitwise_core(py::array voids_1, py::arr
     // anything.
     const uint64_t *ptr1_64 = std::bit_cast<uint64_t *>(buf1.ptr);
     const uint64_t *ptr2_64 = std::bit_cast<uint64_t *>(buf2.ptr);
-    uint64_t *ptr_out_64 = std::bit_cast<uint64_t *>(buf_out.ptr);
+    int64_t *ptr_out_64 = std::bit_cast<int64_t *>(buf_out.ptr);
 
     size_t num_64bit_chunks = total_bytes / 8;
 
@@ -94,7 +96,7 @@ template <typename Op> inline py::object bitwise_core(py::array voids_1, py::arr
     if (remaining_bytes > 0) {
         const uint8_t *ptr1_8 = std::bit_cast<uint8_t *>(buf1.ptr);
         const uint8_t *ptr2_8 = std::bit_cast<uint8_t *>(buf2.ptr);
-        uint8_t *ptr_out_8 = std::bit_cast<uint8_t *>(buf_out.ptr);
+        int8_t *ptr_out_8 = std::bit_cast<int8_t *>(buf_out.ptr);
 
         size_t start_byte = num_64bit_chunks * 8;
         for (size_t i = 0; i < remaining_bytes; ++i) {
@@ -167,7 +169,7 @@ inline py::array bitwise_not(py::array voids) {
     auto buf_out = res_voids.request();
 
     const uint64_t *ptr_64 = std::bit_cast<uint64_t *>(buf.ptr);
-    uint64_t *ptr_out_64 = std::bit_cast<uint64_t *>(buf_out.ptr);
+    int64_t *ptr_out_64 = std::bit_cast<int64_t *>(buf_out.ptr);
 
     size_t num_64bit_chunks = total_bytes / 8;
 
@@ -181,7 +183,7 @@ inline py::array bitwise_not(py::array voids) {
     size_t remaining_bytes = total_bytes % 8;
     if (remaining_bytes > 0) {
         const uint8_t *ptr_8 = std::bit_cast<const uint8_t *>(buf.ptr);
-        uint8_t *ptr_out_8 = std::bit_cast<uint8_t *>(buf_out.ptr);
+        int8_t *ptr_out_8 = std::bit_cast<int8_t *>(buf_out.ptr);
 
         size_t start_byte = num_64bit_chunks * 8;
         for (size_t i = 0; i < remaining_bytes; ++i) {
@@ -191,6 +193,52 @@ inline py::array bitwise_not(py::array voids) {
 
     return res_voids;
 }
+
+// ! THIS DOES NOT WORK AT ALL!!! DO NOT USE!
+//Todo: fix this 
+/**
+ * @brief Performs an element-wise bitwise NOT operation on only the first `num_qubits` bits of a
+ * NumPy contiguous (C-like) array. In other words, it flips the first `num_qubits` bits in the
+ * array, with the remaining bits left unchanged.
+ *
+ * @param voids the input array
+ * @return py::array A NumPy contiguous array of the same shape and dtype as the input, containing
+ * the result of the bitwise NOT operation
+ */
+inline py::array paded_bitwise_not(py::array voids, int num_qubits) {
+    auto buf = voids.request();
+    size_t total_bytes = num_qubits*8;
+    py::array res_voids = py::array(voids.dtype(), buf.shape);
+    auto buf_out = res_voids.request();
+
+    const uint64_t *ptr_64 = std::bit_cast<uint64_t *>(buf.ptr);
+    int64_t *ptr_out_64 = std::bit_cast<int64_t *>(buf_out.ptr);
+
+    size_t num_64bit_chunks = total_bytes / 8;
+
+#ifdef USE_OPENMP
+    #pragma omp parallel for if (num_64bit_chunks >= VOPS_THRESHOLD_PARALLEL) schedule(static)
+#endif
+    for (size_t i = 0; i < num_64bit_chunks; ++i) {
+        ptr_out_64[i] = ~ptr_64[i];
+    }
+
+    size_t remaining_bytes = total_bytes % 8;
+    if (remaining_bytes > 0) {
+        const uint8_t *ptr_8 = std::bit_cast<const uint8_t *>(buf.ptr); 
+        // 
+        int8_t *ptr_out_8 = std::bit_cast<int8_t *>(buf_out.ptr);
+
+        size_t start_byte = num_64bit_chunks * 8;
+        for (size_t i = 0; i < remaining_bytes; ++i) {
+            ptr_out_8[start_byte + i] = ~ptr_8[start_byte + i];
+        }
+    }
+
+    return res_voids;
+
+}
+
 
 /**
  * @brief Counts the number of set bits in each element of a NumPy contiguous (C-like) array.
@@ -202,11 +250,11 @@ inline py::array bitwise_not(py::array voids) {
 inline py::object bitwise_count(py::array voids_1) {
     auto buf1 = voids_1.request();
 
-    py::array_t<uint64_t> result(buf1.size);
+    py::array_t<int64_t> result(buf1.size);
     auto buf_out = result.request();
 
     const uint8_t *ptr1 = std::bit_cast<const uint8_t *>(buf1.ptr);
-    uint64_t *ptr_out = std::bit_cast<uint64_t *>(buf_out.ptr);
+    int64_t *ptr_out = std::bit_cast<int64_t *>(buf_out.ptr);
 
     size_t itemsize = buf1.itemsize;
     size_t n = buf1.size;
@@ -220,7 +268,7 @@ inline py::object bitwise_count(py::array voids_1) {
         // This is necessary in order to return the exact same output as the Python version of this
         // function. i.e. a single integer instead of a one-element array.
         const uint8_t *base = ptr1;
-        uint64_t count = 0;
+        int64_t count = 0;
 
 #ifdef USE_OPENMP
     #pragma omp parallel for if (n64 >= VOPS_THRESHOLD_PARALLEL) schedule(static)                  \
@@ -242,7 +290,7 @@ inline py::object bitwise_count(py::array voids_1) {
 #endif
     for (size_t i = 0; i < n; ++i) {
         const uint8_t *base = ptr1 + i * itemsize;
-        uint64_t count = 0;
+        int64_t count = 0;
         for (size_t k = 0; k < n64; ++k) {
             uint64_t word;
             std::memcpy(&word, base + k * 8, 8);
@@ -282,12 +330,12 @@ inline py::object bitwise_dot(py::array voids_1, py::array voids_2) {
                                  std::to_string(buf1.size) + " and " + std::to_string(buf2.size));
     }
 
-    py::array_t<uint64_t> result(buf1.shape);
+    py::array_t<int64_t> result(buf1.shape);
     auto buf_out = result.request();
 
     const uint8_t *ptr1 = std::bit_cast<const uint8_t *>(buf1.ptr);
     const uint8_t *ptr2 = std::bit_cast<const uint8_t *>(buf2.ptr);
-    uint64_t *ptr_out = std::bit_cast<uint64_t *>(buf_out.ptr);
+    int64_t *ptr_out = std::bit_cast<int64_t *>(buf_out.ptr);
 
     size_t itemsize = buf1.itemsize;
     size_t n = buf1.size;
@@ -301,7 +349,7 @@ inline py::object bitwise_dot(py::array voids_1, py::array voids_2) {
         // function. i.e. a single integer instead of a one-element array.
         const uint8_t *base1 = ptr1;
         const uint8_t *base2 = ptr2;
-        uint64_t count = 0;
+        int64_t count = 0;
 
 #ifdef USE_OPENMP
     #pragma omp parallel for if (n64 >= VOPS_THRESHOLD_PARALLEL) schedule(static)                  \
@@ -325,7 +373,7 @@ inline py::object bitwise_dot(py::array voids_1, py::array voids_2) {
     for (size_t i = 0; i < n; ++i) {
         const uint8_t *base1 = ptr1 + i * itemsize;
         const uint8_t *base2 = ptr2 + i * itemsize;
-        uint64_t count = 0;
+        int64_t count = 0;
         for (size_t k = 0; k < n64; ++k) {
             uint64_t w1, w2;
             std::memcpy(&w1, base1 + k * 8, 8);
@@ -339,4 +387,155 @@ inline py::object bitwise_dot(py::array voids_1, py::array voids_2) {
     }
 
     return result;
+}
+
+
+/**
+ * @brief Transposes a technically 1D array of voids by interpreting it as a 2D array of bits.
+ * In other words, if the input array has shape (M,) and each element has N bits, the output array
+ * will have shape (N, M), where the rows correspond to the bits of the input elements.
+ * 
+ * If input is:
+ * [0110, 
+ *  1001, 
+ *  1111]
+ * 
+ * then output will be:
+ * [011,
+ *  101,
+ *  101,
+ *  011]
+ * 
+ * @param voids Input array
+ * @return py::array Transposed array with minimal dtype
+ */
+inline py::array bitwise_transpose(py::array voids, int64_t num_bits = -1) {
+    auto buf = voids.request();
+    
+    size_t M = buf.size;// Number of elements
+    size_t max_bits = buf.itemsize * 8; // Maximum bits per element
+    
+    // If num_bits not specified, use all bits in dtype
+    // This will create trailing zero bits, but its better than nothing
+    size_t N_bits = (num_bits > 0) ? static_cast<size_t>(num_bits) : max_bits;
+    
+    if (N_bits > max_bits) {
+        throw std::runtime_error("num_bits cannot exceed itemsize * 8");
+    }
+    // Calculate output dtype size (smallest possible to hold M bits)
+    size_t out_bytes = (M + 7) / 8;  // Ceiling division
+    
+    // Create output array with shape (N_bits,) and dtype |V{out_bytes}
+    std::string dtype_str = "|V" + std::to_string(out_bytes); //a revisiter, peux etre pas necessaire
+    py::dtype out_dtype(dtype_str);
+    std::vector<ssize_t> out_shape = {static_cast<ssize_t>(N_bits)};
+    py::array voids_out = py::array(out_dtype, out_shape);
+    auto buf_out = voids_out.request();
+    
+    const uint8_t *ptr_in = std::bit_cast<const uint8_t *>(buf.ptr);
+    uint8_t *ptr_out = std::bit_cast<uint8_t *>(buf_out.ptr);
+    
+    // Initialize output to zero
+    std::memset(ptr_out, 0, N_bits*out_bytes);
+    
+    // Transpose: bit j of element i becomes bit i of element j
+#ifdef USE_OPENMP
+    #pragma omp parallel for if (N_bits * M >= VOPS_THRESHOLD_PARALLEL) schedule(static)
+#endif
+    for (size_t j = 0; j < N_bits; ++j) {
+        size_t byte_idx_in = j / 8;
+        size_t bit_idx_in = j % 8;
+        
+        for (size_t i = 0; i < M; ++i) {
+            // Get bit j from element i
+            uint8_t bit = (ptr_in[i * buf.itemsize + byte_idx_in] >> bit_idx_in) & 1;
+            
+            // Set bit i in element j of output
+            size_t byte_idx_out = i / 8;
+            size_t bit_idx_out = i % 8;
+            
+            if (bit) {
+                ptr_out[j * out_bytes + byte_idx_out] |= (1 << bit_idx_out);
+            }
+        }
+    }
+    
+    return voids_out;
+}
+
+
+/**
+ * @brief Matrix multiplication of two void arrays (technically 1D), interpreted as 2D bit matrices.
+ * 
+ * @param voids_a 
+ * @param voids_b 
+ * @return py::array 
+ */
+inline py::array bitwise_matmul(py::array voids_a, py::array voids_b, int a_num_qubits,  int b_num_qubits) {
+    auto buf1 = voids_a.request();
+    auto buf2 = voids_b.request();
+
+    size_t a_rows = buf1.size;
+    size_t a_cols = a_num_qubits; // Number of bits per element in void
+    size_t b_rows = buf2.size;
+    size_t b_cols = b_num_qubits; // Number of bits per element in void
+
+    std::cout << "A shape: (" << a_rows << ", " << a_cols << ")\n";
+    std::cout << "B shape: (" << b_rows << ", " << b_cols << ")\n";
+
+    if (a_cols != b_rows) {
+        throw std::runtime_error("Shape mismatch for matrix multiplication: A columns (" +
+                                 std::to_string(a_cols) + ") must equal B rows (" +
+                                 std::to_string(b_rows) + ").");
+    }
+
+    size_t out_bytes = (b_cols + 7) / 8;
+    std::string dtype_str = "|V" + std::to_string(out_bytes);
+    py::dtype out_dtype(dtype_str);
+
+    // output is 1-D array of a_rows elements, each a void of out_bytes
+    std::vector<ssize_t> out_shape = { static_cast<ssize_t>(a_rows) };
+    py::array voids_out = py::array(out_dtype, out_shape);
+    auto buf_out = voids_out.request();
+
+    // py::array voids_out = py::array(voids_a.dtype(), {a_rows, b_cols/8});
+    // auto buf_out = voids_out.request();
+
+
+    std::memset(buf_out.ptr, 0, buf_out.size * buf_out.itemsize);
+    // Output array with shape (a_rows, b_cols)
+
+    const uint8_t *ptr_a = std::bit_cast<const uint8_t *>(buf1.ptr);
+    const uint8_t *ptr_b = std::bit_cast<const uint8_t *>(buf2.ptr);
+    int8_t *ptr_out = std::bit_cast<int8_t *>(buf_out.ptr);
+
+    for (size_t i = 0; i < a_rows; i++) {
+        for (size_t j = 0; j < b_cols; j++) {
+            int8_t bit_sum = 0;
+            for (size_t k = 0; k < a_cols; k++) {
+                // Get bit k of row i in A
+                size_t a_byte_idx = k / 8;
+                size_t a_bit_idx = k % 8;
+                uint8_t a_bit = (ptr_a[i * buf1.itemsize + a_byte_idx] >> a_bit_idx) & 1;
+
+                // Get bit j of row k in B
+                size_t b_byte_idx = j / 8;
+                size_t b_bit_idx = j % 8;
+                uint8_t b_bit = (ptr_b[k * buf2.itemsize + b_byte_idx] >> b_bit_idx) & 1;
+
+                bit_sum += a_bit & b_bit;
+            }
+            // Set bit j of row i in output
+            size_t out_byte_idx = j / 8;
+            size_t out_bit_idx = j % 8;
+            if (bit_sum % 2) { // Modulo 2 for bitwise addition
+                ptr_out[i * buf_out.itemsize + out_byte_idx] |= (1 << out_bit_idx);
+            }
+
+        }
+    }
+
+
+    return voids_out;
+
 }

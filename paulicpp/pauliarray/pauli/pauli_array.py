@@ -388,28 +388,28 @@ class PauliArray(object):
             PauliArray: The result of the composition.
             "np.ndarray[np.complex]" : Phases resulting from the composition.
         """
-        if C_CPP:
-            assert self.num_qubits == other.num_qubits
-            assert is_broadcastable(self.shape, other.shape)
-            z, x, phase = pcpp.compose(self.z_voids, self.x_voids, other.z_voids, other.x_voids)
-            return PauliArray(z, x, self.num_qubits), phase
-        else:
-            assert self.num_qubits == other.num_qubits
-            assert is_broadcastable(self.shape, other.shape)
+        # if C_CPP:
+        #     assert self.num_qubits == other.num_qubits
+        #     assert is_broadcastable(self.shape, other.shape)
+        #     z, x, phase = pcpp.compose(self.z_voids, self.x_voids, other.z_voids, other.x_voids)
+        #     return PauliArray(z, x, self.num_qubits), phase
+        # else:
+        assert self.num_qubits == other.num_qubits
+        assert is_broadcastable(self.shape, other.shape)
 
-            new_z_voids = vops.bitwise_xor(self.z_voids, other.z_voids)
-            new_x_voids = vops.bitwise_xor(self.x_voids, other.x_voids)
+        new_z_voids = vops.bitwise_xor(self.z_voids, other.z_voids)
+        new_x_voids = vops.bitwise_xor(self.x_voids, other.x_voids)
 
-            self_phase_power = vops.bitwise_dot(self.z_voids, self.x_voids)
-            other_phase_power = vops.bitwise_dot(other.z_voids, other.x_voids)
-            new_phase_power = vops.bitwise_dot(new_z_voids, new_x_voids)
-            commutation_phase_power = 2 * vops.bitwise_dot(self.x_voids, other.z_voids)
+        self_phase_power = vops.bitwise_dot(self.z_voids, self.x_voids)
+        other_phase_power = vops.bitwise_dot(other.z_voids, other.x_voids)
+        new_phase_power = vops.bitwise_dot(new_z_voids, new_x_voids)
+        commutation_phase_power = 2 * vops.bitwise_dot(self.x_voids, other.z_voids)
 
-            phase_power = commutation_phase_power + self_phase_power + other_phase_power - new_phase_power
+        phase_power = commutation_phase_power + self_phase_power + other_phase_power - new_phase_power
 
-            phases = np.choose(phase_power, [1, -1j, -1, 1j], mode="wrap")
+        phases = np.choose(phase_power, [1, -1j, -1, 1j], mode="wrap")
 
-            return PauliArray(new_z_voids, new_x_voids, self.num_qubits), phases
+        return PauliArray(new_z_voids, new_x_voids, self.num_qubits), phases
 
     def mul_weights(self, other: Union[Number, NDArray]) -> "WeightedPauliArray":
         """
@@ -1338,7 +1338,7 @@ def moveaxis(paulis: PauliArray, source: int, destination: int) -> PauliArray:
     return PauliArray(new_z_voids, new_x_voids, paulis.num_qubits)
 
 
-def unique(
+def unique2(
     paulis: PauliArray,
     axis: Optional[int] = None,
     return_index: bool = False,
@@ -1381,20 +1381,20 @@ def unique(
     else:
         axis = axis % paulis.ndim
 
-    # out = np.unique(
-    #     paulis.zx_voids,
-    #     axis=axis,
-    #     return_index=return_index,
-    #     return_inverse=return_inverse,
-    #     return_counts=return_counts,
-    # )
-    out = pcpp.unique(
+    out = np.unique(
         paulis.zx_voids,
-        # axis=axis,
+        axis=axis,
         return_index=return_index,
         return_inverse=return_inverse,
-        return_counts=return_counts
+        return_counts=return_counts,
     )
+    # out = pcpp.unique(
+    #     paulis.zx_voids,
+    #     # axis=axis,
+    #     return_index=return_index,
+    #     return_inverse=return_inverse,
+    #     return_counts=return_counts
+    # )
         
 
     if return_index or return_inverse or return_counts:
@@ -1407,7 +1407,7 @@ def unique(
 
     return out
 
-def unordered_unique(paulis: PauliArray, return_index: bool = False, return_inverse: bool = False, return_counts: bool = False) -> Union[PauliArray, Tuple[PauliArray, NDArray]]:
+def unique(paulis: PauliArray, return_index: bool = False, return_inverse: bool = False, return_counts: bool = False) -> Union[PauliArray, Tuple[PauliArray, NDArray]]:
     assert C_CPP, "C++ backend is not available."
 
     idx, inv = pcpp.unordered_unique(paulis.zx_voids)
