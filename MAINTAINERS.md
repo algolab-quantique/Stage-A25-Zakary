@@ -302,3 +302,18 @@ The configuration file is `CMakeLists.txt`, found in the project root.
 - `USE_OPENMP`: Enable/disable OpenMP multi-threading
     - Default: `ON`
     - Disable manually in `CMakeLists.txt` or via pip: `pip install . --config-settings=cmake.define.USE_OPENMP=OFF`
+
+---
+
+#### Current C++ conversions:
+
+| void_operations.py            | Speedup  | 1-to-1 ? | Notes |
+|-----------------              |-------   |----------|------------|
+| _xor(), _and(), _or(), _not() | 1x to 5x | Yes      | n/a |
+| _count(), _dot()              | 2x to 7x | Yes      | n/a   |
+
+| pauli_array.py          | Speedup  | 1-to-1 ? | Notes |
+|-----------------        |-------   |----------|------------|
+| unique()                | 1.5x to 3x | Almost...      | - 'axes' parameter is not implemented. da  |
+| unordered_unique()      | 2-10x | Nope! | - 'axes' parameter is not implemented. <br/>- If i get parralization to work, we get up to 7x consistently. <br/>- Only works for 2D arrays  |
+| bitwise_commute_with()  | 1x to 4x | Yes          | Weird Numpy array stuff going on. |

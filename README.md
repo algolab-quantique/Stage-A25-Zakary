@@ -1,71 +1,9 @@
-# PauliC++ 
+# PauliArray, with a side of C++
 WIP project which converts some of [PauliArray](https://github.com/algolab-quantique/pauliarray)'s functions to C++ in order to speed up the library all the whilst retaining the easy-to-use Python structure and syntax.
 
 This project uses [pybind11](https://github.com/pybind/pybind11) as its translator between Python/Numpy and C++. 
 
-#### Current C++ conversions:
-
-| void_operations.py            | Speedup  | 1-to-1 ? | Notes |
-|-----------------              |-------   |----------|------------|
-| _xor(), _and(), _or(), _not() | 1x to 5x | Yes      | n/a |
-| _count(), _dot()              | 2x to 7x | Yes      | n/a   |
-
-| pauli_array.py          | Speedup  | 1-to-1 ? | Notes |
-|-----------------        |-------   |----------|------------|
-| unique()                | 1.5x to 3x | Almost...      | - 'axes' parameter is not implemented. da  |
-| unordered_unique()      | 2-10x | Nope! | - 'axes' parameter is not implemented. <br/>- If i get parralization to work, we get up to 7x consistently. <br/>- Only works for 2D arrays  |
-| bitwise_commute_with()  | 1x to 4x | Yes          | Weird Numpy array stuff going on. |
-
-
-
-#### Sparse structure tests
-| Sparse                  | Speedup  | 1-to-1 ? | Notes |
-|-----------------        |-------   |----------|------------|
-| std::vector<dpoint>  | 0.002x to 40x | NO!      | Time complexity depends on the proximity of the 1s. This ranges from Ω(1) to O(n) |
-| std::set<dpoint> | even slower than vectors | NO!          | Since a vector's index lookup is O(1) and a set's (red-black tree) is O(log n), we get slowed more and more as comlexity increases such that in the worst case, the operations can take up to O(n log n). |
-
-
-
-
-
-
-
-
-## Structure
-Anything outside of `/paulicpp` is subject to deletion. The project structure is the exact same as PauliArray, with the following additions:
-
-saliu
-```
-├── pauliarray
-|   ├── binary
-|   ├── conversion
-|   ├── estimation
-|   ├── mapping
-|   ├── pauli
-|   ├── src
-|   │   ├── bindings
-|   │   │   └── {MODULE}_bindings.cpp
-|   │   ├── build
-|   │   │   └── {MODULE}.{dynamic_lib_extension}
-|   │   │   └── {MODULE}.pyi
-|   │   └── {MODULE}.hpp
-|   │
-|   └── utils
-|
-└── compiler.py
-```
-
-- `/src` Contains the C++ source code (.hpp) for every modules.
-- `/src/bindings` Contains the necessary pybind11 bindings necessary for the translation to and from Python.
-- `src/build` Contains the dynamic shared libraries and stub files.
-    <br>Linux/macOS -> xyz.so
-    <br>Windows -> xyz.dll
-- `compiler.py` Deprecated file.
-
-
-
-
-
+<img src =>
 
 ### Requirements
 - Python 3.10+
