@@ -180,7 +180,7 @@ namespace py = pybind11;
 Note: Omit `<pybind11/numpy.h>` if you don't use NumPy arrays.
 
 ### Writing Functions
-C++ requirese a lot more work and boilerplate in order to get the same result as in Python. 
+C++ requires a lot more work and boilerplate in order to get the same result as in Python. 
 The following functions both flip every bit of data inside of an NDArray:
 
 Python:
@@ -266,6 +266,7 @@ As for the syntax, most *for(...)* loops in the project are prefaced with:
 More keywords exist, but they are specific to certain behaviors that are much less common in this project
 
 ### Understanding the GIL
+TODO: Explain the GIL more in dephths
 Python's Global Interpreter Lock allows only one thread to execute Python bytecode at a time. This simplifies Python's memory management but prevents true multi-threading. Only multiprocessing can achieve true parallelism under the GIL.
 
 However, it is possible to get freed from the shackles of the GIL within C++. This can be done by declaring a section like this:
