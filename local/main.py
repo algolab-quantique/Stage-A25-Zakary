@@ -1,10 +1,11 @@
 import numpy as np
 
 import pauliarray.binary.void_operations as vops
+import pauliarray.pauli.pauli_array as p_a
 import pauliarray as pa
 
 NUM_QUBITS = 2
-NUM_ROWS = 4
+NUM_ROWS = 2
 
 
 def transpose():
@@ -71,10 +72,51 @@ def matmul():
     print(vops.pretty_print_voids(m, NUM_ROWS))
 
 
+def row_echelon():
+    from pauliarray.binary import bit_operations as bops
+
+    ran = pa.PauliArray.random((NUM_ROWS,), NUM_QUBITS)
+    z = ran.z_voids
+    x = ran.x_voids
+
+    print("\n\n======================== Int representation ========================")
+    print("Original Z voids:")
+    print(vops.pretty_print_voids(z, NUM_QUBITS))
+
+    r = vops.bitwise_row_echelon(z, NUM_QUBITS)
+
+    print("\nC++ Row echelon form Z voids:")
+    print(vops.pretty_print_voids(r, NUM_QUBITS))
+
+    bit_z = vops.voids_to_bit_strings(z, NUM_QUBITS)
+    bit_r = bops.row_echelon(bit_z)
+    print("\nPython (bitops) Row echelon form Z voids:")
+    bit_r_voids = vops.bit_strings_to_voids(bit_r)
+
+    print(vops.pretty_print_voids(bit_r_voids, NUM_QUBITS))
+
+    assert np.array_equal(r, bit_r_voids), "C++ and Python row echelon results do not match!"
+
+
+def matrix():
+    ran = pa.PauliArray.random((NUM_ROWS,), NUM_QUBITS)
+    print("\n\n======================== Pauli Array ========================")
+    print("Random Pauli Array:")
+    print(ran.inspect())
+
+    a = p_a.c_to_matrix(ran)
+    print(a)
+    print("\n\n======================== Python Matrix ========================")
+
+    b = pa.PauliArray.to_matrices(ran)
+    print(b)
+
+
 def main():
     # transpose()
-    matmul()
-
+    # matmul()
+    # row_echelon()
+    matrix()
 
 
 

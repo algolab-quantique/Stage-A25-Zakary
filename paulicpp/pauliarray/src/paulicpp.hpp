@@ -472,3 +472,265 @@ py::tuple unordered_unique(py::array zx_voids) {
 
     return py::make_tuple(py_indices, py_inverse);
 }
+
+
+//TODO: Make it work
+/**
+ * @brief applies Gauss-Jordan elimination on a binary matrix to produce row echelon form
+ * 
+ * 
+ * @param voids 
+ * @param num_qubits 
+ * @return py::array 
+ */
+py::array bitwise_row_echelon(py::array voids, int num_qubits){
+    auto buf = voids.request();
+
+    size_t n_rows = buf.size;
+    size_t n_cols = num_qubits;
+
+    py::array voids_out = py::array(voids.dtype(), buf.shape);
+    auto buf_out = voids_out.request();
+
+    const uint8_t *ptr_in = std::bit_cast<const uint8_t *>(buf.ptr);
+    uint8_t *ptr_out = std::bit_cast<uint8_t *>(buf_out.ptr);
+
+    // Copy input to output
+    std::memcpy(ptr_out, ptr_in, buf.size*buf.itemsize);
+
+    int h_row = 0;
+    int k_col = 0;
+
+//     while h_row < n_rows and k_col < n_cols:
+//         if np.all(re_bit_matrix[h_row:, k_col] == 0):
+//             k_col += 1
+//         else:
+//             i_row = h_row + np.argmax(re_bit_matrix[h_row:, k_col])
+//             if i_row != h_row:
+//                 re_bit_matrix[[i_row, h_row], :] = re_bit_matrix[[h_row, i_row], :]
+
+//             cond_rows = np.logical_and(re_bit_matrix[:, k_col], (row_range != h_row))
+
+//             re_bit_matrix[cond_rows, :] = np.logical_xor(re_bit_matrix[cond_rows, :], re_bit_matrix[h_row, :][None, :])
+
+//             h_row += 1
+//             k_col += 1
+
+//     return re_bit_matrix
+
+//TODO: Optimize!
+    while (h_row < n_rows && k_col < n_cols) {
+        int found_nonzero = 0;
+        for (int r = h_row; r < n_rows; r++) {
+            size_t byte_idx = k_col / 8;
+            size_t bit_idx = k_col % 8;
+            uint8_t bit = (ptr_out[r * buf.itemsize + byte_idx] >> bit_idx) & 1;
+            if (bit) {
+                found_nonzero = 1;
+                break;
+            }
+        }
+        if (!found_nonzero) {
+            k_col += 1;
+        } else {
+            // Find pivot row
+            int i_row = h_row;
+            for (int r = h_row; r < n_rows; r++) {
+                size_t byte_idx = k_col / 8;
+                size_t bit_idx = k_col % 8;
+                uint8_t bit = (ptr_out[r * buf.itemsize + byte_idx] >> bit_idx) & 1;
+                if (bit) {
+                    i_row = r;
+                    break;
+                }
+            }
+            // Swap rows if needed
+            if (i_row != h_row) {
+                for (size_t b = 0; b < buf.itemsize; b++) {
+                    std::swap(ptr_out[i_row * buf.itemsize + b], ptr_out[h_row * buf.itemsize + b]);
+                }
+            }
+
+            // Eliminate other rows
+            for (size_t r = 0; r < n_rows; r++) {
+                if (r != h_row) {
+                    size_t byte_idx = k_col / 8;
+                    size_t bit_idx = k_col % 8;
+                    uint8_t bit = (ptr_out[r * buf.itemsize + byte_idx] >> bit_idx) & 1;
+                    if (bit) {
+                        // XOR rows
+                        for (size_t b = 0; b < buf.itemsize; b++) {
+                            ptr_out[r * buf.itemsize + b] ^= ptr_out[h_row * buf.itemsize + b];
+                        }
+                    }
+                }
+            }
+            h_row++;
+            k_col++;
+        }
+    }
+
+    return voids_out;
+}
+
+
+
+
+std::tuple<std::vector<int>, std::vector<int>, std::vector<std::complex<double>>> sparse_matrix_from_zx_voids(py::array z_voids, py::array x_voids, int num_qubits) {
+    auto buf_z = z_voids.request();
+    auto buf_x = x_voids.request();
+
+    size_t dim = 1 << num_qubits; // this is equivalent to 2**num_qubits
+    std::vector<int> row_ind(dim);
+    std::vector<int> col_ind(dim);
+    std::vector<std::complex<double>> matrix_elements(dim);
+
+
+    size_t itemsize = buf_z.itemsize;
+    size_t n = buf_z.size;
+    size_t n64 = itemsize / 8;
+    size_t tail = itemsize % 8;
+    size_t total_64_chunks = n * n64;
+
+    uint8_t *z_ptr = std::bit_cast<uint8_t *>(buf_z.ptr);
+    uint8_t *x_ptr = std::bit_cast<uint8_t *>(buf_x.ptr);
+
+    for (size_t i = 0; i < dim; ++i) {
+        row_ind[i] = i;
+        // col_ind = row_ind XOR x_int
+        int col = 0;
+        for (size_t byte_idx = 0; byte_idx < itemsize; ++byte_idx) {
+            col |= ((x_ptr[byte_idx] & (1 << (i % 8))) ? (1 << (byte_idx * 8 + (i % 8))) : 0);
+        }
+        col_ind[i] = i ^ col;
+
+        // matrix_elements = 1 - 2 * (popcount(row_ind & z_int) % 2)
+        int popcount = 0;
+        for (size_t byte_idx = 0; byte_idx < itemsize; ++byte_idx) {
+            uint8_t and_result = row_ind[i] & z_ptr[byte_idx];
+            popcount += std::popcount(and_result);
+        }
+        matrix_elements[i] = (popcount % 2 == 0) ? std::complex<double>(1.0, 0.0) : std::complex<double>(-1.0, 0.0);
+    }
+    std::cout << "Col size: " << col_ind.size() << std::endl;
+    std::cout << "Row size: " << row_ind.size() << std::endl;
+    std::cout << "Matrix elements size: " << matrix_elements.size() << std::endl;
+
+
+    return std::make_tuple(row_ind, col_ind, matrix_elements);
+
+}
+
+
+//         phase_powers = np.mod(bitops.dot(self.paulis.z_strings, self.paulis.x_strings), 4)
+//         phases = np.choose(phase_powers, [1, -1j, -1, 1j])
+std::vector<std::complex<double>> get_phases(py::array z_voids, py::array x_voids) {
+    auto buf_z = z_voids.request();
+    auto buf_x = x_voids.request();
+
+    size_t n = buf_z.size;
+
+    std::vector<std::complex<double>> phases(n);
+
+    const uint8_t *z_ptr = std::bit_cast<const uint8_t *>(buf_z.ptr);
+    const uint8_t *x_ptr = std::bit_cast<const uint8_t *>(buf_x.ptr);
+}
+
+
+
+// def to_matrix(self) -> NDArray:
+//         """
+//         Converts the Operator into a (n**2, n**2) matrix.
+
+//         Returns:
+//             NDArray: The matrix representation of the Operator.
+//         """
+//         # This method does not use WeightedPauliArray.to_matrices() for performance.
+
+//         mat_shape = (2**self.num_qubits, 2**self.num_qubits)
+
+//         z_ints = bitops.strings_to_ints(self.paulis.z_strings)
+//         x_ints = bitops.strings_to_ints(self.paulis.x_strings)
+
+//? what is this type
+//         phase_powers = np.mod(bitops.dot(self.paulis.z_strings, self.paulis.x_strings), 4)
+//         phases = np.choose(phase_powers, [1, -1j, -1, 1j])
+
+//         matrix = np.zeros(mat_shape, dtype=complex)
+//         for idx in np.ndindex(self.wpaulis.shape):
+//             row_ind, col_ind, matrix_elements = pa.PauliArray.sparse_matrix_from_zx_ints(
+//                 z_ints[idx], x_ints[idx], self.num_qubits
+//             )
+//? self.weights?
+
+//             matrix[row_ind, col_ind] += self.weights[idx] * phases[idx] * matrix_elements
+
+//         return matrix
+//todo: Check return type of operator::to_matrix()
+/**
+ * @brief 
+ * 
+ * @param z_voids 
+ * @param x_voids 
+ * @return py::array_t<std::complex<double>> 
+ */
+py::array_t<std::complex<double>> to_matrix(py::array z_voids, py::array x_voids, int num_qubits) {
+    auto buf_z = z_voids.request();
+    auto buf_x = x_voids.request();
+
+
+
+
+    size_t n_rows = buf_z.shape[0];
+    size_t n_cols = num_qubits;
+
+    py::array_t<std::complex<double>> matrix({static_cast<ssize_t>(1 << n_cols), static_cast<ssize_t>(1 << n_cols)});
+    auto buf_mat = matrix.request();
+    auto ptr_mat = static_cast<std::complex<double> *>(buf_mat.ptr);
+
+    std::memset(buf_mat.ptr, 0, buf_mat.size * buf_mat.itemsize);
+
+    for (size_t idx = 0; idx < n_rows; ++idx) {
+        py::array z_row = z_voids[py::int_(idx)];
+        py::array x_row = x_voids[py::int_(idx)];
+
+        auto [row_ind, col_ind, matrix_elements] = sparse_matrix_from_zx_voids(z_row, x_row, num_qubits);
+
+        for (size_t k = 0; k < row_ind.size(); ++k) {
+            size_t r = row_ind[k];
+            size_t c = col_ind[k];
+            ptr_mat[r * (1 << n_cols) + c] += matrix_elements[k];
+        }
+    }
+
+    
+    return matrix;
+
+}
+
+//  def sparse_matrix_from_zx_ints(z_int: int, x_int: int, num_qubits: int) -> Tuple[NDArray, NDArray, NDArray]:
+//         """
+//         Builds the matrix representing the Pauli String encoded in a sparse notation.
+
+//         Args:
+//             z_int (int): Integer which binary representation defines the z part of a Pauli String.
+//             x_int (int): Integer which binary representation defines the x part of a Pauli String.
+//             num_qubits (int): Length of the Pauli String.
+
+//         Returns:
+//             row_ind (NDArray): The row indices of returned matrix elements.
+//             col_ind (NDArray): The column indices of returned matrix elements.
+//             matrix_elements (NDArray): The matrix elements.
+//         """
+//         dim = 2**num_qubits
+
+//         row_ind = np.arange(dim, dtype=np.uint64)
+//         col_ind = np.bitwise_xor(row_ind, x_int)
+
+//         matrix_elements = 1 - 2 * (np.bitwise_count(np.bitwise_and(row_ind, z_int)).astype(np.float64) % 2)
+
+//         return row_ind, col_ind, matrix_elements
+
+
+
+

@@ -324,3 +324,10 @@ def bitwise_matmul(voids_1: NDArray, voids_2: NDArray, a_num_qubits: int, b_num_
     
     else:
         raise RuntimeError("C++ backend not available.")
+    
+def bitwise_row_echelon(voids: NDArray, num_qubits: int) -> NDArray:
+    if C_CCP:
+        return vcpp.bitwise_row_echelon(_contiguous(voids), num_qubits)
+    
+    else:
+        raise RuntimeError("C++ backend not available.")

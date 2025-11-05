@@ -571,27 +571,3 @@ inline py::array bitwise_matmul(py::array voids_a, py::array voids_b, int a_num_
 
 //     return re_bit_matrix
 
-/**
- * @brief applies Gauss-Jordan elimination on a binary matrix to produce row echelon form
- * 
- * @param voids 
- * @param num_qubits 
- * @return py::array 
- */
-py::array bitwise_row_echelon(py::array voids, int num_qubits){
-    auto buf = voids.request();
-
-    size_t n_rows = buf.size;
-    size_t n_cols = num_qubits;
-
-    py::array voids_out = py::array(voids.dtype(), buf.shape);
-    auto buf_out = voids_out.request();
-
-    const uint8_t *ptr_in = std::bit_cast<const uint8_t *>(buf.ptr);
-    uint8_t *ptr_out = std::bit_cast<uint8_t *>(buf_out.ptr);
-
-    // Copy input to output
-    std::memcpy(ptr_out, ptr_in, buf.size*buf.itemsize);
-
-    
-}

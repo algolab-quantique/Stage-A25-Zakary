@@ -18,6 +18,12 @@ PYBIND11_MODULE(paulicpp, m) {
     m.def("unordered_unique", &unordered_unique, "Returns unordered unique rows of the input array");
     m.def("compose", &compose, "Compose two Pauli arrays");
 
+    m.def("bitwise_row_echelon", &bitwise_row_echelon, "addwad");
+
+    m.def("to_matrix", &to_matrix, "addwad");
+    
+        
+
     // register voidops bindings into this module
     register_voidops(m);
 }

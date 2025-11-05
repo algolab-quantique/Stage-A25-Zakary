@@ -1426,3 +1426,6 @@ def unique(paulis: PauliArray, return_index: bool = False, return_inverse: bool 
         return uniques
         
         
+def c_to_matrix(pauli: PauliArray) -> NDArray:
+    assert C_CPP, "C++ backend is not available."
+    return pcpp.to_matrix(pauli.z_voids, pauli.x_voids, pauli.num_qubits)
