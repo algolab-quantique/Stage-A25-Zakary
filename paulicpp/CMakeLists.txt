@@ -19,15 +19,12 @@ find_package(pybind11 CONFIG REQUIRED)
 option(USE_OPENMP "Enable OpenMP support" ON)
 
 
-pybind11_add_module(paulicpp
-    pauliarray/src/bindings/paulicpp_bindings.cpp
-    pauliarray/src/bindings/voidops_bindings.cpp
-    # pauliarray/src/xxhash/xxhash.c 
+pybind11_add_module(_core
+    pauliarray/_src/bindings/cz2m_bindings.cpp
+    pauliarray/_src/bindings/bitops_bindings.cpp
+    # pauliarray/_src/xxhash/xxhash.c 
 )
-pybind11_add_module(sparsepaulicpp
-    pauliarray/src/bindings/sparsepaulicpp_bindings.cpp
-    pauliarray/src/bindings/setsparse_bindings.cpp
-)
+
 # MUST-HAVES FLAGS
 # O3 is the most aggressive optimization level that is safe. Ofast may break things, and is not a whole lot faster.
 # march=native enables all instruction sets supported by the local machine. This causes non-portable binaries, but is faster in local builds.
@@ -61,7 +58,7 @@ if(APPLE)
     find_library(SYSTEM_LIBCPP NAMES c++ libc++ PATHS /usr/lib /usr/local/lib)
     if(SYSTEM_LIBCPP)
         message(STATUS "Linking against system C++ library: ${SYSTEM_LIBCPP}")
-        target_link_libraries(paulicpp PRIVATE ${SYSTEM_LIBCPP})
+        target_link_libraries(_core PRIVATE ${SYSTEM_LIBCPP})
     else()
         message(WARNING "System libc++ not found; runtime C++ symbols may be missing")
     endif()
@@ -71,7 +68,7 @@ if(APPLE)
     find_library(SYSTEM_LIBCPPABI NAMES c++abi libc++abi PATHS /usr/lib /usr/local/lib)
     if(SYSTEM_LIBCPPABI)
         message(STATUS "Linking against system C++ ABI library: ${SYSTEM_LIBCPPABI}")
-        target_link_libraries(paulicpp PRIVATE ${SYSTEM_LIBCPPABI})
+        target_link_libraries(_core PRIVATE ${SYSTEM_LIBCPPABI})
     else()
         message(STATUS "System libc++abi not found; continuing without explicit libc++abi link")
     endif()
@@ -81,12 +78,12 @@ if(APPLE)
     if(HOMEBREW_LIBCPP)
         message(STATUS "Linking against Homebrew/LLVM libc++: ${HOMEBREW_LIBCPP}")
         # Link both modules against this explicit dylib so the symbol provider is available at runtime
-        target_link_libraries(paulicpp PRIVATE ${HOMEBREW_LIBCPP})
-        target_link_libraries(sparsepaulicpp PRIVATE ${HOMEBREW_LIBCPP})
+        target_link_libraries(_core PRIVATE ${HOMEBREW_LIBCPP})
+        # target_link_libraries(sparse_core PRIVATE ${HOMEBREW_LIBCPP})
         set(HOMEBREW_LIBCPP_DIR "${CMAKE_MATCH_LIBRARIES}/../c++" CACHE STRING "Calculated Homebrew libc++ dir" FORCE)
 
-        set_target_properties(paulicpp PROPERTIES INSTALL_RPATH "@loader_path;/usr/local/opt/llvm/lib/c++")
-        set_target_properties(sparsepaulicpp PROPERTIES INSTALL_RPATH "@loader_path;/usr/local/opt/llvm/lib/c++")
+        set_target_properties(_core PROPERTIES INSTALL_RPATH "@loader_path;/usr/local/opt/llvm/lib/c++")
+        # set_target_properties(sparse_core PROPERTIES INSTALL_RPATH "@loader_path;/usr/local/opt/llvm/lib/c++")
     else()
         message(STATUS "Homebrew libc++ not found in standard locations; will rely on system libcpython++")
     endif()
@@ -114,37 +111,37 @@ if(USE_OPENMP)
     if(OpenMP_CXX_FOUND)
         # prefer modern importing if available
         if(TARGET OpenMP::OpenMP_CXX)
-            target_link_libraries(paulicpp PRIVATE OpenMP::OpenMP_CXX)
-            target_link_libraries(sparsepaulicpp PRIVATE OpenMP::OpenMP_CXX)
+            target_link_libraries(_core PRIVATE OpenMP::OpenMP_CXX)
+            # target_link_libraries(sparse_core PRIVATE OpenMP::OpenMP_CXX)
         else() # old maniere
-            target_compile_options(paulicpp PRIVATE ${OpenMP_CXX_FLAGS})
-            target_link_libraries(paulicpp PRIVATE ${OpenMP_CXX_LIBRARIES})
-            target_compile_options(sparsepaulicpp PRIVATE ${OpenMP_CXX_FLAGS})
-            target_link_libraries(sparsepaulicpp PRIVATE ${OpenMP_CXX_LIBRARIES})
+            target_compile_options(_core PRIVATE ${OpenMP_CXX_FLAGS})
+            target_link_libraries(_core PRIVATE ${OpenMP_CXX_LIBRARIES})
+            # target_compile_options(sparse_core PRIVATE ${OpenMP_CXX_FLAGS})
+            # target_link_libraries(sparse_core PRIVATE ${OpenMP_CXX_LIBRARIES})
         endif()
 
-        target_compile_definitions(paulicpp PRIVATE USE_OPENMP)
-        target_compile_definitions(sparsepaulicpp PRIVATE USE_OPENMP)
+        target_compile_definitions(_core PRIVATE USE_OPENMP)
+        # target_compile_definitions(sparse_core PRIVATE USE_OPENMP)
 
         if(DEFINED LIBOMP_INCLUDE_DIR)
-            target_include_directories(paulicpp PRIVATE ${LIBOMP_INCLUDE_DIR})
-            target_include_directories(sparsepaulicpp PRIVATE ${LIBOMP_INCLUDE_DIR})
+            target_include_directories(_core PRIVATE ${LIBOMP_INCLUDE_DIR})
+            # target_include_directories(sparse_core PRIVATE ${LIBOMP_INCLUDE_DIR})
         endif()
     endif()
 endif()
 
 
 
-set_target_properties(paulicpp PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/pauliarray/src/build
+set_target_properties(_core PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/pauliarray/_src/build
 )
 
-set_target_properties(sparsepaulicpp PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/pauliarray/src/build
-)
+# set_target_properties(sparse_core PROPERTIES
+#     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/pauliarray/_src/build
+# )
 
-install(TARGETS paulicpp DESTINATION pauliarray/src/build)
-install(TARGETS sparsepaulicpp DESTINATION pauliarray/src/build)
+install(TARGETS _core DESTINATION pauliarray/_src/build)
+# install(TARGETS sparse_core DESTINATION pauliarray/_src/build)
 
 
 
@@ -156,34 +153,34 @@ find_package(Python COMPONENTS Interpreter REQUIRED)
 
 
 # TODO: Make this work with xxhash!
-add_custom_command(TARGET paulicpp POST_BUILD
+add_custom_command(TARGET _core POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
           ${Python_EXECUTABLE} -m pybind11_stubgen
-          pauliarray.src.build.paulicpp
+          pauliarray._src.build._core
           -o ${CMAKE_SOURCE_DIR}
           )
 
-add_custom_command(TARGET sparsepaulicpp POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
-          ${Python_EXECUTABLE} -m pybind11_stubgen
-          pauliarray.src.build.sparsepaulicpp
-          -o ${CMAKE_SOURCE_DIR}
-          )
+# add_custom_command(TARGET sparse_core POST_BUILD
+#   COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
+#           ${Python_EXECUTABLE} -m pybind11_stubgen
+#           pauliarray._src.build.sparse_core
+#           -o ${CMAKE_SOURCE_DIR}
+#           )
 
 
 
 # ================== DOES NOT WORK! USE PYBIND11_STUBGEN INSTEAD ==================
 
-# add_custom_command(TARGET paulicpp POST_BUILD
+# add_custom_command(TARGET _core POST_BUILD
 #     COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
 #                     ${Python_EXECUTABLE} -m mypy.stubgen --module
-#                     pauliarray.src.build.paulicpp
+#                     pauliarray._src.build._core
 #                     -o ${CMAKE_SOURCE_DIR}
 # )
 
-# add_custom_command(TARGET sparsepaulicpp POST_BUILD
+# add_custom_command(TARGET sparse_core POST_BUILD
 #     COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
 #                     ${Python_EXECUTABLE} -m mypy.stubgen --module
-#                     pauliarray.src.build.sparsepaulicpp
+#                     pauliarray._src.build.sparse_core
 #                     -o ${CMAKE_SOURCE_DIR}
 # )

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from pauliarray.pauli.weighted_pauli_array import WeightedPauliArray
 
 try:
-    from ..src.build import paulicpp as pcpp
+    from .._src.build import _core
     C_CPP = True
 except ImportError as e:
     C_CPP = False
@@ -391,7 +391,7 @@ class PauliArray(object):
         # if C_CPP:
         #     assert self.num_qubits == other.num_qubits
         #     assert is_broadcastable(self.shape, other.shape)
-        #     z, x, phase = pcpp.compose(self.z_voids, self.x_voids, other.z_voids, other.x_voids)
+        #     z, x, phase = _core.compose(self.z_voids, self.x_voids, other.z_voids, other.x_voids)
         #     return PauliArray(z, x, self.num_qubits), phase
         # else:
         assert self.num_qubits == other.num_qubits
@@ -447,7 +447,7 @@ class PauliArray(object):
             PauliArray: The result of the tensor product.
         """
         if C_CPP:
-            z, x = pcpp.tensor(_contiguous(self.z_voids), _contiguous(self.x_voids), _contiguous(other.z_voids), _contiguous(other.x_voids))
+            z, x = _core.tensor(_contiguous(self.z_voids), _contiguous(self.x_voids), _contiguous(other.z_voids), _contiguous(other.x_voids))
             return PauliArray(z, x, self.num_qubits + other.num_qubits)
         
         else:
@@ -522,7 +522,7 @@ class PauliArray(object):
             "np.ndarray[np.bool]": An array of bool set to true for bitwise commuting Pauli string, and false otherwise.
         """
         if C_CPP:
-            return pcpp.bitwise_commute_with(self.z_voids, self.x_voids, other.z_voids, other.x_voids)
+            return _core.bitwise_commute_with(self.z_voids, self.x_voids, other.z_voids, other.x_voids)
         else:    
             ovlp_1 = vops.bitwise_and(self.z_voids, other.x_voids)
             ovlp_2 = vops.bitwise_and(self.x_voids, other.z_voids)
@@ -1037,7 +1037,7 @@ class PauliArray(object):
 
         assert C_CPP, "C++ backend is not available."
 
-        z, x = pcpp.random_zx_strings(shape)
+        z, x = _core.random_zx_strings(shape)
         # print("z:", z)
         # print("x:", x)
         return PauliArray.from_z_strings_and_x_strings(z, x)
@@ -1388,7 +1388,7 @@ def unique2(
         return_inverse=return_inverse,
         return_counts=return_counts,
     )
-    # out = pcpp.unique(
+    # out = _core.unique(
     #     paulis.zx_voids,
     #     # axis=axis,
     #     return_index=return_index,
@@ -1410,7 +1410,7 @@ def unique2(
 def unique(paulis: PauliArray, return_index: bool = False, return_inverse: bool = False, return_counts: bool = False) -> Union[PauliArray, Tuple[PauliArray, NDArray]]:
     assert C_CPP, "C++ backend is not available."
 
-    idx, inv = pcpp.unordered_unique(paulis.zx_voids)
+    idx, inv = _core.unordered_unique(paulis.zx_voids)
     
     uniques = PauliArray.from_zx_voids(paulis.zx_voids[idx], paulis.num_qubits)
 
@@ -1428,4 +1428,4 @@ def unique(paulis: PauliArray, return_index: bool = False, return_inverse: bool 
         
 def c_to_matrix(pauli: PauliArray) -> NDArray:
     assert C_CPP, "C++ backend is not available."
-    return pcpp.to_matrix(pauli.z_voids, pauli.x_voids, pauli.num_qubits)
+    return _core.to_matrix(pauli.z_voids, pauli.x_voids, pauli.num_qubits)

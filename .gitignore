@@ -55,7 +55,6 @@ paulicpp/pauliarray/src/build/*.*
 .vscode
 **/__pycache__
 # voids.json
-*.png
 /local/results
 .DS_Store
 *.pyc

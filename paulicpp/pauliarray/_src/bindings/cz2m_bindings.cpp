@@ -1,12 +1,12 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include "../paulicpp.hpp"
+#include "../cz2m.hpp"
 // declare registration function from voidops_bindings.cpp
-void register_voidops(pybind11::module_ &m);
+void register_bitops(pybind11::module_ &m);
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(paulicpp, m) {
+PYBIND11_MODULE(_core, m) {
     m.doc() = "Python bindings for the PauliArray class using Pybind11";
 
     m.def("tensor", &tensor, "awdwa");
@@ -22,8 +22,7 @@ PYBIND11_MODULE(paulicpp, m) {
 
     m.def("to_matrix", &to_matrix, "addwad");
     
-        
 
     // register voidops bindings into this module
-    register_voidops(m);
+    register_bitops(m);
 }

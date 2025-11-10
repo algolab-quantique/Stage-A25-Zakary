@@ -2,13 +2,9 @@ import numpy as np
 from numpy.typing import NDArray
 
 try:
-    from ..src.build import voidops as vcpp
+    from .._src.build import _core 
     C_CCP = True
 except ImportError:
-    try:
-        from ..src.build import paulicpp as vcpp
-        C_CCP = True
-    except ImportError:
         C_CCP = False
 
 INTSIZE_TO_UINTTYPE = {1: np.uint8, 2: np.uint16, 4: np.uint32, 8: np.uint64}
@@ -111,7 +107,7 @@ def int_strings_bitcount(int_strings: NDArray[np.int_]):
 
 def bitwise_count(voids: NDArray) -> NDArray[np.int64]:
     if C_CCP:
-        return vcpp.bitwise_count(_contiguous(voids))
+        return _core.bitwise_count(_contiguous(voids))
 
     else:
         int_strings = voids_to_int_strings(voids)
@@ -121,7 +117,7 @@ def bitwise_count(voids: NDArray) -> NDArray[np.int64]:
 
 def bitwise_not(voids: NDArray) -> NDArray:
     if C_CCP:
-        return vcpp.bitwise_not(_contiguous(voids))
+        return _core.bitwise_not(_contiguous(voids))
     
     else:
         int_strings = voids_to_int_strings(voids)
@@ -139,7 +135,7 @@ def bitwise_dot(
         # v1, v2 = _bc(voids_1, voids_2)
         # v1 = _contiguous(v1)
         # v2 = _contiguous(v2)
-        return vcpp.bitwise_dot(*_bc(voids_1, voids_2))
+        return _core.bitwise_dot(*_bc(voids_1, voids_2))
     
     else:
         assert voids_1.dtype.itemsize == voids_2.dtype.itemsize
@@ -155,7 +151,7 @@ def bitwise_and(
     voids_2: NDArray,
 ) -> NDArray:
     if C_CCP:
-        return vcpp.bitwise_and(*_bc(voids_1, voids_2))
+        return _core.bitwise_and(*_bc(voids_1, voids_2))
     
     else:
         assert voids_1.dtype.itemsize == voids_2.dtype.itemsize
@@ -173,7 +169,7 @@ def bitwise_xor(
     voids_2: NDArray,
 ) -> NDArray:
     if C_CCP:
-        return vcpp.bitwise_xor(*_bc(voids_1, voids_2))
+        return _core.bitwise_xor(*_bc(voids_1, voids_2))
     
     else:
         assert voids_1.dtype.itemsize == voids_2.dtype.itemsize
@@ -192,7 +188,7 @@ def bitwise_or(
     voids_2: NDArray,
 ) -> NDArray:
     if C_CCP:
-        return vcpp.bitwise_or(*_bc(voids_1, voids_2))
+        return _core.bitwise_or(*_bc(voids_1, voids_2))
     
     else:
         assert voids_1.dtype.itemsize == voids_2.dtype.itemsize
@@ -209,7 +205,7 @@ def bitwise_or(
 def paded_bitwise_not(voids: NDArray, num_qubits: int) -> NDArray:
 
     # if C_CCP:
-    #     return vcpp.paded_bitwise_not(_contiguous(voids), num_qubits)
+    #     return _core.paded_bitwise_not(_contiguous(voids), num_qubits)
     # else:
     int_strings = voids_to_int_strings(voids)
     new_int_strings = np.invert(int_strings)
@@ -293,7 +289,7 @@ def get_backend():
 
 def random_zx_strings(shape):
     if C_CCP:
-        return vcpp.random_zx_strings(shape)
+        return _core.random_zx_strings(shape)
     else:
         raise RuntimeError("C++ backend not available.")
     
@@ -301,7 +297,7 @@ def random_zx_strings(shape):
 def bitwise_transpose(voids: NDArray, num_qubits : int) -> NDArray:
     if C_CCP:
         
-        return vcpp.bitwise_transpose(_contiguous(voids), num_qubits)
+        return _core.bitwise_transpose(_contiguous(voids), num_qubits)
     
     else:
         raise RuntimeError("C++ backend not available.")
@@ -320,14 +316,14 @@ def pretty_print_voids(voids: NDArray, num_qubits: int) -> str:
 
 def bitwise_matmul(voids_1: NDArray, voids_2: NDArray, a_num_qubits: int, b_num_qubits: int) -> NDArray:
     if C_CCP:
-        return vcpp.bitwise_matmul(_contiguous(voids_1), _contiguous(voids_2), a_num_qubits, b_num_qubits)
+        return _core.bitwise_matmul(_contiguous(voids_1), _contiguous(voids_2), a_num_qubits, b_num_qubits)
     
     else:
         raise RuntimeError("C++ backend not available.")
     
 def bitwise_row_echelon(voids: NDArray, num_qubits: int) -> NDArray:
     if C_CCP:
-        return vcpp.bitwise_row_echelon(_contiguous(voids), num_qubits)
+        return _core.bitwise_row_echelon(_contiguous(voids), num_qubits)
     
     else:
         raise RuntimeError("C++ backend not available.")

@@ -4,8 +4,8 @@ import pauliarray.binary.void_operations as vops
 import pauliarray.pauli.pauli_array as p_a
 import pauliarray as pa
 
-NUM_QUBITS = 2
-NUM_ROWS = 2
+NUM_QUBITS = 9
+NUM_ROWS = 8
 
 
 def transpose():
@@ -115,8 +115,8 @@ def matrix():
 def main():
     # transpose()
     # matmul()
-    # row_echelon()
-    matrix()
+    row_echelon()
+    # matrix()
 
 
 

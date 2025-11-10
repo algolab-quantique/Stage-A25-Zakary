@@ -13,7 +13,7 @@ The project structure is the exact same as PauliArray's [Voids](https://github.c
 |   ├── mapping
 |   ├── pauli
 |   ├──utils
-|   └── src
+|   └── _src
 |       ├── bindings
 |       │   └── {MODULE}_bindings.cpp
 |       ├── build
@@ -81,14 +81,30 @@ To build this library from source, you will need:
 
 Note: In theory, Windows can compile the entire project with no issues. However, since MSVC is a completely different beast to GCC or Clang, no build options have been added to support it. MinGW would also probably work.
 
-### Understanding Voids
-**Voids** (also called "void strings", "binary blobs" or "raw data") refer to the packed bit representation of lists of binary values. This is **not** related to the C/C++ `void` data type.
-Voids usually represent *z, x* in a Pauli string.
-- Original Python representation: `z = [0, 1, 1, 0]` (List of booleans)
-- Voids representation: `z = 0b0110` or `z = 6` (Single integer)
-  
-This packed representation significantly reduces memory usage and enables efficient bitwise operations.
+---
+## Nomenclature
 
+### Z2R
+*Also know as 'Voids', 'bit_string'.*
+<br>Is defined as: $\mathbb{Z}_2$ Rows.
+
+- '$\mathbb{Z}_2$' denotes the cyclic group of integers modulo 2 (i.e the set {0, 1}).
+- 'Rows' states that the structure is a row (list) of elements.
+
+Thus, the structure is a long list of binary 1s and 0s. This packed representation significantly reduces memory usage and enables efficient bitwise operations.
+- Python: `z = np.array([0, 1, 1 0], dtype=np.int8)`. This takes 4 bytes of memory
+- C++: `z = 0b0110`. This takes 1 byte of memory
+
+### CZ2M
+Is defined as: C $\mathbb{Z}_2$ Matrix
+
+This name is in reference to the C++ module which operates on Z2Rs to produce matrices.
+
+### bitwise_[...]
+Is the naming standard of any operation that affects only the individual bits of a Z2R
+
+
+---
 
 ### General Coding Standards
 **Avoid Manual Broadcasting:** Broadcasting is a complex process that required substantial engineering effort from the NumPy team to implement efficiently. Rather than reimplementing ourself broadcasting in C++, either:
@@ -110,8 +126,9 @@ TODO: EXPLAIN CONTIGUITY IN DETAIL!
 - Use generic `py::array` for Voids (packed binary data)
 
 **Binary Data Types:** Since C++ has no native 'binary' type, a substitute one must be chosen instead. Use these types because they guarantee exact bit lengths and support both arithmetic and binary operations:
-- `uint64_t`: 64-bit unsigned integer (for large data)
+- `uint64_t`: 64-bit unsigned integer (for large data inputs)
 - `uint8_t`: 8-bit unsigned integer (for small data)
+- `int64_t`: 64-bit signed integer. Use ONLY for returning outputs, as 
 
 Avoid:
 - `std::byte` (no arithmetic support)
@@ -177,7 +194,7 @@ Include these headers at the top of files that interact with Python:
 #include <pybind11/numpy.h>
 namespace py = pybind11;
 ```
-Note: Omit `<pybind11/numpy.h>` if you don't use NumPy arrays.
+Note: Omit `<pybind11/numpy.h>` if you don't need to pass NumPy arrays.
 
 ### Writing Functions
 C++ requires a lot more work and boilerplate in order to get the same result as in Python. 
@@ -201,7 +218,6 @@ inline py::array bitwise_not(py::array voids) {
 	auto buffer = voids.request();
 	const uint64_t *ptr_64 = std::bit_cast<uint64_t *>(buffer.ptr);
 	py::array result_arr = py::array(voids.dtype(), buffer.shape);
-	// some boilerplate code
 	// ...
 	uint64_t *result_ptr_64 = std::bit_cast<uint64_t *>(result_arr.request().ptr);
 	// ...
@@ -238,7 +254,7 @@ PYBIND11_MODULE(your_module_name, m) {
 
 # Optimization Efforts
 ## General
-In most cases, we cast the data of a Voids array to `uint64_t` via `std::bit_cast<>`. This is done because in most modern computers, 64 bits is the largest natively supported integer size. Even when an array’s dimension is smaller than 64 bits, treating it as a sequence of raw 64-bit blocks enables highly optimized bitwise manipulation and reduces overhead. Of course, if/when 128 bits becomes the standard, we'd use that instead.
+In most cases, we cast the data of a Voids array to `uint64_t` via `std::bit_cast<>`. This is done because in most modern computers, 64 bits is the largest natively supported integer size. Even when an array’s dimension is smaller than 64 bits, treating it as a sequence of raw 64-bit blocks enables highly optimized bitwise manipulation and reduces overhead.
 
 
 
@@ -266,7 +282,7 @@ As for the syntax, most *for(...)* loops in the project are prefaced with:
 More keywords exist, but they are specific to certain behaviors that are much less common in this project
 
 ### Understanding the GIL
-TODO: Explain the GIL more in dephths
+
 Python's Global Interpreter Lock allows only one thread to execute Python bytecode at a time. This simplifies Python's memory management but prevents true multi-threading. Only multiprocessing can achieve true parallelism under the GIL.
 
 However, it is possible to get freed from the shackles of the GIL within C++. This can be done by declaring a section like this:
@@ -284,6 +300,8 @@ Releasing the GIL has some overhead, so it is only useful when code needs to be 
 - Using OpenMP or manual threading
   
 See `unordered_unique()`'s management of the GIL and OpenMP for more information. It is the very last function inside of `paulicpp/pauliarray/src/paulicpp.hpp`
+
+Note: The Python language is working towards removing the GIL. This could take many years before it is accomplished, buf if/when it finished, there will likely be some breakage around any parts explicitly managing the GIL. See [PEP 703](https://peps.python.org/pep-0703/)
 
 ## Building
 WIP
@@ -317,3 +335,58 @@ The configuration file is `CMakeLists.txt`, found in the project root.
 | unique()                | 1.5x to 3x | Almost...      | - 'axes' parameter is not implemented. da  |
 | unordered_unique()      | 2-10x | Nope! | - 'axes' parameter is not implemented. <br/>- If i get parralization to work, we get up to 7x consistently. <br/>- Only works for 2D arrays  |
 | bitwise_commute_with()  | 1x to 4x | Yes          | Weird Numpy array stuff going on. |
+
+
+# PauliArray, with a side of C++
+PauliArray provides data structures to easily create and manipulate arrays of Pauli strings and operators expressed as linear combinations of Pauli strings. It uses a NumPy interface with C++ to handle the Pauli strings encoding. This confers to PauliArray the same useful Numpy's features such as indexing, masking and broadcasting, with the possibility of added specialized C++ function to increase performance.
+
+## Why C++?
+1. Performance: Most operations can be sped-up with either precise bit-on-bit algorithms and/or extreme compiler optimizations (like SIMD). Results are usually between 1.5-9x faster than pure NumPy
+ 2. Memory: Handling Pauli strings within C++ allows for packed representations with next to no compromises.  Less RAM 
+ 3. Flexibility: C++ offers total control over what a function needs to do. This is especially useful when XYZ
+ ---
+
+# External tools and libraries
+We only use PyBind11
+### Numba - Not used
+  - Great for generic uses, but our data structure is specific enought to not be impacted much by the optimizations offered. Not used for the time being, but *could* be useful for future functions that aren't/can't be ported to C++.
+
+
+### Cython - No
+Cython is a 
+- Good, but probably can't optimize most functions due to the data structures of PauliArray. Would probably need to rewrite most functions to take advantage of it; at that point, best to write it in pure C/C++
+
+
+### Boost.Python - No
+  - Featureful but too heavy. Needs lots of boilerplate to achieve simple mechanisms and access patterns. 
+
+
+### pybind11 - Yes
+Is a library that exposes Python and C++ to each other. It makes bindings
+
+# Data structures
+In PauliArray, there is a need to hold lots of binary data in order to represent a Pauli Operator's `z` and `x`.  
+For this project, multiple options were tried and tested against one another:
+
+Let `ex` be the values 0, 1, 1, 0, 0, 1, 1, 1, which we need to encode to C++
+
+1. Binary list
+   - Example: `ex = [0,1,1,0,0,1,1,1]`
+   - Drawback: each element takes up a whole byte while only one bit is needed. Poor memory density and difficult SIMD exploitation makes this approach slow.
+
+2. Sparse intervals
+   - Example: `ex = [(1,3),(5,8)]` denotes runs of consecutive 1s.  
+   - Drawback: good for very sparse patterns but degrades rapidely to O(n). Enormous overhead for most cases.
+
+3. Bit-packed integers 
+   - Example: `ex = 0b01100111` stored in a unsigned integer.  
+   - Drawback: for rare cases where almost all entries are consecutively 1s or 0s, this method is slower and takes more memory space than the sparse implementation 
+   - Benefits:
+     - Enables native bitwise ops (AND/OR/XOR/NOT), popcount, shifts, etc.
+     - SIMD, simpler/faster multithreading on most operations 
+   
+
+
+<img src = "https://github.com/algolab-quantique/Stage-A25-Zakary/blob/main/assets/datastruct_comparison.png" align="center" width="300">
+
+---
