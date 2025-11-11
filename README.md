@@ -1,6 +1,6 @@
 # PauliArray, with a side of C++
-<img src = "https://github.com/algolab-quantique/Stage-A25-Zakary/blob/main/assets/pa_logo.svg" align="right" width="220">
-Accelerator project which converts some of [PauliArray](https://github.com/algolab-quantique/pauliarray) backend to C++ in order to speed up the library all the whilst retaining the easy-to-use Python structure and syntax.
+<!-- <img src = "https://github.com/algolab-quantique/Stage-A25-Zakary/blob/main/assets/pa_logo.svg" align="right" width="220"> -->
+Accelerator project which handles arrays of packed 
 
 
 ### Requirements
@@ -40,6 +40,7 @@ pip install .
 This should automatically compile the C++ code based on your machine and link place it to the correct path.
 
 
+---
 
 ## Without OpenMP
 Once again, this is **not** the recommended way to install this library! You have been warned.
@@ -49,16 +50,3 @@ Clone this repo and navigate to the `paulicpp` directory. You may need to create
 pip install . --config-settings=cmake.define.USE_OPENMP=OFF
 ```
 
----
-
-## Verification
-
-Once installed, you may call the library as usual within a Python script with `import pauliarray`.
-<br> If you want to check what backend the library uses (C++ or a Python fallback), try inside a Python file:
-
-``` python
-import pauliarray.binary.void_operations as vops
-print(vops.get_backend())
-```
-If you get *'C++*', congrats, the library has been sucessfully installed and compiled!
-<br> If you get '*Python*', something went terribly wrong with the installation. Try to install with the other way (i.e Try WITHOUT OpenMP if you tried to install it WITH and vice-versa). If it still doesnt work, please submit an issue

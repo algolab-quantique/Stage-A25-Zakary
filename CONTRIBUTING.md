@@ -6,28 +6,19 @@ There is currently a reformatting and renaming effort throughout the project. Na
 ### Structure
 The project structure is the exact same as PauliArray's [Voids](https://github.com/algolab-quantique/pauliarray/tree/Voids) branch, with the following additions:
 ``` 
-├── pauliarray
-|   ├── binary
-|   ├── conversion
-|   ├── estimation
-|   ├── mapping
-|   ├── pauli
-|   ├──utils
-|   └── _src
-|       ├── bindings
-|       │   └── {MODULE}_bindings.cpp
-|       ├── build
-|       │   └── {MODULE}.{dynamic_lib_extension}
-|       │   └── {MODULE}.pyi
-|       └── {MODULE}.hpp
-├── CMakeLists.txt
-└── .clang-format
+├── _src
+│   ├── bindings
+│   │   └── {MOD}_bindings.cpp
+│   ├── build
+│   │   ├── _{MOD}.[dyn_lib_ext]
+│   │   └── _{MOD}.pyi
+│   └── {MOD}.hpp
+└── {MOD}.py
 ```
-- `/src` Contains the C++ source code (.hpp) for every module.
+`{MOD}` is a module's name. There can be multiple modules with different names compiled to the same directories. 
+- `/_src` Contains the C++ source code (.hpp) for every module.
 - `/src/bindings` Contains the pybind11 bindings necessary for the translation to and from Python.
 - `src/build` Contains the compiled dynamic shared libraries and stub files.
-- `CMakeLists.txt` Instruction set to compile the C++ source code.
-- `.clang-format` File which instructs how to auto-format C++ code.
 
 ### Architecture Overview
 ```mermaid
@@ -100,18 +91,24 @@ Is defined as: C $\mathbb{Z}_2$ Matrix
 
 This name is in reference to the C++ module which operates on Z2Rs to produce matrices.
 
-### bitwise_[...]
-Is the naming standard of any operation that affects only the individual bits of a Z2R
+### The bitwise_[...] prefix
+Any functions with this prefix must be declared inside of `bitops.hpp` and adhere to the following:
+1. Must accept any size and shape of NDArrays, as long as every input is the same shape and contiguous.
+2. Must return an NDArray of the same shape, size, and dtype as the inputs.
+3. Follows as closely as possible NumPy's functions of the same name.
+   
+The only execeptions to rule 2 are `bitwise_count()` and `bitwise_dot()`, which both compress the last dimension of the array.
+
 
 
 ---
 
 ### General Coding Standards
-**Avoid Manual Broadcasting:** Broadcasting is a complex process that required substantial engineering effort from the NumPy team to implement efficiently. Rather than reimplementing ourself broadcasting in C++, either:
+**Avoid Broadcasting in C++:** Broadcasting is a complex process that required substantial engineering effort from the NumPy team to implement efficiently. Rather than reimplementing ourself broadcasting in C++, either:
 - Perform broadcasting in Python before passing data to C++
 - Use pybind11's [vectorize](https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html#vectorizing-functions) functionality when dealing with simple functions
 
-**Avoid Noncontiguous Data**: The speedup made by this library is mainly due to the contiguity of NDArrays, and how this property can be exploited with extreme compiler optimizations (SIMD) or by careful implementation of certain patterns and structure. For uncontiguous data, either:
+**Avoid Uncontiguous Data**: The speedup made by this library is mainly due to the contiguity of NDArrays, and how this property can be exploited with extreme compiler optimizations (SIMD) or by careful implementation of certain patterns and structure. For uncontiguous data, either:
 TODO: EXPLAIN CONTIGUITY IN DETAIL!
 - Rearange the data in Python before passing it to C++
 - Explicitly state that slowdowns may occur (idk).
@@ -128,7 +125,7 @@ TODO: EXPLAIN CONTIGUITY IN DETAIL!
 **Binary Data Types:** Since C++ has no native 'binary' type, a substitute one must be chosen instead. Use these types because they guarantee exact bit lengths and support both arithmetic and binary operations:
 - `uint64_t`: 64-bit unsigned integer (for large data inputs)
 - `uint8_t`: 8-bit unsigned integer (for small data)
-- `int64_t`: 64-bit signed integer. Use ONLY for returning outputs, as 
+- `int64_t`: 64-bit signed integer. Use ONLY for returning outputs
 
 Avoid:
 - `std::byte` (no arithmetic support)
@@ -323,22 +320,8 @@ The configuration file is `CMakeLists.txt`, found in the project root.
 
 ---
 
-#### Current C++ conversions:
+# Name 
 
-| void_operations.py            | Speedup  | 1-to-1 ? | Notes |
-|-----------------              |-------   |----------|------------|
-| _xor(), _and(), _or(), _not() | 1x to 5x | Yes      | n/a |
-| _count(), _dot()              | 2x to 7x | Yes      | n/a   |
-
-| pauli_array.py          | Speedup  | 1-to-1 ? | Notes |
-|-----------------        |-------   |----------|------------|
-| unique()                | 1.5x to 3x | Almost...      | - 'axes' parameter is not implemented. da  |
-| unordered_unique()      | 2-10x | Nope! | - 'axes' parameter is not implemented. <br/>- If i get parralization to work, we get up to 7x consistently. <br/>- Only works for 2D arrays  |
-| bitwise_commute_with()  | 1x to 4x | Yes          | Weird Numpy array stuff going on. |
-
-
-# PauliArray, with a side of C++
-PauliArray provides data structures to easily create and manipulate arrays of Pauli strings and operators expressed as linear combinations of Pauli strings. It uses a NumPy interface with C++ to handle the Pauli strings encoding. This confers to PauliArray the same useful Numpy's features such as indexing, masking and broadcasting, with the possibility of added specialized C++ function to increase performance.
 
 ## Why C++?
 1. Performance: Most operations can be sped-up with either precise bit-on-bit algorithms and/or extreme compiler optimizations (like SIMD). Results are usually between 1.5-9x faster than pure NumPy
@@ -347,43 +330,49 @@ PauliArray provides data structures to easily create and manipulate arrays of Pa
  ---
 
 # External tools and libraries
-We only use PyBind11
-### Numba - Not used
-  - Great for generic uses, but our data structure is specific enought to not be impacted much by the optimizations offered. Not used for the time being, but *could* be useful for future functions that aren't/can't be ported to C++.
+The tools used for this project are:
+- pybind11
+- pybind-stubgen
+- CMake
+- clang-format
+
+## Why pybind11?
+Pybind11 was chosen for its minimal boilerplate, seamless NumPy integration, and modern C++ support. It allows us to expose C++ functions and classes to Python with very little overhead, making it easy to maintain and extend the codebase.
+
+Since pybind is chosen as the interface for this project, the stub generator is obviously pybind-stubgen. However, some problems have appeared with it, notably when trying to add external libraries. It may get replaced with mypy's stubgen in the future.
+
+Other alternatives for optimizing code to work with Python are:
+
+1. **Numba**
+    - While Numba is excellent for accelerating generic Python code, our data structures are highly specialized and already optimized in C++. Numba would offer limited additional benefit and cannot easily accelerate C++ code.
+
+2. **Cython**
+   - Cython is powerful for optimizing Python code and interfacing with C, but it often requires rewriting parts (if not most) of functions to take full advantage of its features. At that point, we might as well rewrite everything in pure C/C++
+
+3. **Boost.Python**
+     - Boost.Python is feature-rich but introduces significant overhead and complexity. It requires more boilerplate code, demands loads more dependencies, and is generally slower compared to pybind11.
 
 
-### Cython - No
-Cython is a 
-- Good, but probably can't optimize most functions due to the data structures of PauliArray. Would probably need to rewrite most functions to take advantage of it; at that point, best to write it in pure C/C++
 
-
-### Boost.Python - No
-  - Featureful but too heavy. Needs lots of boilerplate to achieve simple mechanisms and access patterns. 
-
-
-### pybind11 - Yes
-Is a library that exposes Python and C++ to each other. It makes bindings
 
 # Data structures
-In PauliArray, there is a need to hold lots of binary data in order to represent a Pauli Operator's `z` and `x`.  
-For this project, multiple options were tried and tested against one another:
+Handling long lists of 1s and 0s is at the heart of this project, and needs to be done as efficiently as possible. The current way all data is managed is throught a packed representation of integers.
 
-Let `ex` be the values 0, 1, 1, 0, 0, 1, 1, 1, which we need to encode to C++
-
-1. Binary list
-   - Example: `ex = [0,1,1,0,0,1,1,1]`
-   - Drawback: each element takes up a whole byte while only one bit is needed. Poor memory density and difficult SIMD exploitation makes this approach slow.
-
-2. Sparse intervals
-   - Example: `ex = [(1,3),(5,8)]` denotes runs of consecutive 1s.  
-   - Drawback: good for very sparse patterns but degrades rapidely to O(n). Enormous overhead for most cases.
-
-3. Bit-packed integers 
-   - Example: `ex = 0b01100111` stored in a unsigned integer.  
-   - Drawback: for rare cases where almost all entries are consecutively 1s or 0s, this method is slower and takes more memory space than the sparse implementation 
+Example: `ex = 0b01100111` stored in a unsigned integer.  
+   - Drawback: for extreme cases where almost all entries are consecutively 1s or 0s, this method is slower and takes more memory space than a sparse implementation 
    - Benefits:
      - Enables native bitwise ops (AND/OR/XOR/NOT), popcount, shifts, etc.
      - SIMD, simpler/faster multithreading on most operations 
+
+
+1. **Binary list**
+   - Example: `ex = [0,1,1,0,0,1,1,1]`
+   - Drawback: each element takes up a whole byte while only one bit is needed. Poor memory density and difficult SIMD exploitation makes this approach slow in almost any scenario.
+
+2. **Sparse intervals**
+   - Example: `ex = [(1,3),(5,8)]` denotes runs of consecutive 1s.  
+   - Drawback: good for very very sparse patterns but degrades rapidely to O(n). Enormous overhead for most cases.
+
    
 
 
