@@ -1,6 +1,6 @@
-# PauliArray, with a side of C++
+# Project Name
 <!-- <img src = "https://github.com/algolab-quantique/Stage-A25-Zakary/blob/main/assets/pa_logo.svg" align="right" width="220"> -->
-Accelerator project which handles arrays of packed 
+Accelerator project which handles arrays of packed binary values.
 
 
 ### Requirements
@@ -10,16 +10,6 @@ Accelerator project which handles arrays of packed
 
 # Installation
 If you are on macOS, it is highly recommended to use OpenMP, as it provides multithreading to the C++ library. Whilst it is not ***necessary*** to do so, you may notice worst performance.
-
-| Platform | Official support? | 
-|----------|-------   |
-| Windows | No |
-| Windows (ARM) | No |
-| Linux  | Yes |
-| Linux (ARM) | No |
-| Mac (Intel CPU) | Yes |
-| Mac (Apple Silicon) | Yes |
-
 
 ## With OpenMP
 
@@ -49,4 +39,7 @@ Clone this repo and navigate to the `paulicpp` directory. You may need to create
 ``` console
 pip install . --config-settings=cmake.define.USE_OPENMP=OFF
 ```
+---
 
+# Documentation
+Internal documentation can be found on the [repos's wiki](https://github.com/algolab-quantique/Stage-A25-Zakary/wiki). 
