@@ -16,7 +16,6 @@ PYBIND11_MODULE(_cz2m, m) {
     m.def("unique", &unique, "Unique arrays 1", 
         py::arg("zx_voids"), py::arg("return_index") = false, py::arg("return_inverse") = false, py::arg("return_counts") = false);
     m.def("unordered_unique", &unordered_unique, "Returns unordered unique rows of the input array");
-    m.def("compose", &compose, "Compose two Pauli arrays");
     m.def("to_matrix", &to_matrix, "addwad");
     m.def("transpose", &transpose, "addwad");
     m.def("matmul", &matmul, "addwad");
