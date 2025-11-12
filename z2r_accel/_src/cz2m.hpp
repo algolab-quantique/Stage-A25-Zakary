@@ -724,7 +724,6 @@ py::array_t<std::complex<double>> to_matrix(py::array z_voids, py::array x_voids
 
 //         return row_ind, col_ind, matrix_elements
 
-
 /**
  * @brief Transposes a technically 1D array of voids by interpreting it as a 2D array of bits.
  * In other words, if the input array has shape (M,) and each element has N bits, the output array
@@ -806,8 +805,7 @@ py::array transpose(py::array voids, int64_t num_bits = -1) {
  * @param z2r_b
  * @return py::array
  */
-py::array matmul(py::array z2r_a, py::array z2r_b, int a_num_qubits,
-                                int b_num_qubits) {
+py::array matmul(py::array z2r_a, py::array z2r_b, int a_num_qubits, int b_num_qubits) {
     auto buf1 = z2r_a.request();
     auto buf2 = z2r_b.request();
 
@@ -842,7 +840,7 @@ py::array matmul(py::array z2r_a, py::array z2r_b, int a_num_qubits,
     const uint8_t *ptr_b = std::bit_cast<const uint8_t *>(buf2.ptr);
     int8_t *ptr_out = std::bit_cast<int8_t *>(buf_out.ptr);
 
-    //TODO: Parallelize this whole block
+    // TODO: Parallelize this whole block
     for (size_t i = 0; i < a_rows; i++) {
         for (size_t j = 0; j < b_cols; j++) {
             int8_t bit_sum = 0;

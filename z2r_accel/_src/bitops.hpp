@@ -20,12 +20,10 @@
  * @copyright Copyright (c) 2025
  */
 
+// meme nbr de chaines de pauli, mais entre 64 et 32 bnits
 
+// cz2m
 
- //meme nbr de chaines de pauli, mais entre 64 et 32 bnits
-
- //cz2m
- 
 #pragma once
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -44,10 +42,10 @@ namespace py = pybind11;
 #endif
 
 // bit_operations
-//cz2m
+// cz2m
 
-//z2row
-//z2r  = voids
+// z2row
+// z2r  = voids
 
 // This threshold is completely arbitrary and can be tuned for performance depending on the
 // hardware.
@@ -279,7 +277,7 @@ inline py::object bitwise_count(py::array z2r_1) {
         int64_t count = 0;
 
 #ifdef USE_OPENMP
-    #pragma omp parallel for if (u64_per_elem >= BOPS_THRESHOLD_PARALLEL) schedule(static)                  \
+    #pragma omp parallel for if (u64_per_elem >= BOPS_THRESHOLD_PARALLEL) schedule(static)         \
         reduction(+ : count)
 #endif
         for (size_t k = 0; k < u64_per_elem; ++k) {
@@ -360,7 +358,7 @@ inline py::object bitwise_dot(py::array z2r_1, py::array z2r_2) {
         int64_t count = 0;
 
 #ifdef USE_OPENMP
-    #pragma omp parallel for if (u64_per_elem >= BOPS_THRESHOLD_PARALLEL) schedule(static)                  \
+    #pragma omp parallel for if (u64_per_elem >= BOPS_THRESHOLD_PARALLEL) schedule(static)         \
         reduction(+ : count)
 #endif
         for (size_t k = 0; k < u64_per_elem; ++k) {
@@ -370,7 +368,8 @@ inline py::object bitwise_dot(py::array z2r_1, py::array z2r_2) {
             count += std::popcount(w1 & w2);
         }
         for (size_t t = 0; t < tail_bytes; ++t) {
-            count += std::popcount(static_cast<uint8_t>(base1[u64_per_elem * 8 + t] & base2[u64_per_elem * 8 + t]));
+            count += std::popcount(
+                static_cast<uint8_t>(base1[u64_per_elem * 8 + t] & base2[u64_per_elem * 8 + t]));
         }
         return py::int_(count);
     }
@@ -389,7 +388,8 @@ inline py::object bitwise_dot(py::array z2r_1, py::array z2r_2) {
             count += std::popcount(w1 & w2);
         }
         for (size_t t = 0; t < tail_bytes; ++t) {
-            count += std::popcount(static_cast<uint8_t>(base1[u64_per_elem * 8 + t] & base2[u64_per_elem * 8 + t]));
+            count += std::popcount(
+                static_cast<uint8_t>(base1[u64_per_elem * 8 + t] & base2[u64_per_elem * 8 + t]));
         }
         ptr_out[i] = count;
     }
@@ -397,4 +397,4 @@ inline py::object bitwise_dot(py::array z2r_1, py::array z2r_2) {
     return result;
 }
 
-//test
+// test
