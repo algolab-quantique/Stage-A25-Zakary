@@ -397,3 +397,4 @@ inline py::object bitwise_dot(py::array z2r_1, py::array z2r_2) {
     return result;
 }
 
+//test
