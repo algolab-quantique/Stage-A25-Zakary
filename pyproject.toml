@@ -1,5 +1,10 @@
 [build-system]
-requires = ["scikit-build-core", "pybind11"]
+requires = [
+    "scikit-build-core", 
+    "pybind11",
+    "pybind11-stubgen",
+    "numpy>=2.2.0"
+    ]
 build-backend = "scikit_build_core.build"
 
 [project]
@@ -8,7 +13,5 @@ version = "0.0.2"
 description = "Efficient library to handle packed Z2 arrays"
 requires-python = ">=3.10"
 dependencies = [
-    "numpy>=2.2.0",
-    "pybind11",
-    "pybind11-stubgen",
+    "numpy>=2.2.0"
 ]

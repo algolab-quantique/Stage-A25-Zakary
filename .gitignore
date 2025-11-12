@@ -59,3 +59,4 @@ paulicpp/pauliarray/src/build/*.*
 .DS_Store
 *.pyc
 .github
+/dist
