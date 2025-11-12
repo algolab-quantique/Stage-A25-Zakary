@@ -4,6 +4,7 @@ from typing import Tuple
 
 try:
     from ._src.build import _cz2m
+
     C_CCP = True
 except ImportError:
     C_CCP = False
@@ -11,13 +12,13 @@ except ImportError:
 # assert C_CCP, "C++ backend not available."
 
 
-
 def _contiguous(a):
     if a.flags.c_contiguous:
         return a
     else:
         return np.ascontiguousarray(a)
-    
+
+
 def _bc(a, b):
     if a.shape == b.shape:
         a2 = _contiguous(a)
@@ -29,6 +30,8 @@ def _bc(a, b):
 
 def unique() -> None:
     return None
+
+
 #     paulis: PauliArray,
 #     axis: Optional[int] = None,
 #     return_index: bool = False,
@@ -58,7 +61,7 @@ def unique() -> None:
 #     #     return_inverse=return_inverse,
 #     #     return_counts=return_counts
 #     # )
-        
+
 
 #     if return_index or return_inverse or return_counts:
 #         out = list(out)
@@ -71,19 +74,17 @@ def unique() -> None:
 #     return out
 
 
-def unordered_unique(z2r : NDArray) -> Tuple[NDArray, NDArray]:
+def unordered_unique(z2r: NDArray) -> Tuple[NDArray, NDArray]:
     return _cz2m.unordered_unique(z2r)
 
 
-        
 def random_zx_strings(shape):
     return _cz2m.random_zx_strings(shape)
 
-    
 
-def transpose(z2r: NDArray, num_qubits : int) -> NDArray:
+def transpose(z2r: NDArray, num_qubits: int) -> NDArray:
     return _cz2m.transpose(_contiguous(z2r), num_qubits)
-    
+
 
 # def pretty_print_z2r(z2r: NDArray, num_qubits: int) -> str:
 #     bit_strings = z2r_to_bit_strings(z2r, num_qubits)
@@ -95,6 +96,7 @@ def transpose(z2r: NDArray, num_qubits : int) -> NDArray:
 #         lines.append(line)
 
 #     return "\n".join(lines)
+
 
 def matmul(z2r_1: NDArray, z2r_2: NDArray, a_num_qubits: int, b_num_qubits: int) -> NDArray:
     return _cz2m.matmul(_contiguous(z2r_1), _contiguous(z2r_2), a_num_qubits, b_num_qubits)
