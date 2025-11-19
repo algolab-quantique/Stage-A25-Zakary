@@ -30,34 +30,8 @@
 // matmul
 // transposer sur les bits
 
-#pragma once
+#include "cz2m.h"
 
-#include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
-namespace py = pybind11;
-
-#include <complex>
-#include <cstdint> // uint8_t
-#include <cstring>
-#include <iostream>
-#include <numeric>
-#include <random>
-#include <unordered_map>
-#include <vector>
-
-#ifdef USE_OPENMP
-    #include <omp.h>
-#else
-    #warning "OpenMP is not enabled"
-#endif
-
-#include "bitops.hpp"
-
-#define FUNC_THRESHOLD_PARALLEL 100000
-
-//  new_z_strings = np.concatenate((self.z_strings, other.z_strings), axis=-1)
-// new_x_strings = np.concatenate((self.x_strings, other.x_strings), axis=-1)
-// todo: this aint working
 py::tuple tensor(py::array z2, py::array x2, py::array z1, py::array x1) {
     auto buf_z1 = z1.request();
     auto buf_x1 = x1.request();
@@ -229,8 +203,8 @@ py::tuple random_zx_strings(const std::vector<size_t> &shape) { //, size_t num_q
     return py::make_tuple(z_strings, x_strings);
 }
 
-py::object unique(py::array zx_voids, bool return_index = false, bool return_inverse = false,
-                  bool return_counts = false) {
+py::object unique(py::array zx_voids, bool return_index, bool return_inverse,
+                  bool return_counts) {
     auto buf = zx_voids.request();
     if (buf.ndim == 0) {
         if (return_index || return_inverse || return_counts) {
@@ -626,8 +600,8 @@ std::vector<std::complex<double>> get_phases(py::array z_voids, py::array x_void
 
     std::vector<std::complex<double>> phases(n);
 
-    const uint8_t *z_ptr = std::bit_cast<const uint8_t *>(buf_z.ptr);
-    const uint8_t *x_ptr = std::bit_cast<const uint8_t *>(buf_x.ptr);
+    // const uint8_t *z_ptr = std::bit_cast<const uint8_t *>(buf_z.ptr);
+    // const uint8_t *x_ptr = std::bit_cast<const uint8_t *>(buf_x.ptr);
 
     return phases;
 }
@@ -743,7 +717,7 @@ py::array_t<std::complex<double>> to_matrix(py::array z_voids, py::array x_voids
  * @param voids Input array
  * @return py::array Transposed array with minimal dtype
  */
-py::array transpose(py::array voids, int64_t num_bits = -1) {
+py::array transpose(py::array voids, int64_t num_bits) {
     auto buf = voids.request();
 
     size_t M = buf.size;                // Number of elements
@@ -866,4 +840,84 @@ py::array matmul(py::array z2r_a, py::array z2r_b, int a_num_qubits, int b_num_q
         }
     }
     return z2r_out;
+}
+
+py::array concatenate(py::array x1, py::array x2, int axis) {
+    auto buf1 = x1.request();
+    auto buf2 = x2.request();
+
+    if (buf1.ndim != buf2.ndim) {
+        throw std::runtime_error("Input arrays must have the same number of dimensions.");
+    }
+    for (ssize_t d = 0; d < buf1.ndim; d++) {
+        if (d != axis && buf1.shape[d] != buf2.shape[d]) {
+            throw std::runtime_error("Input arrays must have the same shape except along the concatenation axis.");
+        }
+    }
+
+    std::vector<ssize_t> new_shape(buf1.ndim);
+    for (ssize_t d = 0; d < buf1.ndim; d++) {
+        if (d == axis) {
+            new_shape[d] = buf1.shape[d] + buf2.shape[d];
+        } else {
+            new_shape[d] = buf1.shape[d];
+        }
+    }
+
+    py::array new_x = py::array(x1.dtype(), new_shape);
+    auto buf_new = new_x.request();
+
+    const uint8_t *x1_ptr = static_cast<const uint8_t *>(buf1.ptr);
+    const uint8_t *x2_ptr = static_cast<const uint8_t *>(buf2.ptr);
+    uint8_t *new_x_ptr = static_cast<uint8_t *>(buf_new.ptr);
+
+    size_t itemsize = buf1.itemsize;
+
+    if (buf1.ndim == 1) {
+            if (axis == 0) {
+            ssize_t n1 = buf1.shape[0];
+            ssize_t n2 = buf2.shape[0];
+            std::memcpy(new_x_ptr, x1_ptr, n1 * itemsize);
+            std::memcpy(new_x_ptr + n1 * itemsize, x2_ptr, n2 * itemsize);
+            return new_x;
+        }
+        if (axis != 0){
+
+        }
+    }
+    else if (buf1.ndim == 2){
+        if (axis == 0) {
+            // Stack rows
+            ssize_t n1 = buf1.shape[0];
+            ssize_t n2 = buf2.shape[0];
+            ssize_t row_bytes = buf1.shape[1] * itemsize;
+            std::memcpy(new_x_ptr, x1_ptr, n1 * row_bytes);
+            std::memcpy(new_x_ptr + n1 * row_bytes, x2_ptr, n2 * row_bytes);
+        } else if (axis == 1) {
+            // Concatenate columns
+            ssize_t nrows = buf1.shape[0];
+            ssize_t ncols1 = buf1.shape[1];
+            ssize_t ncols2 = buf2.shape[1];
+            for (ssize_t i = 0; i < nrows; ++i) {
+                // Copy x1's row
+                std::memcpy(
+                    new_x_ptr + (i * (ncols1 + ncols2) * itemsize),
+                    x1_ptr + (i * ncols1 * itemsize),
+                    ncols1 * itemsize
+                );
+                // Copy x2's row
+                std::memcpy(
+                    new_x_ptr + (i * (ncols1 + ncols2) * itemsize) + ncols1 * itemsize,
+                    x2_ptr + (i * ncols2 * itemsize),
+                    ncols2 * itemsize
+                );
+            }
+        } else {
+            throw std::runtime_error("Concatenation for this axis/ndim not implemented.");
+        }
+    }
+    else {
+        throw std::runtime_error("Concatenation for ndim > 2 not implemented.");
+    }
+    return new_x;
 }

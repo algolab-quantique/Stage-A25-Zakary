@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 project(z2r_accel LANGUAGES C CXX)
 
+
+include_directories(${CMAKE_SOURCE_DIR}/z2r_accel/_core/include)
+
 # TODO: Test with other computers, notably Windows and Apple Silicon
 # Current tests are on:
 # OS: Linux Mint 22.2      || COMPILER: gcc 13.3.0            || CPU: AMD Ryzen 7 6800H
@@ -128,7 +131,7 @@ find_package(Python COMPONENTS Interpreter REQUIRED)
 # TARGET_NAME: Name of the pybind11 module target to create
 # SRC: Path to the binding file of the module ({module}_bindings.cpp)
 function(configure_pybind_module TARGET_NAME SRC)
-    pybind11_add_module(${TARGET_NAME} ${SRC})
+    pybind11_add_module(${TARGET_NAME} ${SRC} ${ARGN})
 
     # common compile options
     target_compile_options(${TARGET_NAME} PRIVATE ${PAULI_COMPILE_OPTIONS})
@@ -163,15 +166,15 @@ function(configure_pybind_module TARGET_NAME SRC)
 
     # output location and install
     set_target_properties(${TARGET_NAME} PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/z2r_accel/_src/build
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/z2r_accel/_core/build
     )
-    install(TARGETS ${TARGET_NAME} DESTINATION z2r_accel/_src/build)
+    install(TARGETS ${TARGET_NAME} DESTINATION z2r_accel/_core/build)
 
     # post-build: generate Python stubs
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR}
               ${Python_EXECUTABLE} -m pybind11_stubgen
-              z2r_accel._src.build.${TARGET_NAME}
+              z2r_accel._core.build.${TARGET_NAME}
               -o ${CMAKE_SOURCE_DIR}
     )
 endfunction()
@@ -179,5 +182,12 @@ endfunction()
 
 
 # add any ne wmodules here, with the name of the .so and the binding file
-configure_pybind_module(_cz2m z2r_accel/_src/bindings/cz2m_bindings.cpp)
-configure_pybind_module(_bitops z2r_accel/_src/bindings/bitops_bindings.cpp)
+configure_pybind_module(_cz2m
+    z2r_accel/_core/bindings/cz2m_bindings.cpp
+    z2r_accel/_core/src/cz2m.cpp
+    z2r_accel/_core/src/bitops.cpp
+)
+configure_pybind_module(_bitops
+    z2r_accel/_core/bindings/bitops_bindings.cpp
+    z2r_accel/_core/src/bitops.cpp
+)

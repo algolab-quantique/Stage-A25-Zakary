@@ -3,7 +3,7 @@ from numpy.typing import NDArray
 from typing import Tuple
 
 try:
-    from ._src.build import _cz2m
+    from ._core.build import _cz2m
 
     C_CCP = True
 except ImportError:
@@ -104,3 +104,6 @@ def matmul(z2r_1: NDArray, z2r_2: NDArray, a_num_qubits: int, b_num_qubits: int)
 
 def row_echelon(z2r: NDArray, num_qubits: int) -> NDArray:
     return _cz2m.row_echelon(_contiguous(z2r), num_qubits)
+
+def concatenate(z_voids: NDArray, x_voids: NDArray, axis=0) -> NDArray:
+    return _cz2m.concatenate(_contiguous(z_voids), _contiguous(x_voids), axis)

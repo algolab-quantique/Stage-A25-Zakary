@@ -22,9 +22,9 @@ def bitwise_or(arg0: numpy.ndarray, arg1: numpy.ndarray) -> numpy.ndarray:
     """
     addwad
     """
-def bitwise_xor(arg0: numpy.ndarray, arg1: numpy.ndarray) -> numpy.ndarray:
+def bitwise_xor(z2r_1: numpy.ndarray, z2r_2: numpy.ndarray) -> numpy.ndarray:
     """
-    addwad
+    Computes XOR between each bit
     """
 def paded_bitwise_not(voids: numpy.ndarray, num_qubits: typing.SupportsInt) -> numpy.ndarray:
     """

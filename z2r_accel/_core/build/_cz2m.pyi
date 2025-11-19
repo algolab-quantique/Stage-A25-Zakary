@@ -6,20 +6,18 @@ import collections.abc
 import numpy
 import numpy.typing
 import typing
-__all__: list[str] = ['bitwise_commute_with', 'compose', 'matmul', 'random_zx_strings', 'row_echelon', 'tensor', 'to_matrix', 'transpose', 'unique', 'unordered_unique']
+__all__: list[str] = ['bitwise_commute_with', 'compose', 'concatenate', 'matmul', 'random_zx_strings', 'row_echelon', 'tensor', 'to_matrix', 'transpose', 'unique', 'unordered_unique']
 def bitwise_commute_with(arg0: numpy.ndarray, arg1: numpy.ndarray, arg2: numpy.ndarray, arg3: numpy.ndarray) -> numpy.typing.NDArray[numpy.bool]:
     """
     Check commutation between two Pauli arrays
     """
-@typing.overload
 def compose(arg0: numpy.ndarray, arg1: numpy.ndarray, arg2: numpy.ndarray, arg3: numpy.ndarray) -> tuple:
     """
     Compose two Pauli arrays
     """
-@typing.overload
-def compose(arg0: numpy.ndarray, arg1: numpy.ndarray, arg2: numpy.ndarray, arg3: numpy.ndarray) -> tuple:
+def concatenate(arg0: numpy.ndarray, arg1: numpy.ndarray, arg2: typing.SupportsInt) -> numpy.ndarray:
     """
-    Compose two Pauli arrays
+    addwad
     """
 def matmul(arg0: numpy.ndarray, arg1: numpy.ndarray, arg2: typing.SupportsInt, arg3: typing.SupportsInt) -> numpy.ndarray:
     """

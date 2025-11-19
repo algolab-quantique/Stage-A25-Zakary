@@ -1,4 +1,4 @@
-#include "../cz2m.hpp"
+#include "cz2m.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 // declare registration function from voidops_bindings.cpp
@@ -23,6 +23,7 @@ PYBIND11_MODULE(_cz2m, m) {
     m.def("transpose", &transpose, "addwad");
     m.def("matmul", &matmul, "addwad");
     m.def("row_echelon", &row_echelon, "addwad");
+    m.def("concatenate", &concatenate, "addwad");
 
     // register_bitops(m);
 }

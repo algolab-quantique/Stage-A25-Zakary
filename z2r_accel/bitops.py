@@ -2,7 +2,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 try:
-    from ._src.build import _bitops
+    from ._core.build import _bitops
 
     C_CCP = True
 except ImportError:
