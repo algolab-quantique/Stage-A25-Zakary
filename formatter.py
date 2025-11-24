@@ -10,7 +10,6 @@ def format_black():
         print(f"Error during formatting: {e}")
         return -1
 
-
 def format_clang():
     files = []
     for root, _, filenames in os.walk("."):
