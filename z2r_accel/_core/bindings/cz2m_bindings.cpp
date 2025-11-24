@@ -24,6 +24,11 @@ PYBIND11_MODULE(_cz2m, m) {
     m.def("matmul", &matmul, "addwad");
     m.def("row_echelon", &row_echelon, "addwad");
     m.def("concatenate", &concatenate, "addwad");
+    m.def("z2_to_uint8", &z2_to_uint8, "Convert z2r array to uint8 representation", py::arg("z2r"),
+          py::arg("num_qubits"));
+    m.def("gauss_jordan_inverse", &gauss_jordan_inverse,
+          "Compute the Gauss-Jordan inverse of a binary matrix", py::arg("matrix"),
+          py::arg("num_qubits"));
 
     // register_bitops(m);
 }

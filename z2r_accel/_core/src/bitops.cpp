@@ -34,7 +34,7 @@
  * @return py::array A NumPy contiguous array of the same shape and dtype as the inputs, containing
  * the result of the bitwise AND operation
  */
- py::array bitwise_and(py::array z2r_1, py::array z2r_2) {
+py::array bitwise_and(py::array z2r_1, py::array z2r_2) {
     return bitwise_core(z2r_1, z2r_2, std::bit_and<uint64_t>());
 }
 
@@ -46,7 +46,7 @@
  * @return py::array A NumPy contiguous array of the same shape and dtype as the inputs, containing
  * the result of the bitwise AND operation
  */
- py::array bitwise_xor(py::array z2r_1, py::array z2r_2) {
+py::array bitwise_xor(py::array z2r_1, py::array z2r_2) {
     return bitwise_core(z2r_1, z2r_2, std::bit_xor<uint64_t>());
 }
 
@@ -58,7 +58,7 @@
  * @return py::array A NumPy contiguous array of the same shape and dtype as the inputs, containing
  * the result of the bitwise AND operation
  */
- py::array bitwise_or(py::array z2r_1, py::array z2r_2) {
+py::array bitwise_or(py::array z2r_1, py::array z2r_2) {
     return bitwise_core(z2r_1, z2r_2, std::bit_or<uint64_t>());
 }
 
@@ -71,7 +71,7 @@
  * the result of the bitwise NOT operation
  */
 // TODO: update to reflect new changes in bitwise_core for scalars
- py::array bitwise_not(py::array voids) {
+py::array bitwise_not(py::array voids) {
     auto buf = voids.request();
     size_t total_bytes = buf.size * buf.itemsize;
     py::array res_voids = py::array(voids.dtype(), buf.shape);
@@ -114,7 +114,7 @@
  * @return py::array A NumPy contiguous array of the same shape and dtype as the input, containing
  * the result of the bitwise NOT operation
  */
- py::array paded_bitwise_not(py::array voids, int num_qubits) {
+py::array paded_bitwise_not(py::array voids, int num_qubits) {
     auto buf = voids.request();
     size_t total_bytes = num_qubits * 8;
     py::array res_voids = py::array(voids.dtype(), buf.shape);
@@ -154,7 +154,7 @@
  * @param z2r_1 the input array
  * @return py::array An array of the number of set bits in each element of the input array
  */
- py::object bitwise_count(py::array z2r_1) {
+py::object bitwise_count(py::array z2r_1) {
     auto buf_in = z2r_1.request();
 
     py::array_t<int64_t> result(buf_in.size);
@@ -223,7 +223,7 @@
  * @return py::array A NumPy contiguous array of the same shape as the inputs, containing the
  * bitwise dot product.
  */
- py::object bitwise_dot(py::array z2r_1, py::array z2r_2) {
+py::object bitwise_dot(py::array z2r_1, py::array z2r_2) {
     auto buf1 = z2r_1.request();
     auto buf2 = z2r_2.request();
 

@@ -6,7 +6,7 @@ import collections.abc
 import numpy
 import numpy.typing
 import typing
-__all__: list[str] = ['bitwise_commute_with', 'compose', 'concatenate', 'matmul', 'random_zx_strings', 'row_echelon', 'tensor', 'to_matrix', 'transpose', 'unique', 'unordered_unique']
+__all__: list[str] = ['bitwise_commute_with', 'compose', 'concatenate', 'matmul', 'random_zx_strings', 'row_echelon', 'tensor', 'to_matrix', 'transpose', 'unique', 'unordered_unique', 'z2_to_uint8']
 def bitwise_commute_with(arg0: numpy.ndarray, arg1: numpy.ndarray, arg2: numpy.ndarray, arg3: numpy.ndarray) -> numpy.typing.NDArray[numpy.bool]:
     """
     Check commutation between two Pauli arrays
@@ -50,4 +50,8 @@ def unique(zx_voids: numpy.ndarray, return_index: bool = False, return_inverse: 
 def unordered_unique(arg0: numpy.ndarray) -> tuple:
     """
     Returns unordered unique rows of the input array
+    """
+def z2_to_uint8(z2r: numpy.ndarray, num_qubits: typing.SupportsInt) -> numpy.typing.NDArray[numpy.uint8]:
+    """
+    Convert z2r array to uint8 representation
     """

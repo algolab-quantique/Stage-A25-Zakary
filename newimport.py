@@ -63,13 +63,15 @@ def concatenate():
                      [1,1, 1],
                      [1,1, 1]], dtype=np.uint8)
     
-    z1 = vops.bit_strings_to_voids(z1_i)
-    x1 = vops.bit_strings_to_voids(x1_i)
+    z1 = vops.bit_strings_to_voids(z1_i).reshape(-1, 1)
+    x1 = vops.bit_strings_to_voids(x1_i).reshape(-1, 1)
     # print("Z1 voids:")
     # print(z1)
 
-    res = z2.concatenate(z1, x1, axis=0)
-    res_i = vops.voids_to_bit_strings(res, NUM_QUBITS*2)
+    res = z2.concatenate(z1, x1, axis=1)
+    # res_i = vops.voids_to_bit_strings(res, NUM_QUBITS*2)
+    res_i = z2.z2_to_uint8(res, NUM_QUBITS*2)
+
 
     print("Concatenated bit strings:")
     print("\nZ1:")
@@ -79,9 +81,51 @@ def concatenate():
     print("\nResult:")
     print(res_i)
 
+def gauss_inv(num_qubits=NUM_QUBITS, trials=20):
+    import numpy as np
+    import pauliarray.binary.void_operations as vops
+    import pauliarray.binary.bit_operations as bops
+    import z2r_accel as z2
+
+    def random_invertible(n):
+        # Retry until invertible
+        while True:
+            A = np.random.randint(0, 2, (n, n), dtype=np.uint8)
+            A_void = vops.bit_strings_to_voids(A)
+            try:
+                inv_void = z2.gauss_jordan_inverse(A_void, n)
+                return A, inv_void
+            except RuntimeError:
+                continue  # singular, retry
+
+    for _ in range(trials):
+        A_bits, inv_void = random_invertible(num_qubits)
+        inv_bits = vops.voids_to_bit_strings(inv_void, num_qubits)
+        prod = bops.matmul(A_bits, inv_bits)
+        if not np.array_equal(prod, np.eye(num_qubits, dtype=np.uint8)):
+            print("FAIL:")
+            print("A:\n", A_bits)
+            print("A^{-1}:\n", inv_bits)
+            print("A*A^{-1}:\n", prod)
+        else:
+            print("OK")
+            print("A:\n", A_bits)
+            print("A^{-1}:\n", inv_bits)
+            print("A*A^{-1}:\n", prod)
+
+    # Singular case check
+    singular = np.zeros((num_qubits, num_qubits), dtype=np.uint8)
+    singular_void = vops.bit_strings_to_voids(singular)
+    try:
+        z2.gauss_jordan_inverse(singular_void, num_qubits)
+        print("ERROR: singular matrix inverted unexpectedly")
+    except RuntimeError:
+        print("Singular matrix correctly raised RuntimeError")
+
 def main():
     # matmul()
-    concatenate()
+    # concatenate()
+    gauss_inv()
 
 if __name__ == "__main__":
     main()

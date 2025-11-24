@@ -107,3 +107,9 @@ def row_echelon(z2r: NDArray, num_qubits: int) -> NDArray:
 
 def concatenate(z_voids: NDArray, x_voids: NDArray, axis=0) -> NDArray:
     return _cz2m.concatenate(_contiguous(z_voids), _contiguous(x_voids), axis)
+
+def z2_to_uint8(z2r: NDArray, num_qubits: int) -> NDArray:
+    return _cz2m.z2_to_uint8(_contiguous(z2r), num_qubits)
+
+def gauss_jordan_inverse(matrix: NDArray, num_qubits: int) -> NDArray:
+    return _cz2m.gauss_jordan_inverse(_contiguous(matrix), num_qubits)

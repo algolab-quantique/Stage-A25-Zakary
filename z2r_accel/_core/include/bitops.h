@@ -33,7 +33,6 @@ py::array paded_bitwise_not(py::array voids, int num_qubits);
 py::object bitwise_count(py::array z2r_1);
 py::object bitwise_dot(py::array z2r_1, py::array z2r_2);
 
-
 /**
  * @brief This templated function performs an element-wise, bitwise operation onto two NumPy
  * contiguous (C-like) arrays. Any other type of operators or type of arrays will lead to undefined
@@ -106,5 +105,3 @@ template <typename Op> py::object bitwise_core(py::array z2r_1, py::array z2r_2,
 
     return z2r_out;
 }
-
-

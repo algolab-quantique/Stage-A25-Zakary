@@ -3,18 +3,6 @@ This documentation assumes you have basic knowledge in C/C++ syntax and are fami
 There is currently a reformatting and renaming effort throughout the project. Names like 'paulicpp' will be changed to something more agnostic and appropriate in the near future.
 
 ## Code Convention
-### Structure
-The project structure is the exact same as PauliArray's [Voids](https://github.com/algolab-quantique/pauliarray/tree/Voids) branch, with the following additions:
-``` 
-├── _src
-│   ├── bindings
-│   │   └── {MOD}_bindings.cpp
-│   ├── build
-│   │   ├── _{MOD}.[dyn_lib_ext]
-│   │   └── _{MOD}.pyi
-│   └── {MOD}.hpp
-└── {MOD}.py
-```
 `{MOD}` is a module's name. There can be multiple modules with different names compiled to the same directories. 
 - `/_src` Contains the C++ source code (.hpp) for every module.
 - `/src/bindings` Contains the pybind11 bindings necessary for the translation to and from Python.
@@ -31,7 +19,7 @@ graph TB
     
     subgraph "Binding Layer"
         D[pybind11 Bindings<br/>*_bindings.cpp]
-        E[Type Conversion<br/>py::array ↔ C++]
+        E[Type Conversion<br/>py::array <-> C++]
         F[Function Exposure<br/>PYBIND11_MODULE]
     end
     

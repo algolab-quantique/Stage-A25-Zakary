@@ -203,8 +203,7 @@ py::tuple random_zx_strings(const std::vector<size_t> &shape) { //, size_t num_q
     return py::make_tuple(z_strings, x_strings);
 }
 
-py::object unique(py::array zx_voids, bool return_index, bool return_inverse,
-                  bool return_counts) {
+py::object unique(py::array zx_voids, bool return_index, bool return_inverse, bool return_counts) {
     auto buf = zx_voids.request();
     if (buf.ndim == 0) {
         if (return_index || return_inverse || return_counts) {
@@ -847,77 +846,212 @@ py::array concatenate(py::array x1, py::array x2, int axis) {
     auto buf2 = x2.request();
 
     if (buf1.ndim != buf2.ndim) {
-        throw std::runtime_error("Input arrays must have the same number of dimensions.");
+        throw std::runtime_error("Input arrays must have same ndim.");
     }
-    for (ssize_t d = 0; d < buf1.ndim; d++) {
+    if (axis < 0)
+        axis += buf1.ndim;
+    if (axis < 0 || axis >= buf1.ndim) {
+        throw std::runtime_error("Axis out of range.");
+    }
+
+    for (ssize_t d = 0; d < buf1.ndim; ++d) {
         if (d != axis && buf1.shape[d] != buf2.shape[d]) {
-            throw std::runtime_error("Input arrays must have the same shape except along the concatenation axis.");
+            throw std::runtime_error("Shapes differ on non-concat axis.");
         }
     }
 
     std::vector<ssize_t> new_shape(buf1.ndim);
-    for (ssize_t d = 0; d < buf1.ndim; d++) {
-        if (d == axis) {
-            new_shape[d] = buf1.shape[d] + buf2.shape[d];
-        } else {
-            new_shape[d] = buf1.shape[d];
-        }
+    for (ssize_t d = 0; d < buf1.ndim; ++d) {
+        new_shape[d] = (d == axis) ? buf1.shape[d] + buf2.shape[d] : buf1.shape[d];
     }
 
-    py::array new_x = py::array(x1.dtype(), new_shape);
-    auto buf_new = new_x.request();
+    py::array out(x1.dtype(), new_shape);
+    auto buf_out = out.request();
 
-    const uint8_t *x1_ptr = static_cast<const uint8_t *>(buf1.ptr);
-    const uint8_t *x2_ptr = static_cast<const uint8_t *>(buf2.ptr);
-    uint8_t *new_x_ptr = static_cast<uint8_t *>(buf_new.ptr);
-
+    const uint8_t *p1 = static_cast<const uint8_t *>(buf1.ptr);
+    const uint8_t *p2 = static_cast<const uint8_t *>(buf2.ptr);
+    uint8_t *pout = static_cast<uint8_t *>(buf_out.ptr);
     size_t itemsize = buf1.itemsize;
 
     if (buf1.ndim == 1) {
-            if (axis == 0) {
-            ssize_t n1 = buf1.shape[0];
-            ssize_t n2 = buf2.shape[0];
-            std::memcpy(new_x_ptr, x1_ptr, n1 * itemsize);
-            std::memcpy(new_x_ptr + n1 * itemsize, x2_ptr, n2 * itemsize);
-            return new_x;
-        }
-        if (axis != 0){
-
-        }
+        if (axis != 0)
+            throw std::runtime_error("Invalid axis for 1D concat.");
+        std::memcpy(pout, p1, buf1.shape[0] * itemsize);
+        std::memcpy(pout + buf1.shape[0] * itemsize, p2, buf2.shape[0] * itemsize);
+        return out;
     }
-    else if (buf1.ndim == 2){
+
+    // 2D
+    if (buf1.ndim == 2) {
         if (axis == 0) {
-            // Stack rows
-            ssize_t n1 = buf1.shape[0];
-            ssize_t n2 = buf2.shape[0];
-            ssize_t row_bytes = buf1.shape[1] * itemsize;
-            std::memcpy(new_x_ptr, x1_ptr, n1 * row_bytes);
-            std::memcpy(new_x_ptr + n1 * row_bytes, x2_ptr, n2 * row_bytes);
+            // row stacking
+            ssize_t rows1 = buf1.shape[0];
+            ssize_t rows2 = buf2.shape[0];
+            ssize_t row_bytes = buf1.shape[1] * itemsize; // assumes same ncols for both
+            std::memcpy(pout, p1, rows1 * row_bytes);
+            std::memcpy(pout + rows1 * row_bytes, p2, rows2 * row_bytes);
+            return out;
         } else if (axis == 1) {
-            // Concatenate columns
+            // column concatenation (stride-safe)
             ssize_t nrows = buf1.shape[0];
             ssize_t ncols1 = buf1.shape[1];
             ssize_t ncols2 = buf2.shape[1];
+
+            ssize_t rstride1 = buf1.strides[0];
+            ssize_t rstride2 = buf2.strides[0];
+            ssize_t rstride_out = buf_out.strides[0];
+            ssize_t cstride1 = buf1.strides[1];
+            ssize_t cstride2 = buf2.strides[1];
+            ssize_t cstride_out = buf_out.strides[1];
+
+            bool simple = (cstride1 == (ssize_t)itemsize) && (cstride2 == (ssize_t)itemsize) &&
+                          (cstride_out == (ssize_t)itemsize);
+
             for (ssize_t i = 0; i < nrows; ++i) {
-                // Copy x1's row
-                std::memcpy(
-                    new_x_ptr + (i * (ncols1 + ncols2) * itemsize),
-                    x1_ptr + (i * ncols1 * itemsize),
-                    ncols1 * itemsize
-                );
-                // Copy x2's row
-                std::memcpy(
-                    new_x_ptr + (i * (ncols1 + ncols2) * itemsize) + ncols1 * itemsize,
-                    x2_ptr + (i * ncols2 * itemsize),
-                    ncols2 * itemsize
-                );
+                const uint8_t *row1 = p1 + i * rstride1;
+                const uint8_t *row2 = p2 + i * rstride2;
+                uint8_t *row_out = pout + i * rstride_out;
+
+                if (simple) {
+                    std::memcpy(row_out, row1, ncols1 * itemsize);
+                    std::memcpy(row_out + ncols1 * itemsize, row2, ncols2 * itemsize);
+                } else {
+                    // copy first block
+                    for (ssize_t j = 0; j < ncols1; ++j) {
+                        std::memcpy(row_out + j * cstride_out, row1 + j * cstride1, itemsize);
+                    }
+                    // copy second block
+                    for (ssize_t j = 0; j < ncols2; ++j) {
+                        std::memcpy(row_out + (ncols1 + j) * cstride_out, row2 + j * cstride2,
+                                    itemsize);
+                    }
+                }
             }
+            return out;
         } else {
-            throw std::runtime_error("Concatenation for this axis/ndim not implemented.");
+            throw std::runtime_error("Axis not implemented for 2D.");
         }
     }
-    else {
-        throw std::runtime_error("Concatenation for ndim > 2 not implemented.");
+
+    throw std::runtime_error("ndim > 2 not implemented.");
+}
+
+py::array_t<uint8_t> z2_to_uint8(py::array packed, int num_bits) {
+    auto buf = packed.request();
+    if (buf.ndim == 0 || buf.ndim > 2) {
+        throw std::runtime_error("z2_to_uint8 supports only 1D or 2D arrays.");
     }
-    return new_x;
+
+    ssize_t rows = buf.shape[0];
+    ssize_t cols = (buf.ndim == 1) ? 1 : buf.shape[1]; // number of void elements per row
+    size_t itemsize = buf.itemsize;                    // bytes per void element
+    size_t bytes_per_row = cols * itemsize;
+
+    // If 2D, num_bits must be divisible by cols (equal bits per void element)
+    if (buf.ndim == 2 && (num_bits % cols) != 0) {
+        throw std::runtime_error("num_bits must be a multiple of number of columns.");
+    }
+
+    int bits_per_void = (buf.ndim == 1) ? num_bits : (num_bits / cols);
+    size_t max_bits_per_void = itemsize * 8;
+    if (bits_per_void > (int)max_bits_per_void) {
+        throw std::runtime_error("bits_per_void exceeds capacity of dtype.");
+    }
+
+    py::array_t<uint8_t> out({rows, (ssize_t)num_bits});
+    auto bout = out.request();
+    uint8_t *out_ptr = static_cast<uint8_t *>(bout.ptr);
+
+    const uint8_t *base = static_cast<const uint8_t *>(buf.ptr);
+
+    for (ssize_t r = 0; r < rows; ++r) {
+        const uint8_t *row_ptr = base + r * bytes_per_row;
+        int out_offset = r * num_bits;
+        for (ssize_t c = 0; c < cols; ++c) {
+            const uint8_t *void_ptr = row_ptr + c * itemsize;
+            for (int b = 0; b < bits_per_void; ++b) {
+                size_t byte_idx = b / 8;
+                int bit_idx = b % 8;
+                uint8_t bit = (void_ptr[byte_idx] >> bit_idx) & 0x1;
+                out_ptr[out_offset + c * bits_per_void + b] = bit;
+            }
+        }
+    }
+    return out;
+}
+
+py::array gauss_jordan_inverse(py::array packed, int num_bits) {
+    auto buf = packed.request();
+    if (buf.ndim != 1) {
+        throw std::runtime_error("gauss_jordan_inverse expects 1D packed array of voids.");
+    }
+    ssize_t n = buf.shape[0];
+    if (num_bits != n) {
+        // Require square (n x n) bit matrix
+        throw std::runtime_error("num_bits must equal number of rows (square matrix).");
+    }
+    size_t itemsize = buf.itemsize;
+    if ((size_t)num_bits > itemsize * 8) {
+        throw std::runtime_error("num_bits exceeds bit capacity of row dtype.");
+    }
+
+    py::array A = py::array(packed.dtype(), buf.shape);
+    auto bufA = A.request();
+    std::memcpy(bufA.ptr, buf.ptr, buf.size * buf.itemsize);
+    uint8_t *Aptr = static_cast<uint8_t *>(bufA.ptr);
+
+    // identity crisis
+    py::array Inv = py::array(packed.dtype(), buf.shape);
+    auto bufInv = Inv.request();
+    uint8_t *Iptr = static_cast<uint8_t *>(bufInv.ptr);
+    std::memset(Iptr, 0, bufInv.size * bufInv.itemsize);
+    for (ssize_t r = 0; r < n; ++r) {
+        ssize_t byte_idx = r / 8;
+        int bit_idx = r % 8;
+        Iptr[r * itemsize + byte_idx] |= (1u << bit_idx);
+    }
+
+    // G-J here
+    for (int col = 0; col < num_bits; ++col) {
+        ssize_t pivot = -1;
+        ssize_t byte_idx = col / 8;
+        int bit_idx = col % 8;
+
+        // Find pivot
+        for (ssize_t r = col; r < n; ++r) {
+            uint8_t bit = (Aptr[r * itemsize + byte_idx] >> bit_idx) & 1u;
+            // uint8_t bit =
+            if (bit) {
+                pivot = r;
+                break;
+            }
+        }
+        if (pivot < 0) {
+            throw std::runtime_error("Matrix is singular (no pivot).");
+        }
+
+        // Swap pivot row into position col
+        if (pivot != col) {
+            for (size_t b = 0; b < itemsize; ++b) {
+                std::swap(Aptr[pivot * itemsize + b], Aptr[col * itemsize + b]);
+                std::swap(Iptr[pivot * itemsize + b], Iptr[col * itemsize + b]);
+            }
+        }
+
+        // Eliminate other rows
+        for (ssize_t r = 0; r < n; ++r) {
+            if (r == col)
+                continue;
+            uint8_t bit = (Aptr[r * itemsize + byte_idx] >> bit_idx) & 1u;
+            if (bit) {
+                //
+                for (size_t b = 0; b < itemsize; ++b) {
+                    Aptr[r * itemsize + b] ^= Aptr[col * itemsize + b];
+                    //
+                    Iptr[r * itemsize + b] ^= Iptr[col * itemsize + b];
+                }
+            }
+        }
+    }
+    return Inv;
 }

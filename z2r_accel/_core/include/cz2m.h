@@ -21,7 +21,6 @@ namespace py = pybind11;
     #warning "OpenMP is not enabled"
 #endif
 
-
 #define FUNC_THRESHOLD_PARALLEL 100000
 
 // Function declarations
@@ -52,3 +51,7 @@ py::array transpose(py::array voids, int64_t num_bits = -1);
 py::array matmul(py::array z2r_a, py::array z2r_b, int a_num_qubits, int b_num_qubits);
 
 py::array concatenate(py::array x1, py::array x2, int axis = 0);
+
+py::array_t<uint8_t> z2_to_uint8(py::array z2r, int num_qubits);
+
+py::array gauss_jordan_inverse(py::array matrix, int num_bits);

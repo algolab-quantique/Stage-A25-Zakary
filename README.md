@@ -11,7 +11,11 @@ To install this package, you can try by using pip:
 ``` bash
 pip install z2r_accel
 ```
-If there is no available distribution available for your machine, you'll need to build it from source
+If there is no available distribution available for your machine, you'll need to build it from source. You can try this by using:
+```
+
+pip install numpy pybind11 pybind11-stubgen scikit-build-core git+https://github.com/algolab-quantique/Stage-A25-Zakary.git 
+```
 
 ---
 
