@@ -20,8 +20,9 @@ dev = [
     "scikit-build-core", 
     "pybind11",
     "pybind11-stubgen",
+    "numpy",
     "pytest",
     "black",
     "mypy",
-    "numpy"
+    "pre-commit"
 ]
