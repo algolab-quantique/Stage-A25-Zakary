@@ -1,5 +1,7 @@
 import sys, os, black, subprocess
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 
 def format_black():
     try:
@@ -9,6 +11,7 @@ def format_black():
     except subprocess.CalledProcessError as e:
         print(f"Error during formatting: {e}")
         return -1
+
 
 def format_clang():
     files = []
