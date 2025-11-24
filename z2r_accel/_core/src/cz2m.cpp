@@ -294,7 +294,6 @@ py::object unique(py::array zx_voids, bool return_index, bool return_inverse, bo
     uint8_t *uptr = static_cast<uint8_t *>(ubuf.ptr);
 
     for (size_t gi = 0; gi < groups; ++gi) {
-        size_t src = idx[gi == 0 ? 0 : 0]; // placeholder to avoid compiler warning
         // find any element belonging to group gi -> we can use representatives[gi]
         // (original index), but we must copy the representative's bytes (they equal
         // the group's bytes)
@@ -469,8 +468,8 @@ py::array row_echelon(py::array voids, int num_qubits) {
     // Copy input to output
     std::memcpy(ptr_out, ptr_in, buf.size * buf.itemsize);
 
-    int h_row = 0;
-    int k_col = 0;
+    size_t h_row = 0;
+    size_t k_col = 0;
 
     //     while h_row < n_rows and k_col < n_cols:
     //         if np.all(re_bit_matrix[h_row:, k_col] == 0):
@@ -493,7 +492,7 @@ py::array row_echelon(py::array voids, int num_qubits) {
     // TODO: Optimize!
     while (h_row < n_rows && k_col < n_cols) {
         int found_nonzero = 0;
-        for (int r = h_row; r < n_rows; r++) {
+        for (size_t r = h_row; r < n_rows; r++) {
             size_t byte_idx = k_col / 8;
             size_t bit_idx = k_col % 8;
             uint8_t bit = (ptr_out[r * buf.itemsize + byte_idx] >> bit_idx) & 1;
@@ -506,8 +505,8 @@ py::array row_echelon(py::array voids, int num_qubits) {
             k_col += 1;
         } else {
             // Find pivot row
-            int i_row = h_row;
-            for (int r = h_row; r < n_rows; r++) {
+            size_t i_row = h_row;
+            for (size_t r = h_row; r < n_rows; r++) {
                 size_t byte_idx = k_col / 8;
                 size_t bit_idx = k_col % 8;
                 uint8_t bit = (ptr_out[r * buf.itemsize + byte_idx] >> bit_idx) & 1;
@@ -556,10 +555,6 @@ sparse_matrix_from_zx_voids(py::array z_voids, py::array x_voids, int num_qubits
     std::vector<std::complex<double>> matrix_elements(dim);
 
     size_t itemsize = buf_z.itemsize;
-    size_t n = buf_z.size;
-    size_t n64 = itemsize / 8;
-    size_t tail = itemsize % 8;
-    size_t total_64_chunks = n * n64;
 
     uint8_t *z_ptr = std::bit_cast<uint8_t *>(buf_z.ptr);
     uint8_t *x_ptr = std::bit_cast<uint8_t *>(buf_x.ptr);

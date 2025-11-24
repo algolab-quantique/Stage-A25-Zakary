@@ -8,4 +8,4 @@ repos:
     rev: 25.11.0 
     hooks:
       - id: black
-        args: ["--line-length=100"]
+        args: ["--line-length=100", "--exclude=z2r_accel/_core/build"]
