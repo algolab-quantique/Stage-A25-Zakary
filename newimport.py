@@ -9,24 +9,19 @@ NUM_QUBITS = 3
 NUM_ROWS = 3
 
 
-def matmul(): 
+def matmul():
     ran1 = pa.PauliArray.random((NUM_ROWS,), NUM_QUBITS)
     z1 = ran1.z_voids
     x1 = ran1.x_voids
 
-    ran_mat = np.array([[1, 0, 1],
-                        [0, 1, 1],
-                        [1, 1, 0]], dtype=np.uint8)
-    ran_mat2 = np.array([[0, 1, 1],
-                        [1, 0, 1],
-                        [1, 1, 0]], dtype=np.uint8)
+    ran_mat = np.array([[1, 0, 1], [0, 1, 1], [1, 1, 0]], dtype=np.uint8)
+    ran_mat2 = np.array([[0, 1, 1], [1, 0, 1], [1, 1, 0]], dtype=np.uint8)
     # z1_i = vops.voids_to_int_strings(z1)
     # x1_i = vops.voids_to_int_strings(x1)
     # print(z1_i)
     print("========== Python ==========")
     res_py = bops.matmul(ran_mat, ran_mat2)
     print(res_py)
-
 
     print("========== Z2 ==========")
     ran1_void = vops.bit_strings_to_voids(ran_mat)
@@ -37,9 +32,9 @@ def matmul():
     # print("Result from z2r_accel.matmul:")
     # print(res)
 
-
     # print("Input PauliArray:")
     # print(ran1.inspect())
+
 
 def concatenate():
     # ran1 = pa.PauliArray.random((NUM_ROWS,), NUM_QUBITS)
@@ -56,13 +51,9 @@ def concatenate():
     # x1_i = vops.voids_to_bit_strings(x1, NUM_QUBITS)
     # res_i = vops.voids_to_bit_strings(res, NUM_QUBITS)
 
-    z1_i = np.array([[0,0,0],
-                     [0,0,0],
-                     [0,0,0]], dtype=np.uint8)
-    x1_i = np.array([[1,1, 1],
-                     [1,1, 1],
-                     [1,1, 1]], dtype=np.uint8)
-    
+    z1_i = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]], dtype=np.uint8)
+    x1_i = np.array([[1, 1, 1], [1, 1, 1], [1, 1, 1]], dtype=np.uint8)
+
     z1 = vops.bit_strings_to_voids(z1_i).reshape(-1, 1)
     x1 = vops.bit_strings_to_voids(x1_i).reshape(-1, 1)
     # print("Z1 voids:")
@@ -70,8 +61,7 @@ def concatenate():
 
     res = z2.concatenate(z1, x1, axis=1)
     # res_i = vops.voids_to_bit_strings(res, NUM_QUBITS*2)
-    res_i = z2.z2_to_uint8(res, NUM_QUBITS*2)
-
+    res_i = z2.z2_to_uint8(res, NUM_QUBITS * 2)
 
     print("Concatenated bit strings:")
     print("\nZ1:")
@@ -81,6 +71,8 @@ def concatenate():
     print("\nResult:")
     print(res_i)
 
+
+# PAS MOI!
 def gauss_inv(num_qubits=NUM_QUBITS, trials=20):
     import numpy as np
     import pauliarray.binary.void_operations as vops
@@ -122,10 +114,12 @@ def gauss_inv(num_qubits=NUM_QUBITS, trials=20):
     except RuntimeError:
         print("Singular matrix correctly raised RuntimeError")
 
+
 def main():
     # matmul()
     # concatenate()
     gauss_inv()
+
 
 if __name__ == "__main__":
     main()
