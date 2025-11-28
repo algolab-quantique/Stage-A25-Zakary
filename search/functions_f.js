@@ -1,0 +1,9 @@
+var searchData=
+[
+  ['tensor_0',['tensor',['../cz2m_8h.html#a9462b2d1d2e54e82ad72c6d30f03230c',1,'tensor(py::array z2, py::array x2, py::array z1, py::array x1):&#160;cz2m.cpp'],['../cz2m_8cpp.html#a9462b2d1d2e54e82ad72c6d30f03230c',1,'tensor(py::array z2, py::array x2, py::array z1, py::array x1):&#160;cz2m.cpp']]],
+  ['test_1',['Test',['../classTest.html#a44e3a28c552193de099601e2910531f1',1,'Test::Test()'],['../classTest.html#adcf1bc755df94c4d07519c0a02aa1cc0',1,'Test::Test(const Test &amp;)'],['../classTest_3_01void_01_5_00_01200_01_4.html#aef160085cc11406b872b45fa871c7692',1,'Test&lt; void *, 200 &gt;::Test()'],['../classTest_3_01T_01_5_01_4.html#a474e8a1211308b3f810f9eafced6cbe7',1,'Test&lt; T * &gt;::Test()']]],
+  ['testme_2',['testMe',['../classJavadoc__Test.html#a0c472683ed25ff096e8a9edfb18d550c',1,'Javadoc_Test::testMe()'],['../classQTstyle__Test.html#a8840748753118dd468e8368a28e49c62',1,'QTstyle_Test::testMe()']]],
+  ['testmetoo_3',['testMeToo',['../classJavadoc__Test.html#ac2b39cabbe80957ae3e8bc2bd4e887f6',1,'Javadoc_Test::testMeToo()'],['../classQTstyle__Test.html#ad5b201f097a720d44bf976c2f27efbda',1,'QTstyle_Test::testMeToo()']]],
+  ['to_5fmatrix_4',['to_matrix',['../cz2m_8h.html#a375f5fbabed5082337c4f714f68bedd3',1,'to_matrix(py::array z_voids, py::array x_voids, int num_qubits):&#160;cz2m.cpp'],['../cz2m_8cpp.html#a375f5fbabed5082337c4f714f68bedd3',1,'to_matrix(py::array z_voids, py::array x_voids, int num_qubits):&#160;cz2m.cpp']]],
+  ['transpose_5',['transpose',['../cz2m_8h.html#ac8b462857cd8418f8967e4c5d3c31a48',1,'transpose(py::array voids, int64_t num_bits=-1):&#160;cz2m.cpp'],['../cz2m_8cpp.html#a12fbfe079cede36f161a30220eec6d97',1,'transpose(py::array voids, int64_t num_bits):&#160;cz2m.cpp'],['../namespacez2r__accel_1_1cz2m.html#ad52f3292fb1aee5a8c8119182e3d62aa',1,'z2r_accel.cz2m.transpose()']]]
+];
