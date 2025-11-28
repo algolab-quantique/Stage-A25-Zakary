@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['publicvar_0',['publicVar',['../classJavadoc__Test.html#a44a516fbc3a4865e2dcae34649c9df6a',1,'Javadoc_Test::publicVar()'],['../classQTstyle__Test.html#aabf7b2e9ed83ea44aca4d213baae06d3',1,'QTstyle_Test::publicVar()']]]
+  ['try_0',['try',['../namespacez2r__accel_1_1bitops.html#a8dc2e2fb852178155e72599efda14e2f',1,'z2r_accel.bitops.try()'],['../namespacez2r__accel_1_1cz2m.html#adf5a37109c63a2960ef47b3b722133cc',1,'z2r_accel.cz2m.try()']]]
 ];

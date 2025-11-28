@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['num_5fqubits_0',['NUM_QUBITS',['../namespacenewimport.html#a8cfa0e907824ddf406920be67c5627f5',1,'newimport']]],
-  ['num_5frows_1',['NUM_ROWS',['../namespacenewimport.html#ae50f6bbf928bbde1d7f99fdcf1bfc582',1,'newimport']]]
+  ['publicvar_0',['publicVar',['../classJavadoc__Test.html#a44a516fbc3a4865e2dcae34649c9df6a',1,'Javadoc_Test::publicVar()'],['../classQTstyle__Test.html#aabf7b2e9ed83ea44aca4d213baae06d3',1,'QTstyle_Test::publicVar()']]]
 ];
