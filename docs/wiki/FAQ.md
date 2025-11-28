@@ -1,4 +1,5 @@
-### **Q:** Is having a header and a bindings file for each module redundant if both declare the same functions?
+# FAQ
+### Q: Is having a header and a bindings file for each module redundant if both declare the same functions?
 **A:** ...Yes, and No.
 
 The header file (.h) for a module can only declare C++'s side of the code. Functions, defines, includes and pragmas live there. 

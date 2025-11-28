@@ -10,9 +10,17 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript">
-    DoxygenAwesomeDarkModeToggle.init()
+  // initialize dark mode toggle (safe – initialization is idempotent)
+  if (typeof DoxygenAwesomeDarkModeToggle !== 'undefined') {
+    DoxygenAwesomeDarkModeToggle.init();
+  }
+  // some versions expose a global initializer; keep it safe
+  if (typeof DoxygenAwesome !== 'undefined' && typeof DoxygenAwesome.init === 'function') {
+    DoxygenAwesome.init();
+  }
 </script>
 <link href="navtree.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="resize.js"></script>

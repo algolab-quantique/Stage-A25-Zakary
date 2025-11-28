@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['having_20a_20header_20and_20a_20bindings_20file_20for_20each_20module_20redundant_20if_20both_20declare_20the_20same_20functions_0',['&lt;strong&gt;Q:&lt;/strong&gt; Is having a header and a bindings file for each module redundant if both declare the same functions?',['../md_docs_2wiki_2FAQ.html',1,'']]],
-  ['header_20and_20a_20bindings_20file_20for_20each_20module_20redundant_20if_20both_20declare_20the_20same_20functions_1',['&lt;strong&gt;Q:&lt;/strong&gt; Is having a header and a bindings file for each module redundant if both declare the same functions?',['../md_docs_2wiki_2FAQ.html',1,'']]],
-  ['home_2',['Home',['../md_docs_2wiki_2Home.html',1,'']]],
-  ['home_2emd_3',['Home.md',['../Home_8md.html',1,'']]]
+  ['gauss_5fjordan_5finverse_0',['gauss_jordan_inverse',['../cz2m_8h.html#a29cded3e3faaca6962f8193aaaf35545',1,'gauss_jordan_inverse(py::array matrix, int num_bits):&#160;cz2m.cpp'],['../cz2m_8cpp.html#a410809120b7e19dd834d0eacf8314d4b',1,'gauss_jordan_inverse(py::array z2r, int num_bits):&#160;cz2m.cpp'],['../namespacez2r__accel_1_1cz2m.html#aa1fdca985b65807fbea9f1e4d436a0fd',1,'z2r_accel.cz2m.gauss_jordan_inverse()']]],
+  ['general_1',['General',['../md_docs_2wiki_2Optimizations.html#autotoc_md26',1,'']]],
+  ['get_5fbackend_2',['get_backend',['../namespacez2r__accel_1_1bitops.html#aef8ea5dd54e9f174d5f81d4508505b99',1,'z2r_accel::bitops']]],
+  ['get_5fphases_3',['get_phases',['../cz2m_8h.html#aac70a6a63284d6acd98f2c5cf2c67b0f',1,'get_phases(py::array z_voids, py::array x_voids):&#160;cz2m.cpp'],['../cz2m_8cpp.html#aac70a6a63284d6acd98f2c5cf2c67b0f',1,'get_phases(py::array z_voids, py::array x_voids):&#160;cz2m.cpp']]],
+  ['gil_4',['Understanding the GIL',['../md_docs_2wiki_2Optimizations.html#autotoc_md29',1,'']]]
 ];

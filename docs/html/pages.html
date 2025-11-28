@@ -10,9 +10,17 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript">
-    DoxygenAwesomeDarkModeToggle.init()
+  // initialize dark mode toggle (safe – initialization is idempotent)
+  if (typeof DoxygenAwesomeDarkModeToggle !== 'undefined') {
+    DoxygenAwesomeDarkModeToggle.init();
+  }
+  // some versions expose a global initializer; keep it safe
+  if (typeof DoxygenAwesome !== 'undefined' && typeof DoxygenAwesome.init === 'function') {
+    DoxygenAwesome.init();
+  }
 </script>
 <link href="navtree.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="resize.js"></script>
@@ -105,12 +113,11 @@ $(document).ready(function(){initNavTree('pages.html',''); initResizable(); });
 <tr id="row_1_" class="odd"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md_docs_2wiki_2Coding-Tutorial.html" target="_self">Coding-Tutorial</a></td><td class="desc"></td></tr>
 <tr id="row_2_" class="even"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md_docs_2wiki_2Devlog.html" target="_self">Devlog</a></td><td class="desc"></td></tr>
 <tr id="row_3_" class="odd"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md_docs_2wiki_2External-Tools.html" target="_self">Auto-formatters</a></td><td class="desc"></td></tr>
-<tr id="row_4_" class="even"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md_docs_2wiki_2FAQ.html" target="_self">&lt;strong&gt;Q:&lt;/strong&gt; Is having a header and a bindings file for each module redundant if both declare the same functions?</a></td><td class="desc"></td></tr>
-<tr id="row_5_" class="odd"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md_docs_2wiki_2Home.html" target="_self">Home</a></td><td class="desc"></td></tr>
-<tr id="row_6_" class="even"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md_docs_2wiki_2Nomenclature.html" target="_self">Z2R</a></td><td class="desc"></td></tr>
-<tr id="row_7_" class="odd"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md_docs_2wiki_2Optimizations.html" target="_self">Data structure</a></td><td class="desc"></td></tr>
-<tr id="row_8_" class="even"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md_docs_2wiki_2Packaging.html" target="_self">Packaging</a></td><td class="desc"></td></tr>
-<tr id="row_9_" class="odd"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md_docs_2wiki_2Project-Structure-_6-Architecture.html" target="_self">Structure</a></td><td class="desc"></td></tr>
+<tr id="row_4_" class="even"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md_docs_2wiki_2FAQ.html" target="_self">FAQ</a></td><td class="desc"></td></tr>
+<tr id="row_5_" class="odd"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md_docs_2wiki_2Nomenclature.html" target="_self">Z2R</a></td><td class="desc"></td></tr>
+<tr id="row_6_" class="even"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md_docs_2wiki_2Optimizations.html" target="_self">Data structure</a></td><td class="desc"></td></tr>
+<tr id="row_7_" class="odd"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md_docs_2wiki_2Packaging.html" target="_self">Packaging</a></td><td class="desc"></td></tr>
+<tr id="row_8_" class="even"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="md_docs_2wiki_2Project-Structure-_6-Architecture.html" target="_self">Structure</a></td><td class="desc"></td></tr>
 </table>
 </div><!-- directory -->
 </div><!-- contents -->

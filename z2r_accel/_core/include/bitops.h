@@ -1,3 +1,14 @@
+/**
+ * @file bitops.h
+ * @author your name (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2025-11-28
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
+
 #pragma once
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>

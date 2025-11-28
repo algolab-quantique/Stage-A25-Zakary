@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['module_20redundant_20if_20both_20declare_20the_20same_20functions_0',['&lt;strong&gt;Q:&lt;/strong&gt; Is having a header and a bindings file for each module redundant if both declare the same functions?',['../md_docs_2wiki_2FAQ.html',1,'']]]
+  ['when_20writing_0',['When Writing',['../md_docs_2wiki_2Coding-Convention.html',1,'']]],
+  ['writing_1',['When Writing',['../md_docs_2wiki_2Coding-Convention.html',1,'']]]
 ];

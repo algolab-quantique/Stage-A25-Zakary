@@ -10,9 +10,17 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript">
-    DoxygenAwesomeDarkModeToggle.init()
+  // initialize dark mode toggle (safe – initialization is idempotent)
+  if (typeof DoxygenAwesomeDarkModeToggle !== 'undefined') {
+    DoxygenAwesomeDarkModeToggle.init();
+  }
+  // some versions expose a global initializer; keep it safe
+  if (typeof DoxygenAwesome !== 'undefined' && typeof DoxygenAwesome.init === 'function') {
+    DoxygenAwesome.init();
+  }
 </script>
 <link href="navtree.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="resize.js"></script>
@@ -185,7 +193,12 @@ Functions</h2></td></tr>
 <tr class="memdesc:ab1e2f304ef583d376bcbba25649de372"><td class="mdescLeft">&#160;</td><td class="mdescRight">This templated function performs an element-wise, bitwise operation onto two NumPy contiguous (C-like) arrays.  <br /></td></tr>
 <tr class="separator:ab1e2f304ef583d376bcbba25649de372"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><dl class="section author"><dt>Author</dt><dd>your name (<a href="#" onclick="location.href='mai'+'lto:'+'you'+'@d'+'oma'+'in'+'.co'+'m'; return false;">you@d<span class="obfuscator">.nosp@m.</span>omai<span class="obfuscator">.nosp@m.</span>n.com</a>) </dd></dl>
+<dl class="section version"><dt>Version</dt><dd>0.1 </dd></dl>
+<dl class="section date"><dt>Date</dt><dd>2025-11-28</dd></dl>
+<dl class="section copyright"><dt>Copyright</dt><dd>Copyright (c) 2025 </dd></dl>
+</div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a3361e796901362ed605e4dc4dec2f41d" name="a3361e796901362ed605e4dc4dec2f41d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3361e796901362ed605e4dc4dec2f41d">&#9670;&#160;</a></span>BOPS_THRESHOLD_PARALLEL</h2>
 

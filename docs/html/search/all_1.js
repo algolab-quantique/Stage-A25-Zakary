@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['a_20header_20and_20a_20bindings_20file_20for_20each_20module_20redundant_20if_20both_20declare_20the_20same_20functions_0',['&lt;strong&gt;Q:&lt;/strong&gt; Is having a header and a bindings file for each module redundant if both declare the same functions?',['../md_docs_2wiki_2FAQ.html',1,'']]],
-  ['and_20a_20bindings_20file_20for_20each_20module_20redundant_20if_20both_20declare_20the_20same_20functions_1',['&lt;strong&gt;Q:&lt;/strong&gt; Is having a header and a bindings file for each module redundant if both declare the same functions?',['../md_docs_2wiki_2FAQ.html',1,'']]],
-  ['architecture_2',['Architecture',['../md_docs_2wiki_2Project-Structure-_6-Architecture.html#autotoc_md34',1,'']]],
-  ['auto_20formatters_3',['Auto-formatters',['../md_docs_2wiki_2External-Tools.html',1,'']]]
+  ['_5f_5finit_5f_5f_2epy_0',['__init__.py',['../____init_____8py.html',1,'']]],
+  ['_5fbc_1',['_bc',['../namespacez2r__accel_1_1bitops.html#a52675fc75b44247ec1c0eb68d21699e4',1,'z2r_accel.bitops._bc()'],['../namespacez2r__accel_1_1cz2m.html#ad6ec1474f49427fb5794c2c82f6313a8',1,'z2r_accel.cz2m._bc()']]],
+  ['_5fcontiguous_2',['_contiguous',['../namespacez2r__accel_1_1bitops.html#a552679df43da2a93d66e9f81de2c2b30',1,'z2r_accel.bitops._contiguous()'],['../namespacez2r__accel_1_1cz2m.html#a762c3b3ae1f3cdfee57215f7acc5e5fa',1,'z2r_accel.cz2m._contiguous()']]]
 ];
