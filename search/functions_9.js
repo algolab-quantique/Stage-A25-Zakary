@@ -1,6 +1,0 @@
-var searchData=
-[
-  ['main_0',['main',['../example__test_8cpp.html#acdef7a1fd863a6d3770c1268cb06add3',1,'main():&#160;example_test.cpp'],['../include__test_8cpp.html#acdef7a1fd863a6d3770c1268cb06add3',1,'main():&#160;include_test.cpp'],['../manual_8c.html#a840291bc02cba5474a4cb46a9b9566fe',1,'main(void):&#160;manual.c'],['../namespacenewimport.html#a30497dda601ed95779b82506c80a89ae',1,'newimport.main()']]],
-  ['matmul_1',['matmul',['../namespacenewimport.html#ac4c6e4868d1aadb7bbcafdc9a6f75822',1,'newimport.matmul()'],['../cz2m_8h.html#a3c6e4cb97bf8045d53f0c6d4b48e834c',1,'matmul(py::array z2r_a, py::array z2r_b, int a_num_qubits, int b_num_qubits):&#160;cz2m.cpp'],['../cz2m_8cpp.html#a3c6e4cb97bf8045d53f0c6d4b48e834c',1,'matmul(py::array z2r_a, py::array z2r_b, int a_num_qubits, int b_num_qubits):&#160;cz2m.cpp'],['../namespacez2r__accel_1_1cz2m.html#a9b625dac9d91421087fa99b16d00fa87',1,'z2r_accel.cz2m.matmul()']]],
-  ['member_2',['member',['../classAfterdoc__Test.html#a57ba94e9039ee90a1b191ae0009a05dd',1,'Afterdoc_Test::member()'],['../classAutolink__Test.html#a393ea281f235a2f603d98daf72b0d411',1,'Autolink_Test::member(int)'],['../classAutolink__Test.html#acf783a43c2b4b6cc9dd2361784eca2e1',1,'Autolink_Test::member(int, int)'],['../classFn__Test.html#a823b5c9726bb8f6ece50e57ac8e3092c',1,'Fn_Test::member()']]]
-];
