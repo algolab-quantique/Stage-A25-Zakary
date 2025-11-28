@@ -1,4 +1,5 @@
-This documentation assumes you have basic knowledge in C/C++ syntax and are familiar with PauliArray's Python code.
+Please see the wiki for more information.
+<!-- This documentation assumes you have basic knowledge in C/C++ syntax and are familiar with PauliArray's Python code.
 
 There is currently a reformatting and renaming effort throughout the project. Names like 'paulicpp' will be changed to something more agnostic and appropriate in the near future.
 
@@ -366,4 +367,4 @@ Example: `ex = 0b01100111` stored in a unsigned integer.
 
 <img src = "https://github.com/algolab-quantique/Stage-A25-Zakary/blob/main/assets/datastruct_comparison.png" align="center" width="300">
 
----
+--- -->

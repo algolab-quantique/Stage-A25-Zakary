@@ -5,7 +5,7 @@ import pauliarray.binary.bit_operations as bops
 
 import z2r_accel as z2
 
-NUM_QUBITS = 3
+NUM_QUBITS = 9
 NUM_ROWS = 3
 
 
@@ -96,14 +96,14 @@ def gauss_inv(num_qubits=NUM_QUBITS, trials=20):
         prod = bops.matmul(A_bits, inv_bits)
         if not np.array_equal(prod, np.eye(num_qubits, dtype=np.uint8)):
             print("FAIL:")
-            print("A:\n", A_bits)
-            print("A^{-1}:\n", inv_bits)
-            print("A*A^{-1}:\n", prod)
+            print("A:\n", A_bits.astype(np.uint8))
+            print("A^{-1}:\n", inv_bits.astype(np.uint8))
+            print("A*A^{-1}:\n", prod.astype(np.uint8))
         else:
             print("OK")
-            print("A:\n", A_bits)
-            print("A^{-1}:\n", inv_bits)
-            print("A*A^{-1}:\n", prod)
+            print("A:\n", A_bits.astype(np.uint8))
+            print("A^{-1}:\n", inv_bits.astype(np.uint8))
+            print("A*A^{-1}:\n", prod.astype(np.uint8))
 
     # Singular case check
     singular = np.zeros((num_qubits, num_qubits), dtype=np.uint8)
@@ -115,10 +115,16 @@ def gauss_inv(num_qubits=NUM_QUBITS, trials=20):
         print("Singular matrix correctly raised RuntimeError")
 
 
+# def test():
+#     u = " une "
+#     print("Voici" +u "erreur")
+
+
 def main():
     # matmul()
     # concatenate()
     gauss_inv()
+    # test()
 
 
 if __name__ == "__main__":

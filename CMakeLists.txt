@@ -36,7 +36,7 @@ option(
 # things, and is not a whole lot faster. 
 # - march=native enables all instruction sets supported by the
 # local machine. This causes non-portable binaries, but is faster in local builds. Disabling the
-# march flag may be useful when building pre-built binaries for distribution, but will kill any SIMD
+# march flag may be useful when building pre-built binaries for distribution, but will probably kill any SIMD
 # generation. 
 # - fPIC is needed for shared libraries.
 
@@ -47,6 +47,10 @@ option(
 # - funroll-loops lets the compiler unroll loops. For now i wouldnt use it as i fear it may
 # slow down things for giant NumPy arrays.
 # - Wall enables all warnings. Useful for development. Not for production
+#
+# For more options, see: https://clang.llvm.org/docs/ClangCommandLineReference.html
+# and https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+# The majority of flags supported by clang are also supported on GCC, and vice-versa.
 set(PAULI_COMPILE_OPTIONS
     -O3
     -flto=auto

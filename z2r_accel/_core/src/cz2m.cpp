@@ -19,17 +19,10 @@
  * @copyright Copyright (c) 2025
  */
 
-// bit_string_array
-// bit_string_ndarray
-//  src/_binary
-// binary_unique
-
 // toute dans bit_ops
 // to_matrix
-// row_space
-// matmul
-// transposer sur les bits
-
+// inserer des matrices dans dautres via indexes
+// get_qubit_slices (?) - return toutes qubits pour un ensemble dindexes via vector<int>
 #include "cz2m.h"
 
 py::tuple tensor(py::array z2, py::array x2, py::array z1, py::array x1) {
@@ -247,9 +240,9 @@ py::object unique(py::array zx_voids, bool return_index, bool return_inverse, bo
     auto cmp = [&](size_t a, size_t b) {
         const void *pa = ptr + a * itemsize;
         const void *pb = ptr + b * itemsize;
-        int r = std::memcmp(pa, pb, itemsize);
-        if (r != 0)
-            return r < 0;
+        int row = std::memcmp(pa, pb, itemsize);
+        if (row != 0)
+            return row < 0;
         return a < b;
     };
 
@@ -410,6 +403,9 @@ py::tuple unordered_unique(py::array zx_voids) {
         }
 
         std::unordered_map<std::string_view, size_t> table;
+        // std::unordered_map seems to be poor in performance (according to the internet)
+        // Perhaps we should be using another container implementation?
+        // See: https://martin.ankerl.com/2022/08/27/hashmap-bench-01/
         table.max_load_factor(0.5);
         // std::unordered_map<std::string_view, size_t, XXH3StringViewHash> table;
         table.reserve(nrows);
@@ -492,10 +488,10 @@ py::array row_echelon(py::array voids, int num_qubits) {
     // TODO: Optimize!
     while (h_row < n_rows && k_col < n_cols) {
         int found_nonzero = 0;
-        for (size_t r = h_row; r < n_rows; r++) {
+        for (size_t row = h_row; row < n_rows; row++) {
             size_t byte_idx = k_col / 8;
             size_t bit_idx = k_col % 8;
-            uint8_t bit = (ptr_out[r * buf.itemsize + byte_idx] >> bit_idx) & 1;
+            uint8_t bit = (ptr_out[row * buf.itemsize + byte_idx] >> bit_idx) & 1;
             if (bit) {
                 found_nonzero = 1;
                 break;
@@ -506,12 +502,12 @@ py::array row_echelon(py::array voids, int num_qubits) {
         } else {
             // Find pivot row
             size_t i_row = h_row;
-            for (size_t r = h_row; r < n_rows; r++) {
+            for (size_t row = h_row; row < n_rows; row++) {
                 size_t byte_idx = k_col / 8;
                 size_t bit_idx = k_col % 8;
-                uint8_t bit = (ptr_out[r * buf.itemsize + byte_idx] >> bit_idx) & 1;
+                uint8_t bit = (ptr_out[row * buf.itemsize + byte_idx] >> bit_idx) & 1;
                 if (bit) {
-                    i_row = r;
+                    i_row = row;
                     break;
                 }
             }
@@ -523,15 +519,15 @@ py::array row_echelon(py::array voids, int num_qubits) {
             }
 
             // Eliminate other rows
-            for (size_t r = 0; r < n_rows; r++) {
-                if (r != h_row) {
+            for (size_t row = 0; row < n_rows; row++) {
+                if (row != h_row) {
                     size_t byte_idx = k_col / 8;
                     size_t bit_idx = k_col % 8;
-                    uint8_t bit = (ptr_out[r * buf.itemsize + byte_idx] >> bit_idx) & 1;
+                    uint8_t bit = (ptr_out[row * buf.itemsize + byte_idx] >> bit_idx) & 1;
                     if (bit) {
                         // XOR rows
                         for (size_t b = 0; b < buf.itemsize; b++) {
-                            ptr_out[r * buf.itemsize + b] ^= ptr_out[h_row * buf.itemsize + b];
+                            ptr_out[row * buf.itemsize + b] ^= ptr_out[h_row * buf.itemsize + b];
                         }
                     }
                 }
@@ -658,9 +654,9 @@ py::array_t<std::complex<double>> to_matrix(py::array z_voids, py::array x_voids
             sparse_matrix_from_zx_voids(z_row, x_row, num_qubits);
 
         for (size_t k = 0; k < row_ind.size(); ++k) {
-            size_t r = row_ind[k];
+            size_t row = row_ind[k];
             size_t c = col_ind[k];
-            ptr_mat[r * (1 << n_cols) + c] += matrix_elements[k];
+            ptr_mat[row * (1 << n_cols) + c] += matrix_elements[k];
         }
     }
 
@@ -931,8 +927,8 @@ py::array concatenate(py::array x1, py::array x2, int axis) {
     throw std::runtime_error("ndim > 2 not implemented.");
 }
 
-py::array_t<uint8_t> z2_to_uint8(py::array packed, int num_bits) {
-    auto buf = packed.request();
+py::array_t<uint8_t> z2_to_uint8(py::array z2r, int num_bits) {
+    auto buf = z2r.request();
     if (buf.ndim == 0 || buf.ndim > 2) {
         throw std::runtime_error("z2_to_uint8 supports only 1D or 2D arrays.");
     }
@@ -959,9 +955,9 @@ py::array_t<uint8_t> z2_to_uint8(py::array packed, int num_bits) {
 
     const uint8_t *base = static_cast<const uint8_t *>(buf.ptr);
 
-    for (ssize_t r = 0; r < rows; ++r) {
-        const uint8_t *row_ptr = base + r * bytes_per_row;
-        int out_offset = r * num_bits;
+    for (ssize_t row = 0; row < rows; ++row) {
+        const uint8_t *row_ptr = base + row * bytes_per_row;
+        int out_offset = row * num_bits;
         for (ssize_t c = 0; c < cols; ++c) {
             const uint8_t *void_ptr = row_ptr + c * itemsize;
             for (int b = 0; b < bits_per_void; ++b) {
@@ -975,10 +971,24 @@ py::array_t<uint8_t> z2_to_uint8(py::array packed, int num_bits) {
     return out;
 }
 
-py::array gauss_jordan_inverse(py::array packed, int num_bits) {
-    auto buf = packed.request();
+/**
+ * @brief Calculates the inverse of a matrix (if possible) using Gauss-Jordan elimination.
+ * This function will not work on a matrix if :
+ * - It is not "2D", as in a 1D list of packed voids
+ * - It is not "square" (num_qubits == number of rows)
+ * - It is inconsistant with its dtype and num_qubits
+ * - It is is singular, i.e inatly does not have a inverse
+ * If an input is bad, a runtime error will be thrown and function exited.
+ * TODO: rename function variables to something less ass
+ *
+ * @param z2r
+ * @param num_bits
+ * @return py::array
+ */
+py::array gauss_jordan_inverse(py::array z2r, int num_bits) {
+    auto buf = z2r.request();
     if (buf.ndim != 1) {
-        throw std::runtime_error("gauss_jordan_inverse expects 1D packed array of voids.");
+        throw std::runtime_error("gauss_jordan_inverse expects 1D z2r array of voids.");
     }
     ssize_t n = buf.shape[0];
     if (num_bits != n) {
@@ -990,20 +1000,20 @@ py::array gauss_jordan_inverse(py::array packed, int num_bits) {
         throw std::runtime_error("num_bits exceeds bit capacity of row dtype.");
     }
 
-    py::array A = py::array(packed.dtype(), buf.shape);
+    py::array A = py::array(z2r.dtype(), buf.shape);
     auto bufA = A.request();
     std::memcpy(bufA.ptr, buf.ptr, buf.size * buf.itemsize);
     uint8_t *Aptr = static_cast<uint8_t *>(bufA.ptr);
 
     // identity crisis
-    py::array Inv = py::array(packed.dtype(), buf.shape);
+    py::array Inv = py::array(z2r.dtype(), buf.shape);
     auto bufInv = Inv.request();
     uint8_t *Iptr = static_cast<uint8_t *>(bufInv.ptr);
     std::memset(Iptr, 0, bufInv.size * bufInv.itemsize);
-    for (ssize_t r = 0; r < n; ++r) {
-        ssize_t byte_idx = r / 8;
-        int bit_idx = r % 8;
-        Iptr[r * itemsize + byte_idx] |= (1u << bit_idx);
+    for (ssize_t row = 0; row < n; ++row) {
+        ssize_t byte_idx = row / 8;
+        int bit_idx = row % 8;
+        Iptr[row * itemsize + byte_idx] |= (1u << bit_idx);
     }
 
     // G-J here
@@ -1013,11 +1023,11 @@ py::array gauss_jordan_inverse(py::array packed, int num_bits) {
         int bit_idx = col % 8;
 
         // Find pivot
-        for (ssize_t r = col; r < n; ++r) {
-            uint8_t bit = (Aptr[r * itemsize + byte_idx] >> bit_idx) & 1u;
+        for (ssize_t row = col; row < n; ++row) {
+            uint8_t bit = (Aptr[row * itemsize + byte_idx] >> bit_idx) & 1u;
             // uint8_t bit =
             if (bit) {
-                pivot = r;
+                pivot = row;
                 break;
             }
         }
@@ -1034,16 +1044,16 @@ py::array gauss_jordan_inverse(py::array packed, int num_bits) {
         }
 
         // Eliminate other rows
-        for (ssize_t r = 0; r < n; ++r) {
-            if (r == col)
+        for (ssize_t row = 0; row < n; ++row) {
+            if (row == col)
                 continue;
-            uint8_t bit = (Aptr[r * itemsize + byte_idx] >> bit_idx) & 1u;
+            uint8_t bit = (Aptr[row * itemsize + byte_idx] >> bit_idx) & 1u;
             if (bit) {
                 //
                 for (size_t b = 0; b < itemsize; ++b) {
-                    Aptr[r * itemsize + b] ^= Aptr[col * itemsize + b];
+                    Aptr[row * itemsize + b] ^= Aptr[col * itemsize + b];
                     //
-                    Iptr[r * itemsize + b] ^= Iptr[col * itemsize + b];
+                    Iptr[row * itemsize + b] ^= Iptr[col * itemsize + b];
                 }
             }
         }
