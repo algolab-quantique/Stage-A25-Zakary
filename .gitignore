@@ -60,6 +60,3 @@ paulicpp/pauliarray/src/build/*.*
 *.pyc
 .github
 /dist
-/html
-/latex
-/docs
