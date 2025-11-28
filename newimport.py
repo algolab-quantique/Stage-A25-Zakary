@@ -5,6 +5,7 @@ import pauliarray.binary.bit_operations as bops
 
 import z2r_accel as z2
 
+
 NUM_QUBITS = 9
 NUM_ROWS = 3
 
