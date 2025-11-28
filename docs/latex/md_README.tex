@@ -1,0 +1,53 @@
+\chapter{Project Name}
+\hypertarget{md_README}{}\label{md_README}\index{Project Name@{Project Name}}
+\label{md_README_autotoc_md30}%
+\Hypertarget{md_README_autotoc_md30}%
+ Accelerator project which handles arrays of packed binary values.\hypertarget{md_README_autotoc_md31}{}\doxysection{\texorpdfstring{Installation}{Installation}}\label{md_README_autotoc_md31}
+To install this package, you can try by using pip\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ bash}
+\DoxyCodeLine{pip\ install\ z2r\_accel}
+
+\end{DoxyCode}
+ If there is no available distribution available for your machine, you\textquotesingle{}ll need to install it from git. You can try this by pasting\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{pip\ install\ numpy\ pybind11\ pybind11-\/stubgen\ scikit-\/build-\/core}
+\DoxyCodeLine{pip\ install\ git+https://github.com/algolab-\/quantique/Stage-\/A25-\/Zakary.git\ }
+
+\end{DoxyCode}
+ If this still doesn\textquotesingle{}t work, you\textquotesingle{}ll need to build it directly from source.
+
+\DoxyHorRuler{0}
+\hypertarget{md_README_autotoc_md33}{}\doxysubsection{\texorpdfstring{Building from source}{Building from source}}\label{md_README_autotoc_md33}
+\hypertarget{md_README_autotoc_md34}{}\doxysubsubsection{\texorpdfstring{Requirements}{Requirements}}\label{md_README_autotoc_md34}
+
+\begin{DoxyItemize}
+\item Python 3.\+10+
+\item GCC or Clang, with versions that support at least C++20
+\item Unix system
+\item Open\+MP (recommended) \begin{quote}
+\mbox{[}!\+IMPORTANT\mbox{]} If you are on Mac\+OS, it\textquotesingle{}s recommended to manually install Clang and Open\+MP with \href{https://brew.sh/}{\texttt{ Brew}} by using {\ttfamily brew install llvm libomp}.
+
+On most Linux distributions, GCC/clang are pre-\/installed and with Open\+MP support. No need to do anything extra. \end{quote}
+
+\end{DoxyItemize}\hypertarget{md_README_autotoc_md35}{}\doxysubsubsection{\texorpdfstring{Building with Open\+MP}{Building with OpenMP}}\label{md_README_autotoc_md35}
+Clone this repository, navigate to the the directory where {\ttfamily pyproject.\+toml} is located and do\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{pip\ install\ .}
+
+\end{DoxyCode}
+ This should automatically compile the C++ code based on your machine and link place it to the correct path.
+
+\DoxyHorRuler{0}
+\hypertarget{md_README_autotoc_md37}{}\doxysubsubsection{\texorpdfstring{Building without Open\+MP}{Building without OpenMP}}\label{md_README_autotoc_md37}
+\begin{quote}
+\mbox{[}!\+WARNING\mbox{]} Once again, this is {\bfseries{not}} the recommended way to install this library! \end{quote}
+Clone this repository, navigate to the the directory where {\ttfamily pyproject.\+toml} is located and do\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ console}
+\DoxyCodeLine{pip\ install\ .\ -\/-\/config-\/settings=cmake.define.USE\_OPENMP=OFF}
+
+\end{DoxyCode}
+ \DoxyHorRuler{0}
+\hypertarget{md_README_autotoc_md39}{}\doxysection{\texorpdfstring{Documentation}{Documentation}}\label{md_README_autotoc_md39}
+Internal documentation can be found on the \href{https://github.com/algolab-quantique/Stage-A25-Zakary/wiki}{\texttt{ repos\textquotesingle{}s wiki}}. 

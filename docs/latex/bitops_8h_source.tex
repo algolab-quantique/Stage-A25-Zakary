@@ -1,0 +1,101 @@
+\doxysection{bitops.\+h}
+\hypertarget{bitops_8h_source}{}\label{bitops_8h_source}\index{z2r\_accel/\_core/include/bitops.h@{z2r\_accel/\_core/include/bitops.h}}
+\mbox{\hyperlink{bitops_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <pybind11/numpy.h>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <pybind11/pybind11.h>}}
+\DoxyCodeLine{00004\ \textcolor{keyword}{namespace\ }py\ =\ pybind11;}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <bit>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <cstdint>}\ \textcolor{comment}{//\ uint8\_t}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <cstring>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#ifdef\ USE\_OPENMP}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\ \ \ \ \#include\ <omp.h>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\ \ \ \ \#warning\ "{}OpenMP\ is\ not\ enabled"{}}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{comment}{//\ bit\_operations}}
+\DoxyCodeLine{00019\ \textcolor{comment}{//\ cz2m}}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{comment}{//\ z2row}}
+\DoxyCodeLine{00022\ \textcolor{comment}{//\ z2r\ \ =\ voids}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{comment}{//\ This\ threshold\ is\ completely\ arbitrary\ and\ can\ be\ tuned\ for\ performance\ depending\ on\ the}}
+\DoxyCodeLine{00025\ \textcolor{comment}{//\ hardware.}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#define\ BOPS\_THRESHOLD\_PARALLEL\ 1'000'000}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ py::array\ \mbox{\hyperlink{bitops_8h_adf76c2cbe5370ba32350acec8485a3bc}{bitwise\_and}}(py::array\ z2r\_1,\ py::array\ z2r\_2);}
+\DoxyCodeLine{00029\ py::array\ \mbox{\hyperlink{bitops_8h_a3b371fbe4a023e5077a1c421e2c100df}{bitwise\_xor}}(py::array\ z2r\_1,\ py::array\ z2r\_2);}
+\DoxyCodeLine{00030\ py::array\ \mbox{\hyperlink{bitops_8h_a0fda6fd11b9069fe02ee0efae9751e48}{bitwise\_or}}(py::array\ z2r\_1,\ py::array\ z2r\_2);}
+\DoxyCodeLine{00031\ py::array\ \mbox{\hyperlink{bitops_8h_aedb22dda43c8c1563273c77ac707c0c2}{bitwise\_not}}(py::array\ voids);}
+\DoxyCodeLine{00032\ py::array\ \mbox{\hyperlink{bitops_8h_a2866c8127e015b9756a4692c636dbd9f}{paded\_bitwise\_not}}(py::array\ voids,\ \textcolor{keywordtype}{int}\ num\_qubits);}
+\DoxyCodeLine{00033\ py::object\ \mbox{\hyperlink{bitops_8h_a0ef1198a1ae9103694e3faae1ff654b4}{bitwise\_count}}(py::array\ z2r\_1);}
+\DoxyCodeLine{00034\ py::object\ \mbox{\hyperlink{bitops_8h_af09e23aeabfe87eebbafdf5550643992}{bitwise\_dot}}(py::array\ z2r\_1,\ py::array\ z2r\_2);}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Op>\ py::object\ \mbox{\hyperlink{bitops_8h_ab1e2f304ef583d376bcbba25649de372}{bitwise\_core}}(py::array\ z2r\_1,\ py::array\ z2r\_2,\ Op\ op)\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{auto}\ buf1\ =\ z2r\_1.request();}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{auto}\ buf2\ =\ z2r\_2.request();}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordflow}{if}\ (buf1.itemsize\ !=\ buf2.itemsize)\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Input\ arrays\ must\ have\ the\ same\ itemsize\ (dtype\ compatibility)."{}});}
+\DoxyCodeLine{00054\ \ \ \ \ \}}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordflow}{if}\ (buf1.size\ !=\ buf2.size)\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Input\ arrays\ must\ have\ the\ same\ size."{}});}
+\DoxyCodeLine{00057\ \ \ \ \ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ total\_bytes\ =\ buf1.size\ *\ buf1.itemsize;}
+\DoxyCodeLine{00060\ \ \ \ \ py::array\ z2r\_out\ =\ py::array(z2r\_1.dtype(),\ buf1.shape);}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{auto}\ buf\_out\ =\ z2r\_out.request();}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{comment}{//\ Cut\ the\ data\ into\ 64-\/bit\ chunks\ for\ faster\ proceCest\ ssing}}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{//\ ptr1\_64\ and\ ptr2\_64\ are\ the\ pointers\ to\ the\ input\ data,\ ptr\_out\_64\ is\ the\ pointer\ to\ the}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{//\ output\ data}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{//\ TODO:\ With\ C++20,\ we\ could\ use\ std::assume\_aligned,\ which\ could\ potentially\ lead\ to\ better}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{comment}{//\ auto-\/vectorization\ by\ the\ compiler?\ ?\ Since\ NumPy\ cant\ guarantee\ alignement\ and\ we\ cant}}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{comment}{//\ afford\ to\ copy\ the\ data\ just\ to\ get\ better\ SIMD,\ I\ dont\ know\ if\ assume\_aligned\ is\ worth}}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{comment}{//\ anything.}}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{const}\ uint64\_t\ *ptr1\_64\ =\ std::bit\_cast<uint64\_t\ *>(buf1.ptr);}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keyword}{const}\ uint64\_t\ *ptr2\_64\ =\ std::bit\_cast<uint64\_t\ *>(buf2.ptr);}
+\DoxyCodeLine{00072\ \ \ \ \ int64\_t\ *ptr\_out\_64\ =\ std::bit\_cast<int64\_t\ *>(buf\_out.ptr);}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ num\_u64\_chunks\ =\ total\_bytes\ /\ 8;}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \textcolor{preprocessor}{\#ifdef\ USE\_OPENMP}}
+\DoxyCodeLine{00077\ \textcolor{preprocessor}{\ \ \ \ \#pragma\ omp\ parallel\ for\ if\ (num\_u64\_chunks\ >=\ BOPS\_THRESHOLD\_PARALLEL)\ schedule(static)}}
+\DoxyCodeLine{00078\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ num\_u64\_chunks;\ ++i)\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Applies\ the\ bitwise\ operation.}}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ ptr\_out\_64[i]\ =\ op(ptr1\_64[i],\ ptr2\_64[i]);}
+\DoxyCodeLine{00082\ \ \ \ \ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{comment}{//\ Handle\ any\ bytes\ that\ don't\ fit\ into\ a\ 64-\/bit\ chunk\ (the\ tail)}}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ tail\_bytes\ =\ total\_bytes\ \%\ 8;}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordflow}{if}\ (tail\_bytes\ >\ 0)\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ uint8\_t\ *ptr1\_8\ =\ std::bit\_cast<uint8\_t\ *>(buf1.ptr);}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ uint8\_t\ *ptr2\_8\ =\ std::bit\_cast<uint8\_t\ *>(buf2.ptr);}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ int8\_t\ *ptr\_out\_8\ =\ std::bit\_cast<int8\_t\ *>(buf\_out.ptr);}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ start\_byte\ =\ num\_u64\_chunks\ *\ 8;}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ tail\_bytes;\ ++i)\ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ ptr\_out\_8[start\_byte\ +\ i]\ =\ op(ptr1\_8[start\_byte\ +\ i],\ ptr2\_8[start\_byte\ +\ i]);}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00095\ \ \ \ \ \}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{comment}{//\ If\ the\ input\ arrays\ were\ actually\ scalars\ (shape\ ==\ ()),\ return\ a\ scalar\ as\ well}}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordflow}{if}\ (buf1.size\ ==\ 1)\ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ std::vector<ssize\_t>\ shape0\{\};\ \ \ \textcolor{comment}{//\ zero-\/dim}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ std::vector<ssize\_t>\ strides0\{\};\ \textcolor{comment}{//\ must\ match\ ndim\ (0)}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ py::array\ scalar(z2r\_out.dtype(),\ shape0,\ strides0,\ buf\_out.ptr,}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z2r\_out);\ \textcolor{comment}{//\ TODO:\ Check\ if\ this\ is\ zero-\/copy}}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ scalar;}
+\DoxyCodeLine{00104\ \ \ \ \ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordflow}{return}\ z2r\_out;}
+\DoxyCodeLine{00107\ \}}
+
+\end{DoxyCode}

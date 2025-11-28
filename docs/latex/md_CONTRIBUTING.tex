@@ -1,0 +1,343 @@
+\chapter{CONTRIBUTING}
+\hypertarget{md_CONTRIBUTING}{}\label{md_CONTRIBUTING}\index{CONTRIBUTING@{CONTRIBUTING}}
+Please see the wiki for more information.
+
+B B -\/-\/\texorpdfstring{$>$}{>} C C -\/-\/\texorpdfstring{$>$}{>} D D -\/-\/\texorpdfstring{$>$}{>} E E -\/-\/\texorpdfstring{$>$}{>} F F -\/-\/\texorpdfstring{$>$}{>} G G -\/-\/\texorpdfstring{$>$}{>} H H -\/-\/\texorpdfstring{$>$}{>} I G -\/-\/\texorpdfstring{$>$}{>} J
+
+K -\/-\/\texorpdfstring{$>$}{>} L L -\/-\/\texorpdfstring{$>$}{>} M M -\/-\/\texorpdfstring{$>$}{>} D \hypertarget{md_CONTRIBUTING_autotoc_md2}{}\doxysubsubsection{\texorpdfstring{Build Requirements}{Build Requirements}}\label{md_CONTRIBUTING_autotoc_md2}
+To build this library from source, you will need\+:
+\begin{DoxyItemize}
+\item Python 3.\+10+
+\item GCC or Clang that supports at least C++20
+\item A 64-\/bit Unix-\/like system
+\item (Optional) libomp/\+Open\+MP
+\end{DoxyItemize}
+
+Note\+: In theory, Windows can compile the entire project with no issues. However, since MSVC is a completely different beast to GCC or Clang, no build options have been added to support it. Min\+GW would also probably work.
+
+\DoxyHorRuler{0}
+ \hypertarget{md_CONTRIBUTING_autotoc_md4}{}\doxysubsection{\texorpdfstring{Nomenclature}{Nomenclature}}\label{md_CONTRIBUTING_autotoc_md4}
+\hypertarget{md_CONTRIBUTING_autotoc_md5}{}\doxysubsubsection{\texorpdfstring{Z2R}{Z2R}}\label{md_CONTRIBUTING_autotoc_md5}
+{\itshape Also know as \textquotesingle{}Voids\textquotesingle{}, \textquotesingle{}bit\+\_\+string\textquotesingle{}.} ~\newline
+Is defined as\+: \$\textbackslash{}mathbb\{Z\}\+\_\+2\$ Rows.
+
+
+\begin{DoxyItemize}
+\item \textquotesingle{}\$\textbackslash{}mathbb\{Z\}\+\_\+2\$\textquotesingle{} denotes the cyclic group of integers modulo 2 (i.\+e the set \{0, 1\}).
+\item \textquotesingle{}Rows\textquotesingle{} states that the structure is a row (list) of elements.
+\end{DoxyItemize}
+
+Thus, the structure is a long list of binary 1s and 0s. This packed representation significantly reduces memory usage and enables efficient bitwise operations.
+\begin{DoxyItemize}
+\item Python\+: {\ttfamily z = np.\+array(\mbox{[}0, 1, 1 0\mbox{]}, dtype=np.\+int8)}. This takes 4 bytes of memory
+\item C++\+: {\ttfamily z = 0b0110}. This takes 1 byte of memory
+\end{DoxyItemize}\hypertarget{md_CONTRIBUTING_autotoc_md6}{}\doxysubsubsection{\texorpdfstring{CZ2M}{CZ2M}}\label{md_CONTRIBUTING_autotoc_md6}
+Is defined as\+: C \$\textbackslash{}mathbb\{Z\}\+\_\+2\$ Matrix
+
+This name is in reference to the C++ module which operates on Z2\+Rs to produce matrices.\hypertarget{md_CONTRIBUTING_autotoc_md7}{}\doxysubsubsection{\texorpdfstring{The bitwise\+\_\+\mbox{[}...\mbox{]} prefix}{The bitwise\_[...] prefix}}\label{md_CONTRIBUTING_autotoc_md7}
+Any functions with this prefix must be declared inside of {\ttfamily bitops.\+hpp} and adhere to the following\+:
+\begin{DoxyEnumerate}
+\item Must accept any size and shape of NDArrays, as long as every input is the same shape and contiguous.
+\item Must return an NDArray of the same shape, size, and dtype as the inputs.
+\item Follows as closely as possible Num\+Py\textquotesingle{}s functions of the same name.
+\end{DoxyEnumerate}
+
+The only execeptions to rule 2 are {\ttfamily \doxylink{bitops_8h_a0ef1198a1ae9103694e3faae1ff654b4}{bitwise\+\_\+count()}} and {\ttfamily \doxylink{bitops_8h_af09e23aeabfe87eebbafdf5550643992}{bitwise\+\_\+dot()}}, which both compress the last dimension of the array.
+
+\DoxyHorRuler{0}
+\hypertarget{md_CONTRIBUTING_autotoc_md9}{}\doxysubsubsection{\texorpdfstring{General Coding Standards}{General Coding Standards}}\label{md_CONTRIBUTING_autotoc_md9}
+{\bfseries{Avoid Broadcasting in C++\+:}} Broadcasting is a complex process that required substantial engineering effort from the Num\+Py team to implement efficiently. Rather than reimplementing ourself broadcasting in C++, either\+:
+\begin{DoxyItemize}
+\item Perform broadcasting in Python before passing data to C++
+\item Use pybind11\textquotesingle{}s \href{https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html\#vectorizing-functions}{\texttt{ vectorize}} functionality when dealing with simple functions
+\end{DoxyItemize}
+
+{\bfseries{Avoid Uncontiguous Data}}\+: The speedup made by this library is mainly due to the contiguity of NDArrays, and how this property can be exploited with extreme compiler optimizations (SIMD) or by careful implementation of certain patterns and structure. For uncontiguous data, either\+: TODO\+: EXPLAIN CONTIGUITY IN DETAIL!
+\begin{DoxyItemize}
+\item Rearange the data in Python before passing it to C++
+\item Explicitly state that slowdowns may occur (idk).
+\end{DoxyItemize}
+
+{\bfseries{Memory Management\+:}} C++ lacks garbage collection or Rust\textquotesingle{}s borrow checker, so you must manually manage memory efficiently\+:
+\begin{DoxyItemize}
+\item Track pointer lifetimes carefully to avoid dangling pointers
+\item Prefer zero-\/copy operations whenever possible
+\item Only allocate new memory when necessary
+\end{DoxyItemize}
+
+{\bfseries{Type Specifications\+:}}
+\begin{DoxyItemize}
+\item Use {\ttfamily py\+::array\+\_\+t\texorpdfstring{$<$}{<}TYPE\texorpdfstring{$>$}{>}} for typed arrays (e.\+g., {\ttfamily py\+::array\+\_\+t\texorpdfstring{$<$}{<}float\texorpdfstring{$>$}{>}} for NDArrays of floats)
+\item Use generic {\ttfamily py\+::array} for Voids (packed binary data)
+\end{DoxyItemize}
+
+{\bfseries{Binary Data Types\+:}} Since C++ has no native \textquotesingle{}binary\textquotesingle{} type, a substitute one must be chosen instead. Use these types because they guarantee exact bit lengths and support both arithmetic and binary operations\+:
+\begin{DoxyItemize}
+\item {\ttfamily uint64\+\_\+t}\+: 64-\/bit unsigned integer (for large data inputs)
+\item {\ttfamily uint8\+\_\+t}\+: 8-\/bit unsigned integer (for small data)
+\item {\ttfamily int64\+\_\+t}\+: 64-\/bit signed integer. Use ONLY for returning outputs
+\end{DoxyItemize}
+
+Avoid\+:
+\begin{DoxyItemize}
+\item {\ttfamily std\+::byte} (no arithmetic support) TODO\+: Clarify size garantees
+\item {\ttfamily unsigned char} (no size guarantee)
+\item {\ttfamily unsigned long long int} (unnecessarily verbose)
+\end{DoxyItemize}
+
+{\bfseries{Do not use {\ttfamily using namespace std;}}} While convenient, namespace imports create ambiguity in low-\/level code. Both the standard library and pybind11 may define functions with identical names (e.\+g., {\ttfamily make\+\_\+tuple()}), which would result in unpredicable function calls. Explicit namespace prefixes ensure\+:
+\begin{DoxyItemize}
+\item Functions are called from the correct library
+\item Code behavior is predictable
+\item Future maintainers understand the code\textquotesingle{}s intent
+\end{DoxyItemize}\hypertarget{md_CONTRIBUTING_autotoc_md10}{}\doxysubsubsection{\texorpdfstring{Docstrings}{Docstrings}}\label{md_CONTRIBUTING_autotoc_md10}
+A Python docstring such as\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ python}
+\DoxyCodeLine{}
+\DoxyCodeLine{def\ add\_integers(a:int,\ b:int)\ -\/>\ int:}
+\DoxyCodeLine{\ \ \ \ "{}"{}"{}}
+\DoxyCodeLine{\ \ \ \ Calculates\ the\ sum\ of\ two\ integers}
+\DoxyCodeLine{\ \ \ \ Args:}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ a\ (int):\ The\ first\ operand}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ b\ (int):\ The\ second\ operand}
+\DoxyCodeLine{\ \ \ \ Returns:}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ int:\ The\ sum\ of\ both\ inputs}
+\DoxyCodeLine{\ \ \ \ "{}"{}"{}}
+\DoxyCodeLine{\ \ \ \ return\ a\ +\ b}
+
+\end{DoxyCode}
+
+
+Is roughly equivalent to the Doxygen comment\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ c++}
+\DoxyCodeLine{/**}
+\DoxyCodeLine{*\ @brief\ Calculates\ the\ sum\ of\ two\ integers}
+\DoxyCodeLine{*}
+\DoxyCodeLine{*\ @param\ a\ The\ first\ integer\ operand}
+\DoxyCodeLine{*\ @param\ b\ The\ second\ integer\ operand}
+\DoxyCodeLine{*\ @return\ int\ The\ sum\ of\ both\ inputs}
+\DoxyCodeLine{*/}
+\DoxyCodeLine{int\ add\_integers(int\ a,\ int\ b)\ \{}
+\DoxyCodeLine{\ \ \ \ return\ a\ +\ b;}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+ Additional Doxygen tags include {\ttfamily @deprecated}, {\ttfamily @attention}, and {\ttfamily @warning}, which are used throughout the project where appropriate.\hypertarget{md_CONTRIBUTING_autotoc_md11}{}\doxysubsubsection{\texorpdfstring{Auto-\/formatter}{Auto-formatter}}\label{md_CONTRIBUTING_autotoc_md11}
+Since Black is only usable for Python files, we instead use \href{https://clang.llvm.org/docs/ClangFormat.html}{\texttt{ clang-\/format}}, a highly customizable formatter that we can adjust to look more or less like Black.
+
+All of the options are found inside of the {\ttfamily .clang-\/format} file. As a base, we use LLVM\textquotesingle{}s coding format and override some specific options\+:
+\begin{DoxyItemize}
+\item {\ttfamily Use\+Tab\+: Never}\+: Always forces spaces for indentation
+\item {\ttfamily Indent\+Width\+: 4}\+: Use 4-\/space standard for indentation
+\item {\ttfamily Indent\+PPDirectives\+: After\+Hash}\+: Indent preprocessor directives after their \textquotesingle{}\#\textquotesingle{}
+\end{DoxyItemize}\hypertarget{md_CONTRIBUTING_autotoc_md12}{}\doxysection{\texorpdfstring{Interacting with Python}{Interacting with Python}}\label{md_CONTRIBUTING_autotoc_md12}
+We use \href{https://github.com/pybind/pybind11}{\texttt{ pybind11}} to interface between Python and C++. Pybind11 was chosen over alternatives like Boost.\+Python for its\+:
+\begin{DoxyItemize}
+\item Seamless Num\+Py NDArray integration
+\item Superior performance
+\item Modern C++ support
+\end{DoxyItemize}
+
+Include these headers at the top of files that interact with Python\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ C++}
+\DoxyCodeLine{\#include\ <pybind11/pybind11.h>}
+\DoxyCodeLine{\#include\ <pybind11/numpy.h>}
+\DoxyCodeLine{namespace\ py\ =\ pybind11;}
+
+\end{DoxyCode}
+ Note\+: Omit {\ttfamily \texorpdfstring{$<$}{<}pybind11/numpy.\+h\texorpdfstring{$>$}{>}} if you don\textquotesingle{}t need to pass Num\+Py arrays.\hypertarget{md_CONTRIBUTING_autotoc_md13}{}\doxysubsubsection{\texorpdfstring{Writing Functions}{Writing Functions}}\label{md_CONTRIBUTING_autotoc_md13}
+C++ requires a lot more work and boilerplate in order to get the same result as in Python. The following functions both flip every bit of data inside of an NDArray\+:
+
+Python\+: \href{https://numpy.org/doc/stable/reference/generated/numpy.bitwise_invert.html\#numpy.bitwise_invert}{\texttt{ https\+://numpy.\+org/doc/stable/reference/generated/numpy.\+bitwise\+\_\+invert.\+html\#numpy.\+bitwise\+\_\+invert}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ python}
+\DoxyCodeLine{def\ bitwise\_not(voids:\ NDArray)\ -\/>\ NDArray:}
+\DoxyCodeLine{\ \ \ \ int\_strings\ =\ voids\_to\_int\_strings(voids)}
+\DoxyCodeLine{\ \ \ \ new\_int\_strings\ =\ np.invert(int\_strings)}
+\DoxyCodeLine{\ \ \ \ new\_voids\ =\ int\_strings\_to\_voids(new\_int\_strings)}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ return\ new\_voids}
+
+\end{DoxyCode}
+
+
+C++\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ C++}
+\DoxyCodeLine{inline\ py::array\ bitwise\_not(py::array\ voids)\ \{}
+\DoxyCodeLine{\ \ \ \ auto\ buffer\ =\ voids.request();}
+\DoxyCodeLine{\ \ \ \ const\ uint64\_t\ *ptr\_64\ =\ std::bit\_cast<uint64\_t\ *>(buffer.ptr);}
+\DoxyCodeLine{\ \ \ \ py::array\ result\_arr\ =\ py::array(voids.dtype(),\ buffer.shape);}
+\DoxyCodeLine{\ \ \ \ //\ ...}
+\DoxyCodeLine{\ \ \ \ uint64\_t\ *result\_ptr\_64\ =\ std::bit\_cast<uint64\_t\ *>(result\_arr.request().ptr);}
+\DoxyCodeLine{\ \ \ \ //\ ...}
+\DoxyCodeLine{\ \ \ \ for\ (int\ i\ =\ 0;\ i\ <\ TOTAL\_NUM\_64\_CHUNKS;\ i++)\ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ result\_ptr\_64[i]\ =\ \string~ptr\_64[i];}
+\DoxyCodeLine{\ \ \ \ \}}
+\DoxyCodeLine{\ \ \ \ return\ result\_arr}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+ Lets look at the function declaration\+:
+\begin{DoxyItemize}
+\item {\ttfamily inline} means that the following function will be {\itshape expanded} instead of {\itshape called} from any other functions. What this means in practice is that the external call will be entirely replaced with the actual code of this function. This increases binary file sizes but reduces traditional function call overhead.
+\item {\ttfamily py\+::array} declares an object that is a generic NDArray with no specific type.
+\end{DoxyItemize}
+
+And as for the code within the function\+:
+\begin{DoxyItemize}
+\item {\ttfamily auto buffer = voids.\+request()}\+: Creates a buffer object with type inferred at compile time. The {\ttfamily request()} method returns a zero-\/copy view of the NDArray\textquotesingle{}s data when possible.
+\item {\ttfamily std\+::bit\+\_\+cast\texorpdfstring{$<$}{<}uint64\+\_\+t \texorpdfstring{$\ast$}{*}\texorpdfstring{$>$}{>}} is a near zero-\/overhead reinterpretation of the data underneath.
+\item {\ttfamily py\+::array result\+\_\+arr = py\+::array(voids.\+dtype(), buffer.\+shape)}\+: Creates a new NDArray with the same dtype and shape as the input. This array can be returned directly to Python.
+\item {\ttfamily ptr\+\_\+out\+\_\+64\mbox{[}i\mbox{]} = \texorpdfstring{$\sim$}{\string~}ptr\+\_\+64\mbox{[}i\mbox{]}} inverts the chunk of 64 bits and assigns the result to our result pointer
+\end{DoxyItemize}\hypertarget{md_CONTRIBUTING_autotoc_md14}{}\doxysubsubsection{\texorpdfstring{Exposing Functions to Python (\+Bindings)}{Exposing Functions to Python (Bindings)}}\label{md_CONTRIBUTING_autotoc_md14}
+All C++ functions must be declared in their module\textquotesingle{}s binding file to be accessible from Python. Lets say we want to add {\ttfamily bitwise\+\_\+not} to our module, 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ ++}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include\ "{}your\_source\_file.hpp"{}}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\mbox{\hyperlink{bitops__bindings_8cpp_a12fc346c4c701932d86ea75773e67423}{PYBIND11\_MODULE}}(your\_module\_name,\ m)\ \{}
+\DoxyCodeLine{\ \ \ \ m.doc()\ =\ \textcolor{stringliteral}{"{}The\ description\ of\ your\ module"{}};}
+\DoxyCodeLine{\ \ \ \ }
+\DoxyCodeLine{\ \ \ \ m.def(\textcolor{stringliteral}{"{}bitwise\_not"{}},\ \&\mbox{\hyperlink{bitops_8h_aedb22dda43c8c1563273c77ac707c0c2}{bitwise\_not}},\ }
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Flips\ each\ bit\ in\ an\ NDArray"{}},\ }
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ py::arg(\textcolor{stringliteral}{"{}voids"{}}));}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+\hypertarget{md_CONTRIBUTING_autotoc_md15}{}\doxysection{\texorpdfstring{Optimization Efforts}{Optimization Efforts}}\label{md_CONTRIBUTING_autotoc_md15}
+\hypertarget{md_CONTRIBUTING_autotoc_md16}{}\doxysubsection{\texorpdfstring{General}{General}}\label{md_CONTRIBUTING_autotoc_md16}
+In most cases, we cast the data of a Voids array to {\ttfamily uint64\+\_\+t} via {\ttfamily std\+::bit\+\_\+cast\texorpdfstring{$<$}{<}\texorpdfstring{$>$}{>}}. This is done because in most modern computers, 64 bits is the largest natively supported integer size. Even when an array’s dimension is smaller than 64 bits, treating it as a sequence of raw 64-\/bit blocks enables highly optimized bitwise manipulation and reduces overhead.\hypertarget{md_CONTRIBUTING_autotoc_md17}{}\doxysubsection{\texorpdfstring{Multi-\/threading}{Multi-threading}}\label{md_CONTRIBUTING_autotoc_md17}
+To fully utilize available hardware, we implement multi-\/threading wherever safe and beneficial. Open\+MP provides simple syntax with powerful results while maintaining code readability. \hypertarget{md_CONTRIBUTING_autotoc_md18}{}\doxysubsubsection{\texorpdfstring{Using Open\+MP}{Using OpenMP}}\label{md_CONTRIBUTING_autotoc_md18}
+Before adding Open\+MP, make it {\bfseries{certain}} that your code is thread-\/safe. Data races and memory corruption are difficult to debug. While mutexes can provide thread safety over otherwise unsafe operations, they often cause performance degradation in small functions (our primary use case). Use mutexes cautiously and verify they provide net benefits.
+
+As for the syntax, most {\itshape for(...)} loops in the project are prefaced with\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ C++}
+\DoxyCodeLine{\#ifdef\ USE\_OPENMP}
+\DoxyCodeLine{\ \ \ \ \#pragma\ omp\ parallel\ for\ if\ (local\_variable\ >=\ SOME\_MACRO)\ schedule(static)}
+\DoxyCodeLine{\#endif}
+\DoxyCodeLine{\ \ \ \ for\ (i=0;\ i<local\_variable;\ i++)\ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ //\ Code\ that\ does\ something\ which\ could\ be\ multi-\/threaded}
+\DoxyCodeLine{\ \ \ \ \}}
+
+\end{DoxyCode}
+
+\begin{DoxyItemize}
+\item {\ttfamily \#ifdef} is a preprocessor directive that only compiles it\textquotesingle{}s code block if the specific macro is defined. In this case, {\ttfamily USE\+\_\+\+OPENMP} is our own macro, and is only ever defined within CMake\textquotesingle{}s compiling instruction. This is necessary since if Open\+MP is not installed but still tries to compile OMP-\/specific pragmas, the compiler will throw out an error and exit.
+\item {\ttfamily \#pragma omp parallel for} says that we\textquotesingle{}ll be using Open\+MP\textquotesingle{}s directives, which will pass the next {\itshape for(...)} loop to multiple threads.
+\item {\ttfamily if (local\+\_\+variable \texorpdfstring{$>$}{>}= SOME\+\_\+\+MACRO)} assures that the multithreading only occurs if the statement evaluates to True. Usually this is with a counter or size of a data point compared to an arbitrarily chosen constant.
+\item {\ttfamily schedule(static)} assign each loop iterations to threads in a even, round-\/robin distribution.
+\end{DoxyItemize}
+
+More keywords exist, but they are specific to certain behaviors that are much less common in this project\hypertarget{md_CONTRIBUTING_autotoc_md19}{}\doxysubsubsection{\texorpdfstring{Understanding the GIL}{Understanding the GIL}}\label{md_CONTRIBUTING_autotoc_md19}
+Python\textquotesingle{}s Global Interpreter Lock allows only one thread to execute Python bytecode at a time. This simplifies Python\textquotesingle{}s memory management but prevents true multi-\/threading. Only multiprocessing can achieve true parallelism under the GIL.
+
+However, it is possible to get freed from the shackles of the GIL within C++. This can be done by declaring a section like this\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ ++}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ py::gil\_scoped\_release\ release;}
+\DoxyCodeLine{\ \ \textcolor{comment}{//\ very\ heavy\ CPU\ loop\ (Real\ multithreading\ allowed)}}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{\textcolor{comment}{//\ The\ GIL\ is\ automaticaly\ reaquired\ here}}
+
+\end{DoxyCode}
+ Releasing the GIL has some overhead, so it is only useful when code needs to be truly parallelized. {\bfseries{Release the GIL when\+:}}
+\begin{DoxyItemize}
+\item Operations are CPU-\/intensive and long-\/running
+\item No Python API calls are needed
+\item Using Open\+MP or manual threading
+\end{DoxyItemize}
+
+See {\ttfamily \doxylink{cz2m_8h_ae4da4fa68c447ad16c8312e9e6938628}{unordered\+\_\+unique()}}\textquotesingle{}s management of the GIL and Open\+MP for more information. It is the very last function inside of {\ttfamily paulicpp/pauliarray/src/paulicpp.\+hpp}
+
+Note\+: The Python language is working towards removing the GIL. This could take many years before it is accomplished, buf if/when it finished, there will likely be some breakage around any parts explicitly managing the GIL. See \href{https://peps.python.org/pep-0703/}{\texttt{ PEP 703}}\hypertarget{md_CONTRIBUTING_autotoc_md20}{}\doxysubsection{\texorpdfstring{Building}{Building}}\label{md_CONTRIBUTING_autotoc_md20}
+WIP \hypertarget{md_CONTRIBUTING_autotoc_md21}{}\doxysubsubsection{\texorpdfstring{pyproject.\+toml}{pyproject.toml}}\label{md_CONTRIBUTING_autotoc_md21}
+{\ttfamily scikit-\/build-\/core} is the build backend as Flit not currently compatible with custom C++ compilation steps.
+
+sasssaaa\hypertarget{md_CONTRIBUTING_autotoc_md22}{}\doxysubsubsection{\texorpdfstring{CMake}{CMake}}\label{md_CONTRIBUTING_autotoc_md22}
+CMake is a cross-\/platform build tool. It has clean integration with pybind11 and {\ttfamily scikit-\/build-\/core} for {\ttfamily pip install} support.
+
+The configuration file is {\ttfamily CMake\+Lists.\+txt}, found in the project root.
+
+{\bfseries{Build Options\+:}}
+\begin{DoxyItemize}
+\item {\ttfamily USE\+\_\+\+OPENMP}\+: Enable/disable Open\+MP multi-\/threading
+\begin{DoxyItemize}
+\item Default\+: {\ttfamily ON}
+\item Disable manually in {\ttfamily CMake\+Lists.\+txt} or via pip\+: {\ttfamily pip install . -\/-\/config-\/settings=cmake.\+define.\+USE\+\_\+\+OPENMP=OFF}
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+\DoxyHorRuler{0}
+\hypertarget{md_CONTRIBUTING_autotoc_md24}{}\doxysection{\texorpdfstring{Name}{Name}}\label{md_CONTRIBUTING_autotoc_md24}
+\hypertarget{md_CONTRIBUTING_autotoc_md25}{}\doxysubsection{\texorpdfstring{Why C++?}{Why C++?}}\label{md_CONTRIBUTING_autotoc_md25}
+
+\begin{DoxyEnumerate}
+\item Performance\+: Most operations can be sped-\/up with either precise bit-\/on-\/bit algorithms and/or extreme compiler optimizations (like SIMD). Results are usually between 1.\+5-\/9x faster than pure Num\+Py
+\begin{DoxyEnumerate}
+\item Memory\+: Handling Pauli strings within C++ allows for packed representations with next to no compromises. Less RAM 
+\end{DoxyEnumerate}
+\end{DoxyEnumerate}\hypertarget{md_CONTRIBUTING_autotoc_md26}{}\doxysubsection{\texorpdfstring{3. Flexibility\+: C++ offers total control over what a function needs to do. This is especially useful when XYZ}{3. Flexibility: C++ offers total control over what a function needs to do. This is especially useful when XYZ}}\label{md_CONTRIBUTING_autotoc_md26}
+\hypertarget{md_CONTRIBUTING_autotoc_md27}{}\doxysection{\texorpdfstring{External tools and libraries}{External tools and libraries}}\label{md_CONTRIBUTING_autotoc_md27}
+The tools used for this project are\+:
+\begin{DoxyItemize}
+\item pybind11
+\item pybind-\/stubgen
+\item CMake
+\item clang-\/format
+\end{DoxyItemize}\hypertarget{md_CONTRIBUTING_autotoc_md28}{}\doxysubsection{\texorpdfstring{Why pybind11?}{Why pybind11?}}\label{md_CONTRIBUTING_autotoc_md28}
+Pybind11 was chosen for its minimal boilerplate, seamless Num\+Py integration, and modern C++ support. It allows us to expose C++ functions and classes to Python with very little overhead, making it easy to maintain and extend the codebase.
+
+Since pybind is chosen as the interface for this project, the stub generator is obviously pybind-\/stubgen. However, some problems have appeared with it, notably when trying to add external libraries. It may get replaced with mypy\textquotesingle{}s stubgen in the future.
+
+Other alternatives for optimizing code to work with Python are\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Numba}}
+\begin{DoxyItemize}
+\item While Numba is excellent for accelerating generic Python code, our data structures are highly specialized and already optimized in C++. Numba would offer limited additional benefit and cannot easily accelerate C++ code.
+\end{DoxyItemize}
+\item {\bfseries{Cython}}
+\begin{DoxyItemize}
+\item Cython is powerful for optimizing Python code and interfacing with C, but it often requires rewriting parts (if not most) of functions to take full advantage of its features. At that point, we might as well rewrite everything in pure C/\+C++
+\end{DoxyItemize}
+\item {\bfseries{Boost.\+Python}}
+\begin{DoxyItemize}
+\item Boost.\+Python is feature-\/rich but introduces significant overhead and complexity. It requires more boilerplate code, demands loads more dependencies, and is generally slower compared to pybind11.
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_CONTRIBUTING_autotoc_md29}{}\doxysection{\texorpdfstring{Data structures}{Data structures}}\label{md_CONTRIBUTING_autotoc_md29}
+Handling long lists of 1s and 0s is at the heart of this project, and needs to be done as efficiently as possible. The current way all data is managed is throught a packed representation of integers.
+
+Example\+: {\ttfamily ex = 0b01100111} stored in a unsigned integer. ~\newline
+
+\begin{DoxyItemize}
+\item Drawback\+: for extreme cases where almost all entries are consecutively 1s or 0s, this method is slower and takes more memory space than a sparse implementation
+\item Benefits\+:
+\begin{DoxyItemize}
+\item Enables native bitwise ops (AND/\+OR/\+XOR/\+NOT), popcount, shifts, etc.
+\item SIMD, simpler/faster multithreading on most operations
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+{\bfseries{Binary list}}
+\begin{DoxyItemize}
+\item Example\+: {\ttfamily ex = \mbox{[}0,1,1,0,0,1,1,1\mbox{]}}
+\item Drawback\+: each element takes up a whole byte while only one bit is needed. Poor memory density and difficult SIMD exploitation makes this approach slow in almost any scenario.
+\end{DoxyItemize}
+
+{\bfseries{Sparse intervals}}
+\begin{DoxyItemize}
+\item Example\+: {\ttfamily ex = \mbox{[}(1,3),(5,8)\mbox{]}} denotes runs of consecutive 1s. ~\newline
+
+\item Drawback\+: good for very very sparse patterns but degrades rapidely to O(n). Enormous overhead for most cases.
+\end{DoxyItemize}
+
+
+
+--- -\/-\/\texorpdfstring{$>$}{>} 
