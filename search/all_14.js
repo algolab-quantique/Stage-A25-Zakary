@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['when_20writing_0',['When Writing',['../md_docs_2wiki_2Coding-Convention.html',1,'']]],
-  ['why_20pybind11_1',['Why pybind11?',['../md_docs_2wiki_2External-Tools.html#autotoc_md18',1,'']]],
-  ['windows_2',['On Windows...?',['../md_docs_2wiki_2Packaging.html#autotoc_md31',1,'']]],
-  ['writing_3',['When Writing',['../md_docs_2wiki_2Coding-Convention.html',1,'']]],
-  ['writing_20functions_4',['Writing Functions',['../md_docs_2wiki_2Coding-Tutorial.html#autotoc_md6',1,'']]]
+  ['understanding_20the_20gil_0',['Understanding the GIL',['../md_docs_2wiki_2Optimizations.html#autotoc_md29',1,'']]],
+  ['unique_1',['unique',['../cz2m_8h.html#a6147faad379edac00e339de56b512a54',1,'unique(py::array zx_voids, bool return_index=false, bool return_inverse=false, bool return_counts=false):&#160;cz2m.cpp'],['../cz2m_8cpp.html#aabe6109d5005c80e869f322975d474a4',1,'unique(py::array zx_voids, bool return_index, bool return_inverse, bool return_counts):&#160;cz2m.cpp'],['../namespacez2r__accel_1_1cz2m.html#a1801ff935309fcc6cd014cf067c300f3',1,'z2r_accel.cz2m.unique()']]],
+  ['unordered_5funique_2',['unordered_unique',['../cz2m_8h.html#ae4da4fa68c447ad16c8312e9e6938628',1,'unordered_unique(py::array zx_voids):&#160;cz2m.cpp'],['../cz2m_8cpp.html#ae4da4fa68c447ad16c8312e9e6938628',1,'unordered_unique(py::array zx_voids):&#160;cz2m.cpp'],['../namespacez2r__accel_1_1cz2m.html#aa6a3bc0ea01948dfe5158dde41094725',1,'z2r_accel.cz2m.unordered_unique()']]],
+  ['unstable_20install_3',['Unstable install',['../md_docs_2wiki_2Packaging.html#autotoc_md33',1,'']]],
+  ['using_20openmp_4',['Using OpenMP',['../md_docs_2wiki_2Optimizations.html#autotoc_md28',1,'']]]
 ];

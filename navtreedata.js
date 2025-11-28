@@ -47,22 +47,21 @@ var NAVTREE =
       ] ],
       [ "Why pybind11?", "md_docs_wiki_External_Tools.html#autotoc_md18", null ]
     ] ],
-    [ "<strong>Q:</strong> Is having a header and a bindings file for each module redundant if both declare the same functions?", "md_docs_wiki_FAQ.html", null ],
-    [ "Home", "md_docs_wiki_Home.html", null ],
+    [ "FAQ", "md_docs_wiki_FAQ.html", null ],
     [ "Z2R", "md_docs_wiki_Nomenclature.html", [
-      [ "CZ2M", "md_docs_wiki_Nomenclature.html#autotoc_md21", null ],
-      [ "The bitwise_[...] prefix", "md_docs_wiki_Nomenclature.html#autotoc_md22", null ]
+      [ "CZ2M", "md_docs_wiki_Nomenclature.html#autotoc_md22", null ],
+      [ "The bitwise_[...] prefix", "md_docs_wiki_Nomenclature.html#autotoc_md23", null ]
     ] ],
     [ "Data structure", "md_docs_wiki_Optimizations.html", [
-      [ "General", "md_docs_wiki_Optimizations.html#autotoc_md25", null ],
-      [ "Multi-threading", "md_docs_wiki_Optimizations.html#autotoc_md26", [
-        [ "Using OpenMP", "md_docs_wiki_Optimizations.html#autotoc_md27", null ],
-        [ "Understanding the GIL", "md_docs_wiki_Optimizations.html#autotoc_md28", null ]
+      [ "General", "md_docs_wiki_Optimizations.html#autotoc_md26", null ],
+      [ "Multi-threading", "md_docs_wiki_Optimizations.html#autotoc_md27", [
+        [ "Using OpenMP", "md_docs_wiki_Optimizations.html#autotoc_md28", null ],
+        [ "Understanding the GIL", "md_docs_wiki_Optimizations.html#autotoc_md29", null ]
       ] ]
     ] ],
     [ "Packaging", "md_docs_wiki_Packaging.html", null ],
     [ "Structure", "md_docs_wiki_Project_Structure___Architecture.html", [
-      [ "Architecture", "md_docs_wiki_Project_Structure___Architecture.html#autotoc_md34", null ]
+      [ "Architecture", "md_docs_wiki_Project_Structure___Architecture.html#autotoc_md35", null ]
     ] ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],

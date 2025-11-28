@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['packaging_0',['Packaging',['../md_docs_wiki_Packaging.html',1,'']]]
+  ['structure_0',['Structure',['../md_docs_wiki_Project_Structure___Architecture.html',1,'']]]
 ];

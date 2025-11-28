@@ -10,9 +10,17 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome.js"></script>
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript">
-    DoxygenAwesomeDarkModeToggle.init()
+  // initialize dark mode toggle (safe – initialization is idempotent)
+  if (typeof DoxygenAwesomeDarkModeToggle !== 'undefined') {
+    DoxygenAwesomeDarkModeToggle.init();
+  }
+  // some versions expose a global initializer; keep it safe
+  if (typeof DoxygenAwesome !== 'undefined' && typeof DoxygenAwesome.init === 'function') {
+    DoxygenAwesome.init();
+  }
 </script>
 <link href="navtree.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="resize.js"></script>
@@ -99,7 +107,7 @@ $(document).ready(function(){initNavTree('md_docs_2wiki_2Project-Structure-_6-Ar
   <div class="headertitle"><div class="title">Structure</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md33"></a>The project structure is the exact same as PauliArray's <a href="https://github.com/algolab-quantique/pauliarray/tree/Voids">Voids</a> branch, with the following additions: </p><div class="fragment"><div class="line">├── _src</div>
+<div class="textblock"><p><a class="anchor" id="autotoc_md34"></a>The project structure is the exact same as PauliArray's <a href="https://github.com/algolab-quantique/pauliarray/tree/Voids">Voids</a> branch, with the following additions: </p><div class="fragment"><div class="line">├── _src</div>
 <div class="line">│   ├── bindings</div>
 <div class="line">│   │   └── {MOD}_bindings.cpp</div>
 <div class="line">│   ├── build</div>
@@ -112,7 +120,7 @@ $(document).ready(function(){initNavTree('md_docs_2wiki_2Project-Structure-_6-Ar
 <li><code>/src/bindings</code> Contains the pybind11 bindings necessary for the translation to and from Python.</li>
 <li><code>src/build</code> Contains the compiled dynamic shared libraries and stub files.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md34"></a>
+<h1><a class="anchor" id="autotoc_md35"></a>
 Architecture</h1>
 <div class="fragment"><div class="line">graph TB</div>
 <div class="line">    subgraph &quot;Python Layer&quot;</div>

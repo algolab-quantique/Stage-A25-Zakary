@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Test 123: &lt;strong&gt;Q:&lt;/strong&gt; Is having a header and a bindings file for each module redundant if both declare the same functions?</title>
+<title>Test 123: FAQ</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -104,10 +104,12 @@ $(document).ready(function(){initNavTree('md_docs_wiki_FAQ.html',''); initResiza
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title"><b>Q:</b> Is having a header and a bindings file for each module redundant if both declare the same functions? </div></div>
+  <div class="headertitle"><div class="title">FAQ </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><b>A:</b> ...Yes, and No.</p>
+<div class="textblock"><h2><a class="anchor" id="autotoc_md20"></a>
+Q: Is having a header and a bindings file for each module redundant if both declare the same functions?</h2>
+<p><b>A:</b> ...Yes, and No.</p>
 <p>The header file (.h) for a module can only declare C++'s side of the code. Functions, defines, includes and pragmas live there. The binding file serves as the gateway between Python's calls and C++'s responses. In all current cases, the function names are exactly the same on both sides, but its possible to have a function called <code>foo()</code> in Python that actually calls <code>bar()</code> from C++ </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

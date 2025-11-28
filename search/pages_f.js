@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['z2r_0',['Z2R',['../md_docs_2wiki_2Nomenclature.html',1,'']]]
+  ['when_20writing_0',['When Writing',['../md_docs_2wiki_2Coding-Convention.html',1,'']]],
+  ['writing_1',['When Writing',['../md_docs_2wiki_2Coding-Convention.html',1,'']]]
 ];

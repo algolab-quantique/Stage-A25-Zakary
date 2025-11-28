@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['coding_2dtutorial_0',['Coding-Tutorial',['../md_docs_wiki_Coding_Tutorial.html',1,'']]]
+  ['data_20structure_0',['Data structure',['../md_docs_wiki_Optimizations.html',1,'']]],
+  ['devlog_1',['Devlog',['../md_docs_wiki_Devlog.html',1,'']]]
 ];
