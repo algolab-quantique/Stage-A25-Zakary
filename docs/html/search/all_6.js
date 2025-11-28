@@ -1,5 +1,14 @@
 var searchData=
 [
-  ['paded_5fbitwise_5fnot_0',['paded_bitwise_not',['../bitops_8h.html#a2866c8127e015b9756a4692c636dbd9f',1,'paded_bitwise_not(py::array voids, int num_qubits):&#160;bitops.cpp'],['../bitops_8cpp.html#a2866c8127e015b9756a4692c636dbd9f',1,'paded_bitwise_not(py::array voids, int num_qubits):&#160;bitops.cpp'],['../namespacez2r__accel_1_1bitops.html#a7e36d0ef403175e33c6f2c6ca0c3a031',1,'z2r_accel.bitops.paded_bitwise_not()']]],
-  ['pybind11_5fmodule_1',['pybind11_module',['../bitops__bindings_8cpp.html#a12fc346c4c701932d86ea75773e67423',1,'PYBIND11_MODULE(_bitops, m):&#160;bitops_bindings.cpp'],['../cz2m__bindings_8cpp.html#ac8a764d7703a046a0871ea998d4390c9',1,'PYBIND11_MODULE(_cz2m, m):&#160;cz2m_bindings.cpp']]]
+  ['faq_2emd_0',['FAQ.md',['../FAQ_8md.html',1,'']]],
+  ['file_20for_20each_20module_20redundant_20if_20both_20declare_20the_20same_20functions_1',['&lt;strong&gt;Q:&lt;/strong&gt; Is having a header and a bindings file for each module redundant if both declare the same functions?',['../md_docs_2wiki_2FAQ.html',1,'']]],
+  ['for_20c_2',['For C++',['../md_docs_2wiki_2External-Tools.html#autotoc_md12',1,'']]],
+  ['for_20each_20module_20redundant_20if_20both_20declare_20the_20same_20functions_3',['&lt;strong&gt;Q:&lt;/strong&gt; Is having a header and a bindings file for each module redundant if both declare the same functions?',['../md_docs_2wiki_2FAQ.html',1,'']]],
+  ['for_20python_4',['For Python',['../md_docs_2wiki_2External-Tools.html#autotoc_md11',1,'']]],
+  ['formatters_5',['Auto-formatters',['../md_docs_2wiki_2External-Tools.html',1,'']]],
+  ['formatting_6',['Formatting',['../md_docs_2wiki_2Coding-Convention.html#autotoc_md4',1,'']]],
+  ['from_20python_7',['Calling from Python',['../md_docs_2wiki_2Coding-Tutorial.html#autotoc_md9',1,'']]],
+  ['func_5fthreshold_5fparallel_8',['FUNC_THRESHOLD_PARALLEL',['../cz2m_8h.html#a8517b0cb68055ed7ceb0a5ff090f1205',1,'cz2m.h']]],
+  ['functions_9',['functions',['../md_docs_2wiki_2FAQ.html',1,'&lt;strong&gt;Q:&lt;/strong&gt; Is having a header and a bindings file for each module redundant if both declare the same functions?'],['../md_docs_2wiki_2Coding-Tutorial.html#autotoc_md6',1,'Writing Functions']]],
+  ['functions_20bindings_10',['Exposing Functions (Bindings)',['../md_docs_2wiki_2Coding-Tutorial.html#autotoc_md7',1,'']]]
 ];

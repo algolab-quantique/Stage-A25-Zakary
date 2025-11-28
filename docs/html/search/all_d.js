@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['tensor_0',['tensor',['../cz2m_8h.html#a9462b2d1d2e54e82ad72c6d30f03230c',1,'tensor(py::array z2, py::array x2, py::array z1, py::array x1):&#160;cz2m.cpp'],['../cz2m_8cpp.html#a9462b2d1d2e54e82ad72c6d30f03230c',1,'tensor(py::array z2, py::array x2, py::array z1, py::array x1):&#160;cz2m.cpp']]],
-  ['to_5fmatrix_1',['to_matrix',['../cz2m_8h.html#a375f5fbabed5082337c4f714f68bedd3',1,'to_matrix(py::array z_voids, py::array x_voids, int num_qubits):&#160;cz2m.cpp'],['../cz2m_8cpp.html#a375f5fbabed5082337c4f714f68bedd3',1,'to_matrix(py::array z_voids, py::array x_voids, int num_qubits):&#160;cz2m.cpp']]],
-  ['transpose_2',['transpose',['../cz2m_8h.html#ac8b462857cd8418f8967e4c5d3c31a48',1,'transpose(py::array voids, int64_t num_bits=-1):&#160;cz2m.cpp'],['../cz2m_8cpp.html#a12fbfe079cede36f161a30220eec6d97',1,'transpose(py::array voids, int64_t num_bits):&#160;cz2m.cpp'],['../namespacez2r__accel_1_1cz2m.html#ad52f3292fb1aee5a8c8119182e3d62aa',1,'z2r_accel.cz2m.transpose()']]]
+  ['on_20linux_0',['On Linux',['../md_docs_2wiki_2Packaging.html#autotoc_md29',1,'']]],
+  ['on_20macos_1',['On MacOS',['../md_docs_2wiki_2Packaging.html#autotoc_md30',1,'']]],
+  ['on_20windows_2',['On Windows...?',['../md_docs_2wiki_2Packaging.html#autotoc_md31',1,'']]],
+  ['openmp_3',['Using OpenMP',['../md_docs_2wiki_2Optimizations.html#autotoc_md27',1,'']]],
+  ['optimizations_2emd_4',['Optimizations.md',['../Optimizations_8md.html',1,'']]]
 ];
