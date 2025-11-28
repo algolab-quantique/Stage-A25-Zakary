@@ -6,7 +6,7 @@ var indexSectionsWithContent =
   3: "_bcgmprstuz",
   4: "ct",
   5: "bf",
-  6: "<acdmpswz"
+  6: "<acdhpswz"
 };
 
 var indexSectionNames =
