@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['contributing_0',['CONTRIBUTING',['../md_CONTRIBUTING.html',1,'']]]
+  ['name_0',['Project Name',['../md_README.html',1,'']]]
 ];

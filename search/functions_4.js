@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['doxygenbanner_0',['doxygenBanner',['../javadoc-banner_8h.html#a7acf20d2740fdb0d6086abf738c8688f',1,'javadoc-banner.h']]],
-  ['drawrect_1',['drawRect',['../classOverload__Test.html#a840305784a1944b4de9826a1f4204365',1,'Overload_Test::drawRect(int, int, int, int)'],['../classOverload__Test.html#a7a613f50092cbc0ef830a818d9f3409c',1,'Overload_Test::drawRect(const Rect &amp;r)']]]
+  ['matmul_0',['matmul',['../cz2m_8h.html#a3c6e4cb97bf8045d53f0c6d4b48e834c',1,'matmul(py::array z2r_a, py::array z2r_b, int a_num_qubits, int b_num_qubits):&#160;cz2m.cpp'],['../cz2m_8cpp.html#a3c6e4cb97bf8045d53f0c6d4b48e834c',1,'matmul(py::array z2r_a, py::array z2r_b, int a_num_qubits, int b_num_qubits):&#160;cz2m.cpp'],['../namespacez2r__accel_1_1cz2m.html#a9b625dac9d91421087fa99b16d00fa87',1,'z2r_accel.cz2m.matmul()']]]
 ];

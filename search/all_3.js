@@ -1,25 +1,4 @@
 var searchData=
 [
-  ['c_0',['C',['../classC.html',1,'']]],
-  ['c1_1',['C1',['../classC1.html',1,'']]],
-  ['c2_2',['C2',['../classC2.html',1,'']]],
-  ['c3_3',['C3',['../classC3.html',1,'']]],
-  ['c4_4',['C4',['../classC4.html',1,'']]],
-  ['c5_5',['C5',['../classC5.html',1,'']]],
-  ['c_5fccp_6',['C_CCP',['../namespacez2r__accel_1_1cz2m.html#a13bbaa2618b01f864401b16716371c0b',1,'z2r_accel.cz2m.C_CCP()'],['../namespacez2r__accel_1_1bitops.html#a898a6445680b182c33787d7c1e6076e1',1,'z2r_accel.bitops.C_CCP()']]],
-  ['car_7',['Car',['../structCar.html',1,'Car'],['../manual_8c.html#a00b00bef7a37e8519a62cb3671105c4b',1,'Car():&#160;manual.c']]],
-  ['class_2eh_8',['class.h',['../class_8h.html',1,'']]],
-  ['classvar_9',['classVar',['../classpyexample_1_1PyClass.html#abd17aff54e5b0ca194020c796c733546',1,'pyexample::PyClass']]],
-  ['close_10',['close',['../structcmd_8h.html#ae152484c890a24e4d9b4980e7b965be0',1,'structcmd.h']]],
-  ['compose_11',['compose',['../cz2m_8h.html#a66c4da901dc2803db3fd403a21934220',1,'compose(py::array z1, py::array x1, py::array z2, py::array x2):&#160;cz2m.cpp'],['../cz2m_8cpp.html#a66c4da901dc2803db3fd403a21934220',1,'compose(py::array z1, py::array x1, py::array z2, py::array x2):&#160;cz2m.cpp']]],
-  ['concatenate_12',['concatenate',['../namespacenewimport.html#a6fbe66c6d2e81d3d9a2083c054756bf5',1,'newimport.concatenate()'],['../cz2m_8h.html#abc190cf6fce33b858a0782c6058f86eb',1,'concatenate(py::array x1, py::array x2, int axis=0):&#160;cz2m.cpp'],['../cz2m_8cpp.html#ac5e25849d7db6f59bb064c56f6ca88dd',1,'concatenate(py::array x1, py::array x2, int axis):&#160;cz2m.cpp'],['../namespacez2r__accel_1_1cz2m.html#a7db81b1bcbc668bf38c51922e6e84d21',1,'z2r_accel.cz2m.concatenate()']]],
-  ['contributing_13',['CONTRIBUTING',['../md_CONTRIBUTING.html',1,'']]],
-  ['contributing_2emd_14',['CONTRIBUTING.md',['../CONTRIBUTING_8md.html',1,'']]],
-  ['coord_15',['Coord',['../restypedef_8cpp.html#a013489fb99c6a5b012db8ec66544a507',1,'restypedef.cpp']]],
-  ['coordstruct_16',['CoordStruct',['../structCoordStruct.html',1,'']]],
-  ['cstyle_17',['cstyle',['../javadoc-banner_8h.html#a6ec4bf0132201719721e103451590a9e',1,'javadoc-banner.h']]],
-  ['cz2m_2ecpp_18',['cz2m.cpp',['../cz2m_8cpp.html',1,'']]],
-  ['cz2m_2eh_19',['cz2m.h',['../cz2m_8h.html',1,'']]],
-  ['cz2m_2epy_20',['cz2m.py',['../cz2m_8py.html',1,'']]],
-  ['cz2m_5fbindings_2ecpp_21',['cz2m_bindings.cpp',['../cz2m__bindings_8cpp.html',1,'']]]
+  ['func_5fthreshold_5fparallel_0',['FUNC_THRESHOLD_PARALLEL',['../cz2m_8h.html#a8517b0cb68055ed7ceb0a5ff090f1205',1,'cz2m.h']]]
 ];

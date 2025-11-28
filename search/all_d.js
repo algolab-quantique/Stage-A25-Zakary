@@ -1,9 +1,6 @@
 var searchData=
 [
-  ['object_0',['Object',['../structObject.html',1,'Object'],['../manual_8c.html#ab1287b6141419421dc5c14b9f7756b0a',1,'Object():&#160;manual.c']]],
-  ['objref_1',['objRef',['../structObject.html#a71225073d06a793b9a6ea9263ed37b12',1,'Object']]],
-  ['objunref_2',['objUnref',['../structObject.html#a924ee0cecc906d148022b3f0d6325cfb',1,'Object']]],
-  ['open_3',['open',['../structcmd_8h.html#a2c4414339f388561554c2deab11a1a07',1,'structcmd.h']]],
-  ['overload_2ecpp_4',['overload.cpp',['../overload_8cpp.html',1,'']]],
-  ['overload_5ftest_5',['Overload_Test',['../classOverload__Test.html',1,'']]]
+  ['tensor_0',['tensor',['../cz2m_8h.html#a9462b2d1d2e54e82ad72c6d30f03230c',1,'tensor(py::array z2, py::array x2, py::array z1, py::array x1):&#160;cz2m.cpp'],['../cz2m_8cpp.html#a9462b2d1d2e54e82ad72c6d30f03230c',1,'tensor(py::array z2, py::array x2, py::array z1, py::array x1):&#160;cz2m.cpp']]],
+  ['to_5fmatrix_1',['to_matrix',['../cz2m_8h.html#a375f5fbabed5082337c4f714f68bedd3',1,'to_matrix(py::array z_voids, py::array x_voids, int num_qubits):&#160;cz2m.cpp'],['../cz2m_8cpp.html#a375f5fbabed5082337c4f714f68bedd3',1,'to_matrix(py::array z_voids, py::array x_voids, int num_qubits):&#160;cz2m.cpp']]],
+  ['transpose_2',['transpose',['../cz2m_8h.html#ac8b462857cd8418f8967e4c5d3c31a48',1,'transpose(py::array voids, int64_t num_bits=-1):&#160;cz2m.cpp'],['../cz2m_8cpp.html#a12fbfe079cede36f161a30220eec6d97',1,'transpose(py::array voids, int64_t num_bits):&#160;cz2m.cpp'],['../namespacez2r__accel_1_1cz2m.html#ad52f3292fb1aee5a8c8119182e3d62aa',1,'z2r_accel.cz2m.transpose()']]]
 ];
