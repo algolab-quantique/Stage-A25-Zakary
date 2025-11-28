@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['_5f_5finit_5f_5f_2epy_0',['__init__.py',['../____init_____8py.html',1,'']]],
-  ['_5fbc_1',['_bc',['../namespacez2r__accel_1_1bitops.html#a20f7af44e755747246ee47d397b1cbc3',1,'z2r_accel.bitops._bc()'],['../namespacez2r__accel_1_1cz2m.html#abd3f4c5cda97d6e4df6d085eac7bd8d7',1,'z2r_accel.cz2m._bc()']]],
-  ['_5fcontiguous_2',['_contiguous',['../namespacez2r__accel_1_1bitops.html#a0391c5dfb8a46eb985d45f9ff6e7e650',1,'z2r_accel.bitops._contiguous()'],['../namespacez2r__accel_1_1cz2m.html#ad94c92ead104c28f1e9b145caede7b19',1,'z2r_accel.cz2m._contiguous()']]]
+  ['_3cstrong_3eq_3a_3c_2fstrong_3e_20is_20having_20a_20header_20and_20a_20bindings_20file_20for_20each_20module_20redundant_20if_20both_20declare_20the_20same_20functions_3f_0',['&lt;strong&gt;Q:&lt;/strong&gt; Is having a header and a bindings file for each module redundant if both declare the same functions?',['../md_docs_wiki_FAQ.html',1,'']]]
 ];

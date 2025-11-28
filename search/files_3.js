@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['newimport_2epy_0',['newimport.py',['../newimport_8py.html',1,'']]]
+  ['devlog_2emd_0',['Devlog.md',['../Devlog_8md.html',1,'']]]
 ];
