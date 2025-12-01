@@ -196,12 +196,12 @@ py::tuple random_zx_strings(const std::vector<size_t> &shape) { //, size_t num_q
     return py::make_tuple(z_strings, x_strings);
 }
 
-py::object unique(py::array zx_voids, bool return_index, bool return_inverse, bool return_counts) {
-    auto buf = zx_voids.request();
+py::object unique(py::array z2r, bool return_index, bool return_inverse, bool return_counts) {
+    auto buf = z2r.request();
     if (buf.ndim == 0) {
         if (return_index || return_inverse || return_counts) {
             py::tuple t(1 + (int)return_index + (int)return_inverse + (int)return_counts);
-            t[0] = zx_voids;
+            t[0] = z2r;
             int pos = 1;
             if (return_index) {
                 py::array_t<int64_t> arr_idx(1);
@@ -226,7 +226,7 @@ py::object unique(py::array zx_voids, bool return_index, bool return_inverse, bo
             }
             return t;
         }
-        return zx_voids;
+        return z2r;
     }
 
     size_t n = buf.size;            // number of elements (
@@ -282,7 +282,7 @@ py::object unique(py::array zx_voids, bool return_index, bool return_inverse, bo
 
     // Build unique array (sorted order = order of groups as encountered)
     std::vector<ssize_t> unique_shape = {(ssize_t)groups};
-    py::array unique = py::array(zx_voids.dtype(), unique_shape);
+    py::array unique = py::array(z2r.dtype(), unique_shape);
     auto ubuf = unique.request();
     uint8_t *uptr = static_cast<uint8_t *>(ubuf.ptr);
 
@@ -348,23 +348,19 @@ py::object unique(py::array zx_voids, bool return_index, bool return_inverse, bo
 //  };
 
 /**
- * @brief This is a very early test implementation of unordered unique.
- * It finds unique rows in a NumPy 2D array by mapping the zx_voids to a hashmap.
+ * @brief This function finds unique rows in a NumPy 2D array by mapping the z2r to a hashmap.
  * Thus, two identical rows will be encoded to the same key via the hashing function and ensures
  * a fast execution time.
  *
- * This function is heavily inspired by Qiskit's Rust function of the same name.
- * https://github.com/Qiskit/qiskit/blob/main/crates/quantum_info/src/sparse_pauli_op.rs#L54
- *
  * @attention Does not work for higher dimensions.
- * @param zx_voids Both Z and X voids stiched together
+ * @param z2r Both Z and X voids stiched together
  * @return py::tuple Returns (indices, inverse).
- * Indices gives the index of each unique row from zx_voids.
+ * Indices gives the index of each unique row from z2r.
  * Inverse is the indices to remake the input array from only its unique elements.
  */
-py::tuple unordered_unique(py::array zx_voids) {
+py::tuple unordered_unique(py::array z2r) {
 
-    auto buf = zx_voids.request();
+    auto buf = z2r.request();
     // TODO: Fix this cause its not working ! Ahah!!
     if (buf.ndim == 0) {
         py::array_t<int64_t> idx(1);
@@ -541,7 +537,7 @@ py::array row_echelon(py::array voids, int num_qubits) {
 }
 
 std::tuple<std::vector<int>, std::vector<int>, std::vector<std::complex<double>>>
-sparse_matrix_from_zx_voids(py::array z_voids, py::array x_voids, int num_qubits) {
+sparse_matrix_from_z2r(py::array z_voids, py::array x_voids, int num_qubits) {
     auto buf_z = z_voids.request();
     auto buf_x = x_voids.request();
 
@@ -650,8 +646,7 @@ py::array_t<std::complex<double>> to_matrix(py::array z_voids, py::array x_voids
         py::array z_row = z_voids[py::int_(idx)];
         py::array x_row = x_voids[py::int_(idx)];
 
-        auto [row_ind, col_ind, matrix_elements] =
-            sparse_matrix_from_zx_voids(z_row, x_row, num_qubits);
+        auto [row_ind, col_ind, matrix_elements] = sparse_matrix_from_z2r(z_row, x_row, num_qubits);
 
         for (size_t k = 0; k < row_ind.size(); ++k) {
             size_t row = row_ind[k];

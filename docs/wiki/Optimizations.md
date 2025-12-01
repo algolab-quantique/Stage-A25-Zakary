@@ -1,3 +1,4 @@
+test
 ## Data structure
 Handling long lists of 1s and 0s is at the heart of this project, and needs to be done as efficiently as possible. The current way all data is managed is throught a packed representation of integers such that:
 
@@ -29,7 +30,7 @@ To fully utilize available hardware, we implement multi-threading wherever safe 
 Before adding OpenMP, make it **certain** that your code is thread-safe. Data races and memory corruption are difficult to debug. While mutexes can provide thread safety over otherwise unsafe operations, they often cause performance degradation in small functions (our primary use case). Use mutexes cautiously and verify they provide net benefits.
 
 As for the syntax, most *for(...)* loops in the project are prefaced with:
-``` C++
+```cpp
 #ifdef USE_OPENMP
 	#pragma omp parallel for if (local_variable >= SOME_MACRO) schedule(static)
 #endif
@@ -49,7 +50,7 @@ More keywords exist, but they are specific to certain behaviors that are much le
 Python's Global Interpreter Lock allows only one thread to execute Python bytecode at a time. This simplifies Python's memory management but prevents true multi-threading. Only multiprocessing can achieve true parallelism under the GIL.
 
 However, it is possible to get freed from the shackles of the GIL within C++. This can be done by declaring a section like this:
-```C++
+```cpp
 {
   py::gil_scoped_release release;
   // very heavy CPU loop (Real multithreading allowed)

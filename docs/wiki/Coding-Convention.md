@@ -38,7 +38,7 @@ While convenient, namespace imports create ambiguity in low-level code. Both the
 
 ## Comments
 In Python files, use Docstrings:
-``` python
+```python
 
 def add_integers(a:int, b:int) -> int:
 	"""
@@ -53,7 +53,7 @@ def add_integers(a:int, b:int) -> int:
 ```
 
 In C++, use Doxygen comments:
-``` c++
+```cpp
 /**
 * @brief Calculates the sum of two integers
 *
