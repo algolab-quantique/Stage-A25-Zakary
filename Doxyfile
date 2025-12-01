@@ -38,6 +38,8 @@ HTML_EXTRA_STYLESHEET  = ./docs/doxygen-awesome-css/doxygen-awesome.css
 HTML_HEADER            = ./docs/doxygen-awesome-css/header.html
 HTML_COLORSTYLE        = LIGHT # required with Doxygen >= 1.9.5
 
+HTML_EXTRA_FILES	   = ./docs/assets/logo_cropped.png
+
 # # Doxyfile 1.9.8
 
 # # This file describes the settings to be used by the documentation system

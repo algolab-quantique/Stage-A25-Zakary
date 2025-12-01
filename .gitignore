@@ -60,5 +60,6 @@ paulicpp/pauliarray/src/build/*.*
 *.pyc
 .github
 /dist
-# /docs/html
+/docs/html
 !/docs/html/.gitignore
+**/dump.txt
