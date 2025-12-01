@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Test 123: z2r_accel/_core/include/cz2m.h File Reference</title>
+<title>The Z2 Project: z2r_accel/_core/include/cz2m.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -38,10 +38,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="logo_cropped.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Test 123
+   <div id="projectname">The Z2 Project
    </div>
-   <div id="projectbrief">Description du test</div>
   </td>
  </tr>
  </tbody>
@@ -142,7 +142,7 @@ Functions</h2></td></tr>
 <tr class="memitem:a6147faad379edac00e339de56b512a54"><td class="memItemLeft" align="right" valign="top">py::object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#a6147faad379edac00e339de56b512a54">unique</a> (py::array zx_voids, bool return_index=false, bool return_inverse=false, bool return_counts=false)</td></tr>
 <tr class="separator:a6147faad379edac00e339de56b512a54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4da4fa68c447ad16c8312e9e6938628"><td class="memItemLeft" align="right" valign="top">py::tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#ae4da4fa68c447ad16c8312e9e6938628">unordered_unique</a> (py::array zx_voids)</td></tr>
-<tr class="memdesc:ae4da4fa68c447ad16c8312e9e6938628"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is a very early test implementation of unordered unique.  <br /></td></tr>
+<tr class="memdesc:ae4da4fa68c447ad16c8312e9e6938628"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function finds unique rows in a NumPy 2D array by mapping the z2r to a hashmap.  <br /></td></tr>
 <tr class="separator:ae4da4fa68c447ad16c8312e9e6938628"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6f7178fc35327a981af856ca64fbc16"><td class="memItemLeft" align="right" valign="top">py::array&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#ae6f7178fc35327a981af856ca64fbc16">row_echelon</a> (py::array voids, int num_qubits)</td></tr>
 <tr class="memdesc:ae6f7178fc35327a981af856ca64fbc16"><td class="mdescLeft">&#160;</td><td class="mdescRight">applies Gauss-Jordan elimination on a binary matrix to produce row echelon form  <br /></td></tr>
@@ -681,23 +681,22 @@ Functions</h2></td></tr>
           <td class="memname">py::tuple unordered_unique </td>
           <td>(</td>
           <td class="paramtype">py::array&#160;</td>
-          <td class="paramname"><em>zx_voids</em></td><td>)</td>
+          <td class="paramname"><em>z2r</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>This is a very early test implementation of unordered unique. </p>
-<p>It finds unique rows in a NumPy 2D array by mapping the zx_voids to a hashmap. Thus, two identical rows will be encoded to the same key via the hashing function and ensures a fast execution time.</p>
-<p>This function is heavily inspired by Qiskit's Rust function of the same name. <a href="https://github.com/Qiskit/qiskit/blob/main/crates/quantum_info/src/sparse_pauli_op.rs#L54">https://github.com/Qiskit/qiskit/blob/main/crates/quantum_info/src/sparse_pauli_op.rs#L54</a></p>
+<p>This function finds unique rows in a NumPy 2D array by mapping the z2r to a hashmap. </p>
+<p>Thus, two identical rows will be encoded to the same key via the hashing function and ensures a fast execution time.</p>
 <dl class="section attention"><dt>Attention</dt><dd>Does not work for higher dimensions. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">zx_voids</td><td>Both Z and X voids stiched together </td></tr>
+    <tr><td class="paramname">z2r</td><td>Both Z and X voids stiched together </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>py::tuple Returns (indices, inverse). Indices gives the index of each unique row from zx_voids. Inverse is the indices to remake the input array from only its unique elements. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>py::tuple Returns (indices, inverse). Indices gives the index of each unique row from z2r. Inverse is the indices to remake the input array from only its unique elements. </dd></dl>
 
 </div>
 </div>

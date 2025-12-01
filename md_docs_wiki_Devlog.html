@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Test 123: Devlog</title>
+<title>The Z2 Project: 2025</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -38,10 +38,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="logo_cropped.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Test 123
+   <div id="projectname">The Z2 Project
    </div>
-   <div id="projectbrief">Description du test</div>
   </td>
  </tr>
  </tbody>
@@ -104,10 +104,27 @@ $(document).ready(function(){initNavTree('md_docs_wiki_Devlog.html',''); initRes
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">Devlog </div></div>
+  <div class="headertitle"><div class="title">2025 </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>a </p>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md11"></a>
+November</h1>
+<h2><a class="anchor" id="autotoc_md12"></a>
+24th-28th</h2>
+<ul>
+<li>Created <code>gh-pages</code> branch. Manual overwrite and pushes needed.</li>
+<li>Licensed project under Apache 2.0</li>
+<li>Automatic deployement of Doxygen documentation to the GH pages on any new push to <code>main</code>. Manual generation of docs still needed by typing <code>doxygen Doxyfile</code> before pushes.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md13"></a>
+December</h1>
+<h2><a class="anchor" id="autotoc_md14"></a>
+1st-5th</h2>
+<ul>
+<li>When the first iterations of the dense bitwise operations was created, a strange pattern arrose: if multithreading was used for small-ish array sizes, the program would sometimes be more efficient, and sometimes spikes up to 100x slower than expected. This bug was never fixed. However, i have a hunch that this bug occurs due to <a class="el" href="md_docs_wiki_Optimizations.html">the GIL</a>! One way to fix this would be to release the GIL when iterating over the 64 bit an tail chunks. If this issue is fixed, bitwise operations can (possibly) become 2x faster in some cases</li>
+<li>Created <code>dev</code> branch</li>
+<li></li>
+</ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->

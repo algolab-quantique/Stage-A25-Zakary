@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Test 123: When Writing</title>
+<title>The Z2 Project: When Writing</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -38,10 +38,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="logo_cropped.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Test 123
+   <div id="projectname">The Z2 Project
    </div>
-   <div id="projectbrief">Description du test</div>
   </td>
  </tr>
  </tbody>
@@ -142,25 +142,19 @@ $(document).ready(function(){initNavTree('md_docs_wiki_Coding_Convention.html','
 <hr  />
 <h1><a class="anchor" id="autotoc_md2"></a>
 Comments</h1>
-<p>In Python files, use Docstrings: </p><div class="fragment"><div class="line">def add_integers(a:int, b:int) -&gt; int:</div>
-<div class="line">    &quot;&quot;&quot;</div>
-<div class="line">    Calculates the sum of two integers</div>
-<div class="line">    Args:</div>
-<div class="line">        a (int): The first operand</div>
-<div class="line">        b (int): The second operand</div>
-<div class="line">    Returns:</div>
-<div class="line">        int: The sum of both inputs</div>
-<div class="line">    &quot;&quot;&quot;</div>
-<div class="line">    return a + b</div>
-</div><!-- fragment --><p>In C++, use Doxygen comments: </p><div class="fragment"><div class="line">/**</div>
-<div class="line">* @brief Calculates the sum of two integers</div>
-<div class="line">*</div>
-<div class="line">* @param a The first integer operand</div>
-<div class="line">* @param b The second integer operand</div>
-<div class="line">* @return int The sum of both inputs</div>
-<div class="line">*/</div>
-<div class="line">int add_integers(int a, int b) {</div>
-<div class="line">    return a + b;</div>
+<p>In Python files, use Docstrings: </p><div class="fragment"><div class="line"><span class="keyword">def </span>add_integers(a:int, b:int) -&gt; int:</div>
+<div class="line">    <span class="stringliteral">&quot;&quot;&quot;</span></div>
+<div class="line"><span class="stringliteral">    Calculates the sum of two integers</span></div>
+<div class="line"><span class="stringliteral">    Args:</span></div>
+<div class="line"><span class="stringliteral">        a (int): The first operand</span></div>
+<div class="line"><span class="stringliteral">        b (int): The second operand</span></div>
+<div class="line"><span class="stringliteral">    Returns:</span></div>
+<div class="line"><span class="stringliteral">        int: The sum of both inputs</span></div>
+<div class="line"><span class="stringliteral">    &quot;&quot;&quot;</span></div>
+<div class="line"><span class="stringliteral">    </span><span class="keywordflow">return</span> a + b</div>
+</div><!-- fragment --><p>In C++, use Doxygen comments: </p><div class="fragment"><div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> add_integers(<span class="keywordtype">int</span> a, <span class="keywordtype">int</span> b) {</div>
+<div class="line">    <span class="keywordflow">return</span> a + b;</div>
 <div class="line">}</div>
 </div><!-- fragment --><hr  />
 <h1><a class="anchor" id="autotoc_md4"></a>

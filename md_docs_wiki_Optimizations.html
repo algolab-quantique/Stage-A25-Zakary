@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Test 123: Data structure</title>
+<title>The Z2 Project: Optimizations</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -38,10 +38,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="logo_cropped.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Test 123
+   <div id="projectname">The Z2 Project
    </div>
-   <div id="projectbrief">Description du test</div>
   </td>
  </tr>
  </tbody>
@@ -104,10 +104,13 @@ $(document).ready(function(){initNavTree('md_docs_wiki_Optimizations.html',''); 
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">Data structure </div></div>
+  <div class="headertitle"><div class="title">Optimizations </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Handling long lists of 1s and 0s is at the heart of this project, and needs to be done as efficiently as possible. The current way all data is managed is throught a packed representation of integers such that:</p>
+<div class="textblock"><p>test </p>
+<h2><a class="anchor" id="autotoc_md30"></a>
+Data structure</h2>
+<p>Handling long lists of 1s and 0s is at the heart of this project, and needs to be done as efficiently as possible. The current way all data is managed is throught a packed representation of integers such that:</p>
 <p><code>ex = 0b01100111</code> or <code>ex = 103</code>,</p><ul>
 <li>Drawback: for extreme cases where almost all entries are consecutively 1s or 0s, this method is slower and takes more memory space than a sparse implementation</li>
 <li>Benefits:<ul>
@@ -131,20 +134,20 @@ $(document).ready(function(){initNavTree('md_docs_wiki_Optimizations.html',''); 
 </li>
 </ol>
 <hr  />
-<h1><a class="anchor" id="autotoc_md26"></a>
-General</h1>
+<h2><a class="anchor" id="autotoc_md32"></a>
+General</h2>
 <p>In most cases, we cast the data of a Z2R array to <code>uint64_t</code> via <code>std::bit_cast&lt;&gt;</code>. This is done because in most modern computers, 64 bits is the largest natively supported integer size. When an object's total size is less than 64 bits, casting is mostly on <code>uint8_t</code> and sometimes on <code>bitset&lt;N&gt;</code></p>
-<h1><a class="anchor" id="autotoc_md27"></a>
-Multi-threading</h1>
+<h2><a class="anchor" id="autotoc_md33"></a>
+Multi-threading</h2>
 <p>To fully utilize available hardware, we implement multi-threading wherever safe and beneficial. OpenMP provides simple syntax with powerful results while maintaining code readability. </p>
-<h2><a class="anchor" id="autotoc_md28"></a>
-Using OpenMP</h2>
+<h3><a class="anchor" id="autotoc_md34"></a>
+Using OpenMP</h3>
 <p>Before adding OpenMP, make it <b>certain</b> that your code is thread-safe. Data races and memory corruption are difficult to debug. While mutexes can provide thread safety over otherwise unsafe operations, they often cause performance degradation in small functions (our primary use case). Use mutexes cautiously and verify they provide net benefits.</p>
-<p>As for the syntax, most <em>for(...)</em> loops in the project are prefaced with: </p><div class="fragment"><div class="line">#ifdef USE_OPENMP</div>
-<div class="line">    #pragma omp parallel for if (local_variable &gt;= SOME_MACRO) schedule(static)</div>
-<div class="line">#endif</div>
-<div class="line">    for (i=0; i&lt;local_variable; i++) {</div>
-<div class="line">        // Code that does something which could be multi-threaded</div>
+<p>As for the syntax, most <em>for(...)</em> loops in the project are prefaced with: </p><div class="fragment"><div class="line"><span class="preprocessor">#ifdef USE_OPENMP</span></div>
+<div class="line"><span class="preprocessor">    #pragma omp parallel for if (local_variable &gt;= SOME_MACRO) schedule(static)</span></div>
+<div class="line"><span class="preprocessor">#endif</span></div>
+<div class="line">    <span class="keywordflow">for</span> (i=0; i&lt;local_variable; i++) {</div>
+<div class="line">        <span class="comment">// Code that does something which could be multi-threaded</span></div>
 <div class="line">    }</div>
 </div><!-- fragment --><ul>
 <li><code>#ifdef</code> is a preprocessor directive that only compiles it's code block if the specific macro is defined. In this case, <code>USE_OPENMP</code> is our own macro, and is only ever defined within CMake's compiling instruction. This is necessary since if OpenMP is not installed but still tries to compile OMP-specific pragmas, the compiler will throw out an error and exit.</li>
@@ -153,21 +156,20 @@ Using OpenMP</h2>
 <li><code>schedule(static)</code> assign each loop iterations to threads in a even, round-robin distribution.</li>
 </ul>
 <p>More keywords exist, but they are specific to certain behaviors that are much less common in this project</p>
-<h2><a class="anchor" id="autotoc_md29"></a>
-Understanding the GIL</h2>
+<h3><a class="anchor" id="autotoc_md35"></a>
+Understanding the GIL</h3>
 <p>Python's Global Interpreter Lock allows only one thread to execute Python bytecode at a time. This simplifies Python's memory management but prevents true multi-threading. Only multiprocessing can achieve true parallelism under the GIL.</p>
-<p>However, it is possible to get freed from the shackles of the GIL within C++. This can be done by declaring a section like this: </p><div class="fragment"><div class="line"> {C++}</div>
-<div class="line">{</div>
+<p>However, it is possible to get freed from the shackles of the GIL within C++. This can be done by declaring a section like this: </p><div class="fragment"><div class="line">{</div>
 <div class="line">  py::gil_scoped_release release;</div>
-<div class="line">  // very heavy CPU loop (Real multithreading allowed)</div>
+<div class="line">  <span class="comment">// very heavy CPU loop (Real multithreading allowed)</span></div>
 <div class="line">}</div>
-<div class="line">// The GIL is automaticaly reaquired here</div>
+<div class="line"><span class="comment">// The GIL is automaticaly reaquired here</span></div>
 </div><!-- fragment --><p> Releasing the GIL has some overhead, so it is only useful when code needs to be truly parallelized. <b>Release the GIL when:</b></p><ul>
 <li>Operations are CPU-intensive and long-running</li>
 <li>No Python API calls are needed</li>
 <li>Using OpenMP or manual threading</li>
 </ul>
-<p>See <code><a class="el" href="cz2m_8h.html#ae4da4fa68c447ad16c8312e9e6938628" title="This is a very early test implementation of unordered unique.">unordered_unique()</a></code>'s management of the GIL and OpenMP for more information. It is the very last function inside of <code>paulicpp/pauliarray/src/paulicpp.hpp</code></p>
+<p>See <code><a class="el" href="cz2m_8h.html#ae4da4fa68c447ad16c8312e9e6938628" title="This function finds unique rows in a NumPy 2D array by mapping the z2r to a hashmap.">unordered_unique()</a></code>'s management of the GIL and OpenMP for more information. It is the very last function inside of <code>paulicpp/pauliarray/src/paulicpp.hpp</code></p>
 <blockquote class="doxtable">
 <p>&zwj;Note: The Python language is working towards removing the GIL. This could take many years before it is accomplished, buf if/when it finished, there will likely be some breakage around any parts explicitly managing the GIL. See <a href="https://peps.python.org/pep-0703/">PEP 703</a> </p>
 </blockquote>

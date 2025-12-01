@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['auto_2dformatters_0',['Auto-formatters',['../md_docs_wiki_External_Tools.html',1,'']]]
+  ['2025_0',['2025',['../md_docs_wiki_Devlog.html',1,'']]]
 ];
