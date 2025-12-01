@@ -4,7 +4,7 @@ In this exemple, we'll create a new C++ module and integrate it to the existing 
 # Coding in C++
 Before anything, choose the name of your new module. This will be later refered to as: {MODULE}
 Create a new header (.h) file in `_core/include/` and a source (.cpp) file  in `_core/src/` with the name of your module. In your new header file, add:
-``` C++
+```cpp
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 namespace py = pybind11;
@@ -15,8 +15,7 @@ namespace py = pybind11;
 Lets write a function that takes an NDArray of packed bits, flips every bit in it to a new resulting array and finally returns that.
 
 Declare the function in the header file by adding `py::array bitwise_not(py::array z2r);`, then begin its implementation in the .cpp source:
-C++:
-``` C++
+```cpp
 py::array bitwise_not(py::array z2r) {
 	auto buffer = z2r.request();
 	const uint64_t *ptr_64 = std::bit_cast<uint64_t *>(buffer.ptr); 
@@ -52,7 +51,7 @@ And as for the code of the function:
 Now that we have a new function, we need to expose it so that it can be called from inside Python.
 
 To do so, navigate to `_src/bindings/` and make a new C++ file (`{MODULE}_bindings.cpp`). Once done, add the following:
-```C++
+```cpp
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 namespace py = pybind11;
@@ -73,7 +72,7 @@ PYBIND11_MODULE(_{MODULE}, m) {
 
 ## Compiling Modules 
 Each module must be compiled to a dynamic library by CMake. To do so, simply go to the `CMakeLists.txt` file and at the very last line, add: 
-``` cmake
+```cmake
 configure_pybind_module(
     _{MODULE}
     z2r_accel/_core/bindings/{MODULE}_bindings.cpp
@@ -85,7 +84,7 @@ configure_pybind_module(
 
 ## Calling from Python
 The last step is to make a new Python file to define how functions are called. Move to the `z2r_accel` and create a Python file (`{MODULE}.py`). Inside it, add:
-```
+```python
 try:
     from ._core.build import _{MODULE}
     C_CCP = True
