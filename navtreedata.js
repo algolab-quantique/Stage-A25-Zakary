@@ -37,12 +37,14 @@ var NAVTREE =
         [ "Calling from Python", "md_docs_wiki_Coding_Tutorial.html#autotoc_md9", null ]
       ] ]
     ] ],
-    [ "2025", "md_docs_wiki_Devlog.html", [
-      [ "November", "md_docs_wiki_Devlog.html#autotoc_md11", [
-        [ "24th-28th", "md_docs_wiki_Devlog.html#autotoc_md12", null ]
-      ] ],
-      [ "December", "md_docs_wiki_Devlog.html#autotoc_md13", [
-        [ "1st-5th", "md_docs_wiki_Devlog.html#autotoc_md14", null ]
+    [ "Devlog", "md_docs_wiki_Devlog.html", [
+      [ "2025", "md_docs_wiki_Devlog.html#autotoc_md10", [
+        [ "November", "md_docs_wiki_Devlog.html#autotoc_md11", [
+          [ "24th-28th", "md_docs_wiki_Devlog.html#autotoc_md12", null ]
+        ] ],
+        [ "December", "md_docs_wiki_Devlog.html#autotoc_md13", [
+          [ "1st-5th", "md_docs_wiki_Devlog.html#autotoc_md14", null ]
+        ] ]
       ] ]
     ] ],
     [ "Auto-formatters", "md_docs_wiki_External_Tools.html", [

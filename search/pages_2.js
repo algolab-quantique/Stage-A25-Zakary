@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['coding_2dtutorial_0',['Coding-Tutorial',['../md_docs_wiki_Coding_Tutorial.html',1,'']]]
+  ['devlog_0',['Devlog',['../md_docs_wiki_Devlog.html',1,'']]]
 ];
