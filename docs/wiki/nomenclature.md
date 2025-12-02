@@ -1,3 +1,4 @@
+# Nomenclature
 ## Z2R
 *Also know as 'Voids', 'bit_string'.*
 <br>Is defined as: $\mathbb{Z}_2$ Rows.

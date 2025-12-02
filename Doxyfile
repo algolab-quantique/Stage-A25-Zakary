@@ -5,7 +5,7 @@ PROJECT_LOGO           = ./docs/assets/logo_cropped.png
 
 # Input and output settings
 INPUT                  = ./z2r_accel ./docs/wiki
-USE_MDFILE_AS_MAINPAGE = ./docs/wiki/Home.md
+USE_MDFILE_AS_MAINPAGE = ./docs/wiki/home.md
 FILE_PATTERNS = *.c *.cc *.cpp *.h *.hpp *.py *.md *.markdown *.mm
 RECURSIVE              = YES
 OUTPUT_DIRECTORY       = ./docs

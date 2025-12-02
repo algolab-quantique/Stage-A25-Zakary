@@ -1,3 +1,4 @@
+# Coding Convention
 ## When Writing
 **Avoid Broadcasting in C++:** Broadcasting is a complex process that required substantial engineering effort from the NumPy team to implement efficiently. Rather than reimplementing ourself broadcasting in C++, either:
 - Perform broadcasting in Python before passing data to C++

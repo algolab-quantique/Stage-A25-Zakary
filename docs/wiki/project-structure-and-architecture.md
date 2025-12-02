@@ -1,3 +1,4 @@
+# Project Structure and Architecture
 ## Structure
 The project structure is the exact same as PauliArray's [Voids](https://github.com/algolab-quantique/pauliarray/tree/Voids) branch, with the following additions:
 ``` 
