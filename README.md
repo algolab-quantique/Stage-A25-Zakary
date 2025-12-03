@@ -1,9 +1,13 @@
 # The Z2 Project
-<img src = "https://github.com/algolab-quantique/Stage-A25-Zakary/blob/main/docs/assets/logo_cropped.png" align="right" width="200">
-Z2P aims to provide performance and memory efficient functions for NumPy NDArray of dtype Void 
+<img src = "https://github.com/algolab-quantique/Stage-A25-Zakary/blob/main/docs/assets/logo_cropped.png" align="right" width="150">
 
+Z2P aims to provide performance and memory efficient functions for NumPy NDArray of dtype Void. This is done by passing the CPU-intensive tasks to C++ via [pybind11](https://github.com/pybind/pybind11).
 
+<br>
+<br>
+<br>
 
+---
 
 # Installation
 

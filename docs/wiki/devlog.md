@@ -34,8 +34,10 @@ This file documents changes, fixes, known issues and miscelaneous notes for each
 - Multithreading is inconsistent for small arrays; suspect [the GIL](Optimizations.md) as root cause. Probable fix is to release the GIL during each bitwise operation.
 - pybind-stubgen has difficulties and crashes when creating stubs for files using external libraries (e.g., xxhash)
 - std::unordered_map is inneficient (?). Better alternatives are available online. Main use case for a better hashmap is in `unordered_unique()`
-- `concatenate()` should be split into two (one for each axis). There should also be an option or other function that permits direct insertion of one matrix onto/into another.
-- 
+- `concatenate()` should be split into two (one for each axis). There should also be an option or other function that permits direct insertion of one matrix onto/into another via an index parameter.
+- There is a proposal for [std::simd](https://en.cppreference.com/w/cpp/experimental/simd.html) to be added to the ISO Standard of C++26, which would allow for portable SIMD without having to deal with intrinsics. Interesting option for future developement and maintainance of library.
 
 **Notes:**  
-- First prototype of project logo made. 
+- First prototype of project logo made. Revisions to color scheme, positioning and vectorization needed for future iterations.
+- Project has been added to PauliArray; Passes the exact same number of tests that PA passed without Z2P
+- Feature freeze is active for core C++ functions, but not infrastructure (testing suite) or Python files
