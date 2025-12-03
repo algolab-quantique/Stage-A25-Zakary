@@ -25,47 +25,67 @@
 var NAVTREE =
 [
   [ "The Z2 Project", "index.html", [
-    [ "When Writing", "md_docs_wiki_Coding_Convention.html", [
-      [ "Comments", "md_docs_wiki_Coding_Convention.html#autotoc_md2", null ],
-      [ "Formatting", "md_docs_wiki_Coding_Convention.html#autotoc_md4", null ]
+    [ "Coding Convention", "md_docs_wiki_coding_convention.html", [
+      [ "When Writing", "md_docs_wiki_coding_convention.html#autotoc_md1", null ],
+      [ "Comments", "md_docs_wiki_coding_convention.html#autotoc_md3", null ],
+      [ "Formatting", "md_docs_wiki_coding_convention.html#autotoc_md5", null ]
     ] ],
-    [ "Coding-Tutorial", "md_docs_wiki_Coding_Tutorial.html", [
-      [ "Coding in C++", "md_docs_wiki_Coding_Tutorial.html#autotoc_md5", [
-        [ "Writing Functions", "md_docs_wiki_Coding_Tutorial.html#autotoc_md6", null ],
-        [ "Exposing Functions (Bindings)", "md_docs_wiki_Coding_Tutorial.html#autotoc_md7", null ],
-        [ "Compiling Modules", "md_docs_wiki_Coding_Tutorial.html#autotoc_md8", null ],
-        [ "Calling from Python", "md_docs_wiki_Coding_Tutorial.html#autotoc_md9", null ]
+    [ "Coding Tutorial", "md_docs_wiki_coding_tutorial.html", [
+      [ "Coding in C++", "md_docs_wiki_coding_tutorial.html#autotoc_md7", [
+        [ "Writing Functions", "md_docs_wiki_coding_tutorial.html#autotoc_md8", null ],
+        [ "Exposing Functions (Bindings)", "md_docs_wiki_coding_tutorial.html#autotoc_md9", null ],
+        [ "Compiling Modules", "md_docs_wiki_coding_tutorial.html#autotoc_md10", null ],
+        [ "Calling from Python", "md_docs_wiki_coding_tutorial.html#autotoc_md11", null ]
       ] ]
     ] ],
-    [ "Devlog", "md_docs_wiki_Devlog.html", [
-      [ "2025", "md_docs_wiki_Devlog.html#autotoc_md10", [
-        [ "November", "md_docs_wiki_Devlog.html#autotoc_md11", [
-          [ "24th-28th", "md_docs_wiki_Devlog.html#autotoc_md12", null ]
+    [ "Devlog", "md_docs_wiki_devlog.html", [
+      [ "2025", "md_docs_wiki_devlog.html#autotoc_md13", [
+        [ "November", "md_docs_wiki_devlog.html#autotoc_md14", [
+          [ "24th-28th", "md_docs_wiki_devlog.html#autotoc_md15", null ]
         ] ],
-        [ "December", "md_docs_wiki_Devlog.html#autotoc_md13", [
-          [ "1st-5th", "md_docs_wiki_Devlog.html#autotoc_md14", null ]
+        [ "December", "md_docs_wiki_devlog.html#autotoc_md16", [
+          [ "1st-5th", "md_docs_wiki_devlog.html#autotoc_md17", null ]
         ] ]
       ] ]
     ] ],
-    [ "Auto-formatters", "md_docs_wiki_External_Tools.html", [
-      [ "Build Systems", "md_docs_wiki_External_Tools.html#autotoc_md19", [
-        [ "For Python", "md_docs_wiki_External_Tools.html#autotoc_md16", null ],
-        [ "For C++", "md_docs_wiki_External_Tools.html#autotoc_md17", null ],
-        [ "In Python", "md_docs_wiki_External_Tools.html#autotoc_md20", null ],
-        [ "In C++", "md_docs_wiki_External_Tools.html#autotoc_md21", null ]
+    [ "External Tools", "md_docs_wiki_external_tools.html", [
+      [ "Auto-formatters", "md_docs_wiki_external_tools.html#autotoc_md19", [
+        [ "For Python", "md_docs_wiki_external_tools.html#autotoc_md20", null ],
+        [ "For C++", "md_docs_wiki_external_tools.html#autotoc_md21", null ]
       ] ],
-      [ "Why pybind11?", "md_docs_wiki_External_Tools.html#autotoc_md23", null ]
+      [ "Build Systems", "md_docs_wiki_external_tools.html#autotoc_md23", [
+        [ "In Python", "md_docs_wiki_external_tools.html#autotoc_md24", null ],
+        [ "In C++", "md_docs_wiki_external_tools.html#autotoc_md25", null ]
+      ] ],
+      [ "Documentation", "md_docs_wiki_external_tools.html#autotoc_md27", null ],
+      [ "Pybind11 (and why it was chosen)", "md_docs_wiki_external_tools.html#autotoc_md29", null ]
     ] ],
-    [ "FAQ", "md_docs_wiki_FAQ.html", null ],
-    [ "Z2R", "md_docs_wiki_Nomenclature.html", [
-      [ "CZ2M", "md_docs_wiki_Nomenclature.html#autotoc_md28", null ],
-      [ "The bitwise_[...] prefix", "md_docs_wiki_Nomenclature.html#autotoc_md29", null ]
+    [ "FAQ", "md_docs_wiki_faq.html", null ],
+    [ "Nomenclature", "md_docs_wiki_nomenclature.html", [
+      [ "Z2R", "md_docs_wiki_nomenclature.html#autotoc_md34", null ],
+      [ "CZ2M", "md_docs_wiki_nomenclature.html#autotoc_md35", null ],
+      [ "The bitwise_[...] prefix", "md_docs_wiki_nomenclature.html#autotoc_md36", null ]
     ] ],
-    [ "Optimizations", "md_docs_wiki_Optimizations.html", null ],
-    [ "Packaging", "md_docs_wiki_Packaging.html", null ],
-    [ "Structure", "md_docs_wiki_Project_Structure___Architecture.html", [
-      [ "Architecture", "md_docs_wiki_Project_Structure___Architecture.html#autotoc_md41", null ]
+    [ "Optimizations", "md_docs_wiki_optimizations.html", [
+      [ "Data structure", "md_docs_wiki_optimizations.html#autotoc_md38", null ],
+      [ "General", "md_docs_wiki_optimizations.html#autotoc_md40", null ],
+      [ "Multi-threading", "md_docs_wiki_optimizations.html#autotoc_md41", [
+        [ "Using OpenMP", "md_docs_wiki_optimizations.html#autotoc_md42", null ],
+        [ "Understanding the GIL", "md_docs_wiki_optimizations.html#autotoc_md43", null ]
+      ] ]
     ] ],
+    [ "Packaging", "md_docs_wiki_packaging.html", [
+      [ "On Linux", "md_docs_wiki_packaging.html#autotoc_md45", null ],
+      [ "On MacOS", "md_docs_wiki_packaging.html#autotoc_md46", null ],
+      [ "On Windows...?", "md_docs_wiki_packaging.html#autotoc_md47", null ],
+      [ "Unstable install", "md_docs_wiki_packaging.html#autotoc_md48", null ]
+    ] ],
+    [ "Project Structure and Architecture", "md_docs_wiki_project_structure_and_architecture.html", [
+      [ "Structure", "md_docs_wiki_project_structure_and_architecture.html#autotoc_md50", null ],
+      [ "Architecture", "md_docs_wiki_project_structure_and_architecture.html#autotoc_md51", null ]
+    ] ],
+    [ "Todo List", "todo.html", null ],
+    [ "Deprecated List", "deprecated.html", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [

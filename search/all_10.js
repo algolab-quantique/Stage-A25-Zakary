@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['unique_0',['unique',['../cz2m_8h.html#a6147faad379edac00e339de56b512a54',1,'unique(py::array zx_voids, bool return_index=false, bool return_inverse=false, bool return_counts=false):&#160;cz2m.cpp'],['../cz2m_8cpp.html#a5b1b5a3e4064ce2677b1b1a4d7b2ced4',1,'unique(py::array z2r, bool return_index, bool return_inverse, bool return_counts):&#160;cz2m.cpp'],['../namespacez2r__accel_1_1cz2m.html#a1801ff935309fcc6cd014cf067c300f3',1,'z2r_accel.cz2m.unique()']]],
-  ['unordered_5funique_1',['unordered_unique',['../cz2m_8h.html#ae4da4fa68c447ad16c8312e9e6938628',1,'unordered_unique(py::array zx_voids):&#160;cz2m.cpp'],['../cz2m_8cpp.html#ab33ae8090d4f59d905d416d2629ea5c6',1,'unordered_unique(py::array z2r):&#160;cz2m.cpp'],['../namespacez2r__accel_1_1cz2m.html#aa6a3bc0ea01948dfe5158dde41094725',1,'z2r_accel.cz2m.unordered_unique()']]]
+  ['bitops_0',['bitops',['../namespacez2r__accel_1_1bitops.html',1,'z2r_accel']]],
+  ['cz2m_1',['cz2m',['../namespacez2r__accel_1_1cz2m.html',1,'z2r_accel']]],
+  ['z2_5fto_5fuint8_2',['z2_to_uint8',['../cz2m_8h.html#ab5a4be27682ccf717b9522eb24bba423',1,'z2_to_uint8(py::array z2r, int num_qubits):&#160;cz2m.cpp'],['../cz2m_8cpp.html#a5eca29d13c97b572644a145d68451347',1,'z2_to_uint8(py::array z2r, int num_bits):&#160;cz2m.cpp'],['../namespacez2r__accel_1_1cz2m.html#a01d5223a6785f3df623e628f0cfefaff',1,'z2r_accel.cz2m.z2_to_uint8()']]],
+  ['z2r_5faccel_3',['z2r_accel',['../namespacez2r__accel.html',1,'']]]
 ];

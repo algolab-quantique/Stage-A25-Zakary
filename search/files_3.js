@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['devlog_2emd_0',['Devlog.md',['../Devlog_8md.html',1,'']]]
+  ['devlog_2emd_0',['devlog.md',['../devlog_8md.html',1,'']]]
 ];

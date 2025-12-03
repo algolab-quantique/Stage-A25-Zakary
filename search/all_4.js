@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['devlog_0',['Devlog',['../md_docs_wiki_Devlog.html',1,'']]],
-  ['devlog_2emd_1',['Devlog.md',['../Devlog_8md.html',1,'']]]
+  ['external_20tools_0',['External Tools',['../md_docs_wiki_external_tools.html',1,'']]],
+  ['external_2dtools_2emd_1',['external-tools.md',['../external-tools_8md.html',1,'']]]
 ];

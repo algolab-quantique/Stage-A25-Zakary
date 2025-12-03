@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['coding_2dtutorial_0',['Coding-Tutorial',['../md_docs_wiki_Coding_Tutorial.html',1,'']]]
+  ['deprecated_20list_0',['Deprecated List',['../deprecated.html',1,'']]],
+  ['devlog_1',['Devlog',['../md_docs_wiki_devlog.html',1,'']]]
 ];

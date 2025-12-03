@@ -132,26 +132,33 @@ Macros</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a9462b2d1d2e54e82ad72c6d30f03230c"><td class="memItemLeft" align="right" valign="top">py::tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#a9462b2d1d2e54e82ad72c6d30f03230c">tensor</a> (py::array z2, py::array x2, py::array z1, py::array x1)</td></tr>
+<tr class="memdesc:a9462b2d1d2e54e82ad72c6d30f03230c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function performs a 'tensor product' between two arrays of Pauli operators In practice this is just a concatenation of the underlying z and x arrays.  <br /></td></tr>
 <tr class="separator:a9462b2d1d2e54e82ad72c6d30f03230c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66c4da901dc2803db3fd403a21934220"><td class="memItemLeft" align="right" valign="top">py::tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#a66c4da901dc2803db3fd403a21934220">compose</a> (py::array z1, py::array x1, py::array z2, py::array x2)</td></tr>
+<tr class="memdesc:a66c4da901dc2803db3fd403a21934220"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compose two arrays of Pauli operators.  <br /></td></tr>
 <tr class="separator:a66c4da901dc2803db3fd403a21934220"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f8b9ce6d2fd5c3b15c38b12727994f9"><td class="memItemLeft" align="right" valign="top">py::array_t&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#a0f8b9ce6d2fd5c3b15c38b12727994f9">bitwise_commute_with</a> (py::array z1, py::array x1, py::array z2, py::array x2)</td></tr>
+<tr class="memdesc:a0f8b9ce6d2fd5c3b15c38b12727994f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operates on two arrays of Pauli operators and returns a boolean vector indicating which qubits commute between the two arrays.  <br /></td></tr>
 <tr class="separator:a0f8b9ce6d2fd5c3b15c38b12727994f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0495c869623fb769f74386e502b297fc"><td class="memItemLeft" align="right" valign="top">py::tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#a0495c869623fb769f74386e502b297fc">random_zx_strings</a> (const std::vector&lt; size_t &gt; &amp;shape)</td></tr>
+<tr class="memdesc:a0495c869623fb769f74386e502b297fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates random Z and X strings of given shape.  <br /></td></tr>
 <tr class="separator:a0495c869623fb769f74386e502b297fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6147faad379edac00e339de56b512a54"><td class="memItemLeft" align="right" valign="top">py::object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#a6147faad379edac00e339de56b512a54">unique</a> (py::array zx_voids, bool return_index=false, bool return_inverse=false, bool return_counts=false)</td></tr>
+<tr class="memdesc:a6147faad379edac00e339de56b512a54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the unique rows in a Z2R array.  <br /></td></tr>
 <tr class="separator:a6147faad379edac00e339de56b512a54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4da4fa68c447ad16c8312e9e6938628"><td class="memItemLeft" align="right" valign="top">py::tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#ae4da4fa68c447ad16c8312e9e6938628">unordered_unique</a> (py::array zx_voids)</td></tr>
 <tr class="memdesc:ae4da4fa68c447ad16c8312e9e6938628"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function finds unique rows in a NumPy 2D array by mapping the z2r to a hashmap.  <br /></td></tr>
 <tr class="separator:ae4da4fa68c447ad16c8312e9e6938628"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6f7178fc35327a981af856ca64fbc16"><td class="memItemLeft" align="right" valign="top">py::array&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#ae6f7178fc35327a981af856ca64fbc16">row_echelon</a> (py::array voids, int num_qubits)</td></tr>
-<tr class="memdesc:ae6f7178fc35327a981af856ca64fbc16"><td class="mdescLeft">&#160;</td><td class="mdescRight">applies Gauss-Jordan elimination on a binary matrix to produce row echelon form  <br /></td></tr>
+<tr class="memdesc:ae6f7178fc35327a981af856ca64fbc16"><td class="mdescLeft">&#160;</td><td class="mdescRight">applies Gauss-Jordan elimination on a binary matrix to produce row echelon form.  <br /></td></tr>
 <tr class="separator:ae6f7178fc35327a981af856ca64fbc16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4ad30cf11f525fd9d8edf274e2b746f"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; std::vector&lt; int &gt;, std::vector&lt; int &gt;, std::vector&lt; std::complex&lt; double &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#ac4ad30cf11f525fd9d8edf274e2b746f">sparse_matrix_from_zx_voids</a> (py::array z_voids, py::array x_voids, int num_qubits)</td></tr>
 <tr class="separator:ac4ad30cf11f525fd9d8edf274e2b746f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac70a6a63284d6acd98f2c5cf2c67b0f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::complex&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#aac70a6a63284d6acd98f2c5cf2c67b0f">get_phases</a> (py::array z_voids, py::array x_voids)</td></tr>
+<tr class="memdesc:aac70a6a63284d6acd98f2c5cf2c67b0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the phases from two Z2R arrays.  <br /></td></tr>
 <tr class="separator:aac70a6a63284d6acd98f2c5cf2c67b0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a375f5fbabed5082337c4f714f68bedd3"><td class="memItemLeft" align="right" valign="top">py::array_t&lt; std::complex&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#a375f5fbabed5082337c4f714f68bedd3">to_matrix</a> (py::array z_voids, py::array x_voids, int num_qubits)</td></tr>
+<tr class="memdesc:a375f5fbabed5082337c4f714f68bedd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts two arrays of Z2Rs into a dense matrix representation.  <br /></td></tr>
 <tr class="separator:a375f5fbabed5082337c4f714f68bedd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8b462857cd8418f8967e4c5d3c31a48"><td class="memItemLeft" align="right" valign="top">py::array&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#ac8b462857cd8418f8967e4c5d3c31a48">transpose</a> (py::array voids, int64_t num_bits=-1)</td></tr>
 <tr class="memdesc:ac8b462857cd8418f8967e4c5d3c31a48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transposes a technically 1D array of voids by interpreting it as a 2D array of bits.  <br /></td></tr>
@@ -160,8 +167,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:a3c6e4cb97bf8045d53f0c6d4b48e834c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matrix multiplication of two void arrays (technically 1D), interpreted as 2D bit matrices.  <br /></td></tr>
 <tr class="separator:a3c6e4cb97bf8045d53f0c6d4b48e834c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc190cf6fce33b858a0782c6058f86eb"><td class="memItemLeft" align="right" valign="top">py::array&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#abc190cf6fce33b858a0782c6058f86eb">concatenate</a> (py::array x1, py::array x2, int axis=0)</td></tr>
+<tr class="memdesc:abc190cf6fce33b858a0782c6058f86eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concatenates two numpy matrices along a specified axis.  <br /></td></tr>
 <tr class="separator:abc190cf6fce33b858a0782c6058f86eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab5a4be27682ccf717b9522eb24bba423"><td class="memItemLeft" align="right" valign="top">py::array_t&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#ab5a4be27682ccf717b9522eb24bba423">z2_to_uint8</a> (py::array z2r, int num_qubits)</td></tr>
+<tr class="memdesc:ab5a4be27682ccf717b9522eb24bba423"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a Z2R array to a uint8 array.  <br /></td></tr>
 <tr class="separator:ab5a4be27682ccf717b9522eb24bba423"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29cded3e3faaca6962f8193aaaf35545"><td class="memItemLeft" align="right" valign="top">py::array&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cz2m_8h.html#a29cded3e3faaca6962f8193aaaf35545">gauss_jordan_inverse</a> (py::array matrix, int num_bits)</td></tr>
 <tr class="memdesc:a29cded3e3faaca6962f8193aaaf35545"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the inverse of a matrix (if possible) using Gauss-Jordan elimination.  <br /></td></tr>
@@ -221,6 +230,18 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Operates on two arrays of Pauli operators and returns a boolean vector indicating which qubits commute between the two arrays. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">z1</td><td></td></tr>
+    <tr><td class="paramname">x1</td><td></td></tr>
+    <tr><td class="paramname">z2</td><td></td></tr>
+    <tr><td class="paramname">x2</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>py::array_t&lt;bool&gt; </dd></dl>
+
 </div>
 </div>
 <a id="a66c4da901dc2803db3fd403a21934220" name="a66c4da901dc2803db3fd403a21934220"></a>
@@ -261,6 +282,19 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Compose two arrays of Pauli operators. </p>
+<dl class="section warning"><dt>Warning</dt><dd>Current implementation is very naive, error prone and probably slow. Best to re-implement in a better way.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">z1</td><td></td></tr>
+    <tr><td class="paramname">x1</td><td></td></tr>
+    <tr><td class="paramname">z2</td><td></td></tr>
+    <tr><td class="paramname">x2</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>py::tuple Returns a tuple of (new_z, new_x, phase_power). The new_z and new_x are the composed Pauli operators, and phase_power is a complex array of dtype complex128 </dd></dl>
+
 </div>
 </div>
 <a id="abc190cf6fce33b858a0782c6058f86eb" name="abc190cf6fce33b858a0782c6058f86eb"></a>
@@ -285,7 +319,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>axis</em> = <code>0</code>&#160;</td>
+          <td class="paramname"><em>axis</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -294,6 +328,18 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Concatenates two numpy matrices along a specified axis. </p>
+<p>If axis=0, performs row stacking. If axis=1, performs column concatenation.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x1</td><td></td></tr>
+    <tr><td class="paramname">x2</td><td></td></tr>
+    <tr><td class="paramname">axis</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>py::array </dd></dl>
 
 </div>
 </div>
@@ -367,6 +413,17 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Get the phases from two Z2R arrays. </p>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000003">Deprecated:</a></b></dt><dd>This function is not used anymore.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">z_voids</td><td></td></tr>
+    <tr><td class="paramname">x_voids</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;std::complex&lt;double&gt;&gt; </dd></dl>
+
 </div>
 </div>
 <a id="a3c6e4cb97bf8045d53f0c6d4b48e834c" name="a3c6e4cb97bf8045d53f0c6d4b48e834c"></a>
@@ -435,6 +492,16 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Generates random Z and X strings of given shape. </p>
+<dl class="section attention"><dt>Attention</dt><dd>This function exists mainly for testing purposes.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">shape</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>py::tuple Returns a tuple of (z_strings, x_strings), which are both boolean arrays of the given shape (not Z2Rs) </dd></dl>
+
 </div>
 </div>
 <a id="ae6f7178fc35327a981af856ca64fbc16" name="ae6f7178fc35327a981af856ca64fbc16"></a>
@@ -463,7 +530,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>applies Gauss-Jordan elimination on a binary matrix to produce row echelon form </p>
+<p>applies Gauss-Jordan elimination on a binary matrix to produce row echelon form. </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>Optimize this function!</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">voids</td><td></td></tr>
@@ -547,6 +615,19 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>This function performs a 'tensor product' between two arrays of Pauli operators In practice this is just a concatenation of the underlying z and x arrays. </p>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>Use <a class="el" href="cz2m_8cpp.html#ac5e25849d7db6f59bb064c56f6ca88dd" title="Concatenates two numpy matrices along a specified axis.">concatenate()</a> instead, as it is generic and not aimed only for Pauli ops.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">z2</td><td></td></tr>
+    <tr><td class="paramname">x2</td><td></td></tr>
+    <tr><td class="paramname">z1</td><td></td></tr>
+    <tr><td class="paramname">x1</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>py::tuple </dd></dl>
+
 </div>
 </div>
 <a id="a375f5fbabed5082337c4f714f68bedd3" name="a375f5fbabed5082337c4f714f68bedd3"></a>
@@ -580,6 +661,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Converts two arrays of Z2Rs into a dense matrix representation. </p>
+<dl class="section attention"><dt>Attention</dt><dd>This function is mainly for testing purposes.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">z_voids</td><td></td></tr>
@@ -641,25 +725,25 @@ Functions</h2></td></tr>
           <td class="memname">py::object unique </td>
           <td>(</td>
           <td class="paramtype">py::array&#160;</td>
-          <td class="paramname"><em>zx_voids</em>, </td>
+          <td class="paramname"><em>z2r</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>return_index</em> = <code>false</code>, </td>
+          <td class="paramname"><em>return_index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>return_inverse</em> = <code>false</code>, </td>
+          <td class="paramname"><em>return_inverse</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>return_counts</em> = <code>false</code>&#160;</td>
+          <td class="paramname"><em>return_counts</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -668,6 +752,19 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Finds the unique rows in a Z2R array. </p>
+<p>Functions similarly to numpy.unique, but with no axis parameter. </p><dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000002">Deprecated:</a></b></dt><dd>Use <a class="el" href="cz2m_8cpp.html#ab33ae8090d4f59d905d416d2629ea5c6" title="This function finds unique rows in a NumPy 2D array by mapping the z2r to a hashmap.">unordered_unique()</a> instead for better performance (3x-15x) on the vast majority of use cases.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">z2r</td><td></td></tr>
+    <tr><td class="paramname">return_index</td><td></td></tr>
+    <tr><td class="paramname">return_inverse</td><td></td></tr>
+    <tr><td class="paramname">return_counts</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>py::object </dd></dl>
 
 </div>
 </div>
@@ -716,7 +813,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>num_qubits</em>&#160;</td>
+          <td class="paramname"><em>num_bits</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -725,6 +822,16 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Converts a Z2R array to a uint8 array. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">z2r</td><td></td></tr>
+    <tr><td class="paramname">num_bits</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>py::array_t&lt;uint8_t&gt; Returns an array of shape (rows, num_bits) with each uint8_t element being either 0 or 1, representing the bits of the input Z2R array </dd></dl>
 
 </div>
 </div>

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['auto_2dformatters_0',['Auto-formatters',['../md_docs_wiki_External_Tools.html',1,'']]]
+  ['coding_20convention_0',['Coding Convention',['../md_docs_wiki_coding_convention.html',1,'']]],
+  ['coding_20tutorial_1',['Coding Tutorial',['../md_docs_wiki_coding_tutorial.html',1,'']]]
 ];

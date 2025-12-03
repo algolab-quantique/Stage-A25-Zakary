@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>The Z2 Project: When Writing</title>
+<title>The Z2 Project: Coding Convention</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -78,7 +78,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('md_docs_wiki_Coding_Convention.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('md_docs_wiki_coding_convention.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -104,10 +104,12 @@ $(document).ready(function(){initNavTree('md_docs_wiki_Coding_Convention.html','
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">When Writing </div></div>
+  <div class="headertitle"><div class="title">Coding Convention </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><b>Avoid Broadcasting in C++:</b> Broadcasting is a complex process that required substantial engineering effort from the NumPy team to implement efficiently. Rather than reimplementing ourself broadcasting in C++, either:</p><ul>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md1"></a>
+When Writing</h1>
+<p><b>Avoid Broadcasting in C++:</b> Broadcasting is a complex process that required substantial engineering effort from the NumPy team to implement efficiently. Rather than reimplementing ourself broadcasting in C++, either:</p><ul>
 <li>Perform broadcasting in Python before passing data to C++</li>
 <li>Use pybind11's <a href="https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html#vectorizing-functions">vectorize</a> functionality when dealing with simple functions</li>
 </ul>
@@ -140,7 +142,7 @@ $(document).ready(function(){initNavTree('md_docs_wiki_Coding_Convention.html','
 <li>Future maintainers understand the code's intent</li>
 </ul>
 <hr  />
-<h1><a class="anchor" id="autotoc_md2"></a>
+<h1><a class="anchor" id="autotoc_md3"></a>
 Comments</h1>
 <p>In Python files, use Docstrings: </p><div class="fragment"><div class="line"><span class="keyword">def </span>add_integers(a:int, b:int) -&gt; int:</div>
 <div class="line">    <span class="stringliteral">&quot;&quot;&quot;</span></div>
@@ -157,7 +159,7 @@ Comments</h1>
 <div class="line">    <span class="keywordflow">return</span> a + b;</div>
 <div class="line">}</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md4"></a>
+<h1><a class="anchor" id="autotoc_md5"></a>
 Formatting</h1>
 <p>Please format your files using the project's [[auto-formatters|External Tools::Auto-formatters]]. A GitHub Action will perform checks on every push to detect if all files were correctly formatted. </p>
 </div></div><!-- contents -->

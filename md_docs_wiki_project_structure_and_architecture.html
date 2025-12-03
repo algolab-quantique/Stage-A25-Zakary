@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>The Z2 Project: Z2R</title>
+<title>The Z2 Project: Project Structure and Architecture</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -78,7 +78,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('md_docs_wiki_Nomenclature.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('md_docs_wiki_project_structure_and_architecture.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -104,32 +104,66 @@ $(document).ready(function(){initNavTree('md_docs_wiki_Nomenclature.html',''); i
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">Z2R </div></div>
+  <div class="headertitle"><div class="title">Project Structure and Architecture </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><em>Also know as 'Voids', 'bit_string'.</em> <br  />
-Is defined as: $\mathbb{Z}_2$ Rows.</p>
-<ul>
-<li>'$\mathbb{Z}_2$' denotes the cyclic group of integers modulo 2 (i.e the set {0, 1}).</li>
-<li>'Rows' states that the structure is a row (list) of elements.</li>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md50"></a>
+Structure</h1>
+<p>The project structure is the exact same as PauliArray's <a href="https://github.com/algolab-quantique/pauliarray/tree/Voids">Voids</a> branch, with the following additions: </p><div class="fragment"><div class="line">├── _src</div>
+<div class="line">│   ├── bindings</div>
+<div class="line">│   │   └── {MOD}_bindings.cpp</div>
+<div class="line">│   ├── build</div>
+<div class="line">│   │   ├── _{MOD}.[dyn_lib_ext]</div>
+<div class="line">│   │   └── _{MOD}.pyi</div>
+<div class="line">│   └── {MOD}.hpp</div>
+<div class="line">└── {MOD}.py</div>
+</div><!-- fragment --><p> <code>{MOD}</code> is a module's name. There can be multiple modules with different names compiled to the same directories.</p><ul>
+<li><code>/_src</code> Contains the C++ source code (.hpp) for every module.</li>
+<li><code>/src/bindings</code> Contains the pybind11 bindings necessary for the translation to and from Python.</li>
+<li><code>src/build</code> Contains the compiled dynamic shared libraries and stub files.</li>
 </ul>
-<p>Thus, the structure is a long list of binary 1s and 0s. This packed representation significantly reduces memory usage and enables efficient bitwise operations.</p><ul>
-<li>Python: <code>z = np.array([0, 1, 1 0], dtype=np.int8)</code>. This takes 4 bytes of memory</li>
-<li>C++: <code>z = 0b0110</code>. This takes 1 byte of memory</li>
-</ul>
-<h1><a class="anchor" id="autotoc_md28"></a>
-CZ2M</h1>
-<p>Is defined as: C $\mathbb{Z}_2$ Matrix</p>
-<p>This name is in reference to the C++ module which operates on Z2Rs to produce matrices.</p>
-<h1><a class="anchor" id="autotoc_md29"></a>
-The bitwise_[...] prefix</h1>
-<p>Any functions with this prefix must be declared inside of <code>bitops.hpp</code> and adhere to the following:</p><ol type="1">
-<li>Must accept any size and shape of NDArrays, as long as every input is the same shape and contiguous.</li>
-<li>Must return an NDArray of the same shape, size, and dtype as the inputs.</li>
-<li>Follows as closely as possible NumPy's functions of the same name.</li>
-</ol>
-<p>The only execeptions to rule 2 are <code><a class="el" href="bitops_8h.html#a0ef1198a1ae9103694e3faae1ff654b4" title="Counts the number of set bits in each element of a NumPy contiguous (C-like) array.">bitwise_count()</a></code> and <code><a class="el" href="bitops_8h.html#af09e23aeabfe87eebbafdf5550643992" title="Computes the bitwise dot product between corresponding elements of two NumPy contiguous (C-like) arra...">bitwise_dot()</a></code>, which both compress the last dimension of the array. </p>
-</div></div><!-- contents -->
+<h1><a class="anchor" id="autotoc_md51"></a>
+Architecture</h1>
+<div class="fragment"><div class="line">graph TB</div>
+<div class="line">    subgraph &quot;Python Layer&quot;</div>
+<div class="line">        A[Python User Code]</div>
+<div class="line">        B[NumPy Arrays]</div>
+<div class="line">        C[Python API]</div>
+<div class="line">    end</div>
+<div class="line">    </div>
+<div class="line">    subgraph &quot;Binding Layer&quot;</div>
+<div class="line">        D[pybind11 Bindings&lt;br/&gt;*_bindings.cpp]</div>
+<div class="line">        E[Type Conversion&lt;br/&gt;py::array ↔ C++]</div>
+<div class="line">        F[Function Exposure&lt;br/&gt;PYBIND11_MODULE]</div>
+<div class="line">    end</div>
+<div class="line">    </div>
+<div class="line">    subgraph &quot;C++ Core Layer&quot;</div>
+<div class="line">        G[Header Files&lt;br/&gt;*.hpp]</div>
+<div class="line">        H[Function Operations]</div>
+<div class="line">        I[OpenMP Threading]</div>
+<div class="line">        J[GIL Management]</div>
+<div class="line">    end</div>
+<div class="line">    </div>
+<div class="line">    subgraph &quot;Build System&quot;</div>
+<div class="line">        K[CMakeLists.txt]</div>
+<div class="line">        L[Compiler&lt;br/&gt;clang/gcc]</div>
+<div class="line">        M[Dynamic Libraries&lt;br/&gt;.so/.dylib/.dll]</div>
+<div class="line">    end</div>
+<div class="line">    </div>
+<div class="line">    A --&gt; B</div>
+<div class="line">    B --&gt; C</div>
+<div class="line">    C --&gt; D</div>
+<div class="line">    D --&gt; E</div>
+<div class="line">    E --&gt; F</div>
+<div class="line">    F --&gt; G</div>
+<div class="line">    G --&gt; H</div>
+<div class="line">    H --&gt; I</div>
+<div class="line">    G --&gt; J</div>
+<div class="line">    </div>
+<div class="line">    K --&gt; L</div>
+<div class="line">    L --&gt; M</div>
+<div class="line">    M --&gt; D</div>
+</div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
 <!-- start footer part -->

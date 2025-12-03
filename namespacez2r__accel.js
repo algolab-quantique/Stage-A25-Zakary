@@ -23,7 +23,7 @@ var namespacez2r__accel =
       [ "random_zx_strings", "namespacez2r__accel_1_1cz2m.html#afc39a6c2a14afeb42639195f4cd334d3", null ],
       [ "row_echelon", "namespacez2r__accel_1_1cz2m.html#a165f8be77fa3c9bf43454ca830c66037", null ],
       [ "transpose", "namespacez2r__accel_1_1cz2m.html#ad52f3292fb1aee5a8c8119182e3d62aa", null ],
-      [ "unique", "namespacez2r__accel_1_1cz2m.html#a1801ff935309fcc6cd014cf067c300f3", null ],
+      [ "unique", "namespacez2r__accel_1_1cz2m.html#a128d0c969a4b24993dc2b67b80241574", null ],
       [ "unordered_unique", "namespacez2r__accel_1_1cz2m.html#aa6a3bc0ea01948dfe5158dde41094725", null ],
       [ "z2_to_uint8", "namespacez2r__accel_1_1cz2m.html#a01d5223a6785f3df623e628f0cfefaff", null ],
       [ "C_CCP", "namespacez2r__accel_1_1cz2m.html#a13bbaa2618b01f864401b16716371c0b", null ],

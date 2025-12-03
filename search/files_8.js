@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['optimizations_2emd_0',['Optimizations.md',['../Optimizations_8md.html',1,'']]]
+  ['optimizations_2emd_0',['optimizations.md',['../optimizations_8md.html',1,'']]]
 ];
