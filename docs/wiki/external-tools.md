@@ -1,3 +1,4 @@
+# External Tools
 ## Auto-formatters
 All formatters can be automatically called before each commit with the help of [pre-commit](https://pre-commit.com/)! To set it up, simply nagivate to the root of the project and call
 ```
@@ -26,12 +27,24 @@ All of the options are found inside of the `.clang-format` file. LLVM's format i
 ### In C++
 [CMake](https://cmake.org/) is the tool that generates files for OS-specific compilation of source code. It has great compatibility with pybind11 and scikit-build-core.
 
+
 ---
 
-## Why pybind11?
+## Documentation
+Code comments are written in the [Doxygen](https://www.doxygen.nl/) format.
+Any markdown files created should be located in `/docs/wiki/`. 
+
+On any push to `main`, a GH Action will trigger and try to generate the documentation and push changes to the `gh-pages` branch. This usually takes a minute. If successful, the GH will update the website at: https://algolab-quantique.github.io/Stage-A25-Zakary/
+
+To test documentation without having to merge/push on `main`, navigate to project root and call `doxygen Doxyfile`. Output should be located in `/docs/html/`. Open `index.html` with a web browser to navigate the site locally.
+
+
+---
+
+## Pybind11 (and why it was chosen)
 Pybind11 was chosen for its minimal boilerplate, seamless NumPy integration, and modern C++ support. It allows us to expose C++ functions and classes to Python with very little overhead, making it easy to maintain and extend the codebase.
 
-Since pybind is chosen as the interface for this project, the stub generator is obviously pybind-stubgen. However, some problems have appeared with it, notably when trying to add external libraries. It may get replaced with mypy's stubgen in the future.
+Since pybind is chosen as the interface for this project, the stub generator is obviously [pybind-stubgen](https://github.com/sizmailov/pybind11-stubgen). However, some problems have appeared with it, notably when trying to add external libraries. It may get replaced with mypy's stubgen in the future.
 
 Other alternatives were considered, but ultimetly rejected:
 
@@ -43,3 +56,8 @@ Other alternatives were considered, but ultimetly rejected:
 
 3. **Boost.Python**
      - Boost.Python is feature-rich but introduces significant overhead and complexity. It requires more boilerplate code, demands loads more dependencies, and is generally slower compared to pybind11.
+
+
+
+
+

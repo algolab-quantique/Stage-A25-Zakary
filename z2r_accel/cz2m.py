@@ -28,54 +28,66 @@ def _bc(a, b):
     return np.ascontiguousarray(tmp[0]), np.ascontiguousarray(tmp[1])
 
 
-def unique() -> None:
-    return None
+def unique(
+    paulis,
+    axis=None,
+    return_index: bool = False,
+    return_inverse: bool = False,
+    return_counts: bool = False,
+):
+    if hasattr(paulis, "zx_voids"):
+        z2r = paulis.zx_voids
+    else:
+        z2r = paulis
+    # The C backend `_cz2m.unique` only accepts the ndarray argument (positional).
+    # If the caller requests extra information (indices/inverse/counts) or uses
+    # an axis, fall back to numpy.unique on the zx_voids so we preserve the
+    # numpy-like interface. Otherwise call the fast C implementation.
+    if axis is not None or return_index or return_inverse or return_counts:
+        # Mirror the Python-side behavior used elsewhere: operate on zx_voids
+        # and convert back into PauliArray when appropriate.
+        if axis is None:
+            # flatten semantics
+            tmp_paulis = paulis.flatten() if hasattr(paulis, "flatten") else paulis
+            axis = 0
+        out = np.unique(
+            z2r,
+            axis=axis,
+            return_index=return_index,
+            return_inverse=return_inverse,
+            return_counts=return_counts,
+        )
+        if return_index or return_inverse or return_counts:
+            out = list(out)
+            unique_zx_voids = out[0]
+            out[0] = paulis.__class__.from_zx_voids(unique_zx_voids, paulis.num_qubits)
+        else:
+            unique_zx_voids = out
+            out = paulis.__class__.from_zx_voids(unique_zx_voids, paulis.num_qubits)
+        return out
 
-
-#     paulis: PauliArray,
-#     axis: Optional[int] = None,
-#     return_index: bool = False,
-#     return_inverse: bool = False,
-#     return_counts: bool = False,
-# ) -> Union[PauliArray, Tuple[PauliArray, NDArray]]:
-
-#     if axis is None:
-#         paulis = paulis.flatten()
-#         axis = 0
-#     elif axis >= paulis.ndim:
-#         raise ValueError("")
-#     else:
-#         axis = axis % paulis.ndim
-
-#     out = np.unique(
-#         paulis.zx_voids,
-#         axis=axis,
-#         return_index=return_index,
-#         return_inverse=return_inverse,
-#         return_counts=return_counts,
-#     )
-#     # out = _cz2m.unique(
-#     #     paulis.zx_voids,
-#     #     # axis=axis,
-#     #     return_index=return_index,
-#     #     return_inverse=return_inverse,
-#     #     return_counts=return_counts
-#     # )
-
-
-#     if return_index or return_inverse or return_counts:
-#         out = list(out)
-#         unique_zx_voids = out[0]
-#         out[0] = PauliArray.from_zx_voids(unique_zx_voids, paulis.num_qubits)
-#     else:
-#         unique_zx_voids = out
-#         out = PauliArray.from_zx_voids(unique_zx_voids, paulis.num_qubits)
-
-#     return out
+    # simple fast path: call C backend with only positional ndarray arg
+    return _cz2m.unique(z2r)
 
 
 def unordered_unique(z2r: NDArray) -> Tuple[NDArray, NDArray]:
     return _cz2m.unordered_unique(z2r)
+
+
+# def unordered_unique(
+#     object,
+#     axis = None,
+#     return_index: bool = False,
+#     return_inverse: bool = False,
+#     return_counts: bool = False,
+# ):
+#     if hasattr(object, 'zx_voids'):
+#         z2r = object.zx_voids
+
+#     else:
+#         z2r = object
+
+#     return _cz2m.unordered_unique(z2r)
 
 
 def random_zx_strings(shape):

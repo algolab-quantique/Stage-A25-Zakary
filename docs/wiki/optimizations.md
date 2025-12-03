@@ -1,4 +1,4 @@
-test
+# Optimizations
 ## Data structure
 Handling long lists of 1s and 0s is at the heart of this project, and needs to be done as efficiently as possible. The current way all data is managed is throught a packed representation of integers such that:
 

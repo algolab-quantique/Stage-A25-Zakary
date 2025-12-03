@@ -25,6 +25,17 @@
 // get_qubit_slices (?) - return toutes qubits pour un ensemble dindexes via vector<int>
 #include "cz2m.h"
 
+/**
+ * @brief This function performs a 'tensor product' between two arrays of Pauli operators
+ * In practice this is just a concatenation of the underlying z and x arrays.
+ * @deprecated Use concatenate() instead, as it is generic and not aimed only for Pauli ops.
+ *
+ * @param z2
+ * @param x2
+ * @param z1
+ * @param x1
+ * @return py::tuple
+ */
 py::tuple tensor(py::array z2, py::array x2, py::array z1, py::array x1) {
     auto buf_z1 = z1.request();
     auto buf_x1 = x1.request();
@@ -72,24 +83,19 @@ py::tuple tensor(py::array z2, py::array x2, py::array z1, py::array x1) {
     return py::make_tuple(new_z, new_x);
 }
 
-/*
-    assert self.num_qubits == other.num_qubits
-    assert is_broadcastable(self.shape, other.shape)
-
-    new_z_voids = vops.bitwise_xor(self.z_voids, other.z_voids)
-    new_x_voids = vops.bitwise_xor(self.x_voids, other.x_voids)
-
-    self_phase_power = vops.bitwise_dot(self.z_voids, self.x_voids)
-    other_phase_power = vops.bitwise_dot(other.z_voids, other.x_voids)
-    new_phase_power = vops.bitwise_dot(new_z_voids, new_x_voids)
-    commutation_phase_power = 2 * vops.bitwise_dot(self.x_voids, other.z_voids)
-
-    phase_power = commutation_phase_power + self_phase_power + other_phase_power - new_phase_power
-
-    phases = np.choose(phase_power, [1, -1j, -1, 1j], mode="wrap")
-
-    return PauliArray(new_z_voids, new_x_voids, self.num_qubits), phases
-*/
+/**
+ * @brief Compose two arrays of Pauli operators.
+ *
+ * @warning Current implementation is very naive, error prone and probably slow.
+ * Best to re-implement in a better way.
+ *
+ * @param z1
+ * @param x1
+ * @param z2
+ * @param x2
+ * @return py::tuple Returns a tuple of (new_z, new_x, phase_power). The new_z and new_x
+ * are the composed Pauli operators, and phase_power is a complex array of dtype complex128
+ */
 py::tuple compose(py::array z1, py::array x1, py::array z2, py::array x2) {
     py::array new_z = bitwise_xor(z1, z2);
     py::array new_x = bitwise_xor(x1, x2);
@@ -140,6 +146,16 @@ py::tuple compose(py::array z1, py::array x1, py::array z2, py::array x2) {
     return py::make_tuple(new_z, new_x, phase_power);
 }
 
+/**
+ * @brief Operates on two arrays of Pauli operators and returns a boolean vector indicating which
+ * qubits commute between the two arrays.
+ *
+ * @param z1
+ * @param x1
+ * @param z2
+ * @param x2
+ * @return py::array_t<bool>
+ */
 py::array_t<bool> bitwise_commute_with(py::array z1, py::array x1, py::array z2, py::array x2) {
     py::array ovlp_1 = bitwise_and(z1, x2);
     py::array ovlp_2 = bitwise_and(x1, z2);
@@ -163,6 +179,14 @@ py::array_t<bool> bitwise_commute_with(py::array z1, py::array x1, py::array z2,
     return result.reshape(z1.request().shape);
 }
 
+/**
+ * @brief Generates random Z and X strings of given shape.
+ * @attention This function exists mainly for testing purposes.
+ *
+ * @param shape
+ * @return py::tuple Returns a tuple of (z_strings, x_strings), which are both
+ * boolean arrays of the given shape (not Z2Rs)
+ */
 py::tuple random_zx_strings(const std::vector<size_t> &shape) { //, size_t num_qubits) {
     size_t total_size = 1;
     for (size_t dim : shape) {
@@ -196,6 +220,18 @@ py::tuple random_zx_strings(const std::vector<size_t> &shape) { //, size_t num_q
     return py::make_tuple(z_strings, x_strings);
 }
 
+/**
+ * @brief Finds the unique rows in a Z2R array. Functions similarly to numpy.unique, but with
+ * no axis parameter.
+ * @deprecated Use unordered_unique() instead for better performance (3x-15x) on the vast majority
+ * of use cases.
+ *
+ * @param z2r
+ * @param return_index
+ * @param return_inverse
+ * @param return_counts
+ * @return py::object
+ */
 py::object unique(py::array z2r, bool return_index, bool return_inverse, bool return_counts) {
     auto buf = z2r.request();
     if (buf.ndim == 0) {
@@ -436,10 +472,9 @@ py::tuple unordered_unique(py::array z2r) {
     return py::make_tuple(py_indices, py_inverse);
 }
 
-// TODO: Make it work
 /**
- * @brief applies Gauss-Jordan elimination on a binary matrix to produce row echelon form
- *
+ * @brief applies Gauss-Jordan elimination on a binary matrix to produce row echelon form.
+ * @todo Optimize this function!
  *
  * @param voids
  * @param num_qubits
@@ -536,6 +571,16 @@ py::array row_echelon(py::array voids, int num_qubits) {
     return voids_out;
 }
 
+/**
+ * @brief Generates a sparse matrix representation from two Z2Rs.
+ * @attention This function is mainly for testing purposes. Errors are to be expected.
+ *
+ * @param z_voids
+ * @param x_voids
+ * @param num_qubits
+ * @return std::tuple<std::vector<int>, std::vector<int>, std::vector<std::complex<double>>>
+ * Returns (row_ind, col_ind, matrix_elements)
+ */
 std::tuple<std::vector<int>, std::vector<int>, std::vector<std::complex<double>>>
 sparse_matrix_from_z2r(py::array z_voids, py::array x_voids, int num_qubits) {
     auto buf_z = z_voids.request();
@@ -576,8 +621,15 @@ sparse_matrix_from_z2r(py::array z_voids, py::array x_voids, int num_qubits) {
     return std::make_tuple(row_ind, col_ind, matrix_elements);
 }
 
-//         phase_powers = np.mod(bitops.dot(self.paulis.z_strings, self.paulis.x_strings), 4)
-//         phases = np.choose(phase_powers, [1, -1j, -1, 1j])
+/**
+ * @brief Get the phases from two Z2R arrays.
+ *
+ * @deprecated This function is not used anymore.
+ *
+ * @param z_voids
+ * @param x_voids
+ * @return std::vector<std::complex<double>>
+ */
 std::vector<std::complex<double>> get_phases(py::array z_voids, py::array x_voids) {
     auto buf_z = z_voids.request();
     auto buf_x = x_voids.request();
@@ -622,7 +674,9 @@ std::vector<std::complex<double>> get_phases(py::array z_voids, py::array x_void
 //         return matrix
 // todo: Check return type of operator::to_matrix()
 /**
- * @brief
+ * @brief Converts two arrays of Z2Rs into a dense matrix representation.
+ *
+ * @attention This function is mainly for testing purposes.
  *
  * @param z_voids
  * @param x_voids
@@ -827,6 +881,15 @@ py::array matmul(py::array z2r_a, py::array z2r_b, int a_num_qubits, int b_num_q
     return z2r_out;
 }
 
+/**
+ * @brief Concatenates two numpy matrices along a specified axis.
+ * If axis=0, performs row stacking. If axis=1, performs column concatenation.
+ *
+ * @param x1
+ * @param x2
+ * @param axis
+ * @return py::array
+ */
 py::array concatenate(py::array x1, py::array x2, int axis) {
     auto buf1 = x1.request();
     auto buf2 = x2.request();
@@ -922,6 +985,14 @@ py::array concatenate(py::array x1, py::array x2, int axis) {
     throw std::runtime_error("ndim > 2 not implemented.");
 }
 
+/**
+ * @brief Converts a Z2R array to a uint8 array.
+ *
+ * @param z2r
+ * @param num_bits
+ * @return py::array_t<uint8_t> Returns an array of shape (rows, num_bits) with each uint8_t element
+ * being either 0 or 1, representing the bits of the input Z2R array
+ */
 py::array_t<uint8_t> z2_to_uint8(py::array z2r, int num_bits) {
     auto buf = z2r.request();
     if (buf.ndim == 0 || buf.ndim > 2) {
