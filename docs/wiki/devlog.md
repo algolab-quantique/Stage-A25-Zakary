@@ -25,6 +25,7 @@ This file documents changes, fixes, known issues and miscelaneous notes for each
 **Features Added:**
 - Created `dev` branch
 - Created `tests/` directory. Currently only Python unit tests are available.
+- Created `benchmarks/` directory. Contains mostly tests to be fused with pauliarray
   
 **Bug Fixes:**
 - Never actually needed to manually generate doxygen documentation! All documents in docs/html/ purged in branch `main`.

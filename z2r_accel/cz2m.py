@@ -1,3 +1,13 @@
+"""
+File: cz2m.py
+Author: Zakary Romdhane (zakary.romdhane@usherbrooke.ca)
+Brief:
+Version: 0.1
+Date: 2025-12-05
+
+Copyright: Copyright 2025 Zakary Romdhane
+"""
+
 import numpy as np
 from numpy.typing import NDArray
 from typing import Tuple

@@ -1,28 +1,27 @@
 /**
  * @file cz2m.hpp
- * @author Zakary Romdhane (zakaryromdhane@gmail.com)
- * @brief This is a C++ implementation of PauliArray's class functions (found in
- * pauliarray/pauli/pauli_array.py).
+ * @author Zakary Romdhane (zakary.romdhane@usherbrooke.ca)
+ * @brief
  *
  * @attention Your compiler must support at least C++20 standard to properly compile this file.
  *
- * @todo Add SIMD support
+ * @todo Add SIMD support,
+ * to_matrix,
+ * inserer des matrices dans dautres via indexes,
+ * get_qubit_slices (?) - return toutes qubits pour un ensemble dindexes via vector<int>
  *
- * It is assumed that all of the input arrays are contiguous, of the dtype |V{N}, and the exact
- * same shape. No checks are performed to ensure this is the case. Any broadcasting and contiguity
- * checks MUST be performed in Python before calling any of these functions. Any computers which are
- * not 64-bit architectures will lead to undefined behavior due to the casting to uint64_t*.
+ * @note It is assumed that all of the input arrays are contiguous, of the dtype |V{N}, and the
+ * exact same shape. No checks are performed to ensure this is the case. Any broadcasting and
+ * contiguity checks MUST be performed in Python before calling any of these functions. Any
+ * computers which are not 64-bit architectures will lead to undefined behavior due to the casting
+ * to uint64_t*.
  *
  * @version 0.1.1
  * @date 2025-10-01
  *
- * @copyright Copyright (c) 2025
+ * @copyright Copyright 2025 Zakary Romdhane
  */
 
-// toute dans bit_ops
-// to_matrix
-// inserer des matrices dans dautres via indexes
-// get_qubit_slices (?) - return toutes qubits pour un ensemble dindexes via vector<int>
 #include "cz2m.h"
 
 /**
