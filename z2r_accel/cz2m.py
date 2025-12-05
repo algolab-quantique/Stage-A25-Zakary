@@ -1,12 +1,12 @@
-"""
-File: cz2m.py
-Author: Zakary Romdhane (zakary.romdhane@usherbrooke.ca)
-Brief:
-Version: 0.1
-Date: 2025-12-05
+## @pacakge z2r_accel.cz2m
+# @file cz2m.py
+# @author Zakary Romdhane (zakary.romdhane@usherbrooke.ca)
+# @brief
+# @version 0.1
+# @date 2025-12-05
+#
+# Copyright: Copyright 2025 Zakary Romdhane
 
-Copyright: Copyright 2025 Zakary Romdhane
-"""
 
 import numpy as np
 from numpy.typing import NDArray

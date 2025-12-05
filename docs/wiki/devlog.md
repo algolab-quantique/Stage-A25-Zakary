@@ -38,6 +38,7 @@ This file documents changes, fixes, known issues and miscelaneous notes for each
 - pybind-stubgen has difficulties and crashes when creating stubs for files using external libraries (e.g., xxhash)
 - std::unordered_map is inneficient (?). Better alternatives are available online. Main use case for a better hashmap is in `unordered_unique()`
 - `concatenate()` should be split into two (one for each axis). There should also be an option or other function that permits direct insertion of one matrix onto/into another via an index parameter.
+- Doxygen comments for Python are not displayed in HTML output
 
 
 **Notes:**  

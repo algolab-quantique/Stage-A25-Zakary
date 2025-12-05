@@ -67,5 +67,6 @@ if __name__ == "__main__":
     hop = get_hop_mat_from_geo(num_site=10000, geo="line")
     # print("Hopping matrix:", hop)
     qubit_op = hubbard(hop=hop, u=4, mu=2)
+
     # print(qubit_op)
     print("END!")

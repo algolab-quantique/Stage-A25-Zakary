@@ -8,12 +8,10 @@
  * @copyright Copyright 2025 Zakary Romdhane
  *
  */
+
 #include "cz2m.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-// declare registration function from voidops_bindings.cpp
-// void register_bitops(pybind11::module_ &m);
-
 namespace py = pybind11;
 
 PYBIND11_MODULE(_cz2m, m) {
@@ -39,6 +37,4 @@ PYBIND11_MODULE(_cz2m, m) {
     m.def("gauss_jordan_inverse", &gauss_jordan_inverse,
           "Compute the Gauss-Jordan inverse of a binary matrix", py::arg("matrix"),
           py::arg("num_qubits"));
-
-    // register_bitops(m);
 }
