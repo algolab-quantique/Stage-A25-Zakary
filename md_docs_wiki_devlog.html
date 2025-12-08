@@ -137,24 +137,29 @@ December</h2>
 1st-5th</h3>
 <p><b>Features Added:</b></p><ul>
 <li>Created <code>dev</code> branch</li>
+<li>Created <code>tests/</code> directory. Currently only Python unit tests are available.</li>
+<li>Created <code>benchmarks/</code> directory. Contains mostly tests to be fused with pauliarray</li>
 </ul>
 <p><b>Bug Fixes:</b></p><ul>
 <li>Never actually needed to manually generate doxygen documentation! All documents in docs/html/ purged in branch <code>main</code>.</li>
+<li>Added dummy arguments in <code><a class="el" href="cz2m_8h.html#ae4da4fa68c447ad16c8312e9e6938628" title="This function finds unique rows in a NumPy 2D array by mapping the z2r to a hashmap.">unordered_unique()</a></code>'s Python wrapper to match the ones found in <code><a class="el" href="cz2m_8h.html#a6147faad379edac00e339de56b512a54" title="Finds the unique rows in a Z2R array.">unique()</a></code>. This enables direct replacement of the function in PA.</li>
 </ul>
 <p><b>TODOs &amp; Known Issues:</b></p><ul>
-<li>Implement automatic Python and C++ test suite</li>
+<li>Implement automatic Python and C++ test suite --&gt; Catch2 yet to be implemented</li>
 <li>Fully integrate project with PauliArray</li>
 <li>Multithreading is inconsistent for small arrays; suspect the GIL as root cause. Probable fix is to release the GIL during each bitwise operation.</li>
 <li>pybind-stubgen has difficulties and crashes when creating stubs for files using external libraries (e.g., xxhash)</li>
 <li>std::unordered_map is inneficient (?). Better alternatives are available online. Main use case for a better hashmap is in <code><a class="el" href="cz2m_8h.html#ae4da4fa68c447ad16c8312e9e6938628" title="This function finds unique rows in a NumPy 2D array by mapping the z2r to a hashmap.">unordered_unique()</a></code></li>
 <li><code><a class="el" href="cz2m_8h.html#abc190cf6fce33b858a0782c6058f86eb" title="Concatenates two numpy matrices along a specified axis.">concatenate()</a></code> should be split into two (one for each axis). There should also be an option or other function that permits direct insertion of one matrix onto/into another via an index parameter.</li>
-<li>There is a proposal for <a href="https://en.cppreference.com/w/cpp/experimental/simd.html">std::simd</a> to be added to the ISO Standard of C++26, which would allow for portable SIMD without having to deal with intrinsics. Interesting option for future developement and maintainance of library.</li>
+<li>Doxygen comments for Python are not displayed in HTML output</li>
 </ul>
 <p><b>Notes:</b> <br  />
 </p><ul>
 <li>First prototype of project logo made. Revisions to color scheme, positioning and vectorization needed for future iterations.</li>
 <li>Project has been added to PauliArray; Passes the exact same number of tests that PA passed without Z2P</li>
-<li>Feature freeze is active for core C++ functions, but not infrastructure (testing suite) or Python files </li>
+<li>Used PauliArray with Z2P as a dependency in molecule simulation; Same results, no errors, but significantly faster!</li>
+<li>Feature freeze is active for core C++ functions, but not infrastructure (testing suite) or Python files</li>
+<li>There is a proposal for <a href="https://en.cppreference.com/w/cpp/experimental/simd.html">std::simd</a> to be added to the ISO Standard of C++26, which would allow for portable SIMD without having to deal with intrinsics. Interesting option for future developement and maintainance of library. </li>
 </ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

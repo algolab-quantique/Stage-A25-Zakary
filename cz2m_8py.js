@@ -10,6 +10,7 @@ var cz2m_8py =
     [ "transpose", "cz2m_8py.html#ad52f3292fb1aee5a8c8119182e3d62aa", null ],
     [ "unique", "cz2m_8py.html#a128d0c969a4b24993dc2b67b80241574", null ],
     [ "unordered_unique", "cz2m_8py.html#aa6a3bc0ea01948dfe5158dde41094725", null ],
+    [ "unordered_unique", "cz2m_8py.html#ab477a1185b6287a9a9a7431b1bd3442c", null ],
     [ "z2_to_uint8", "cz2m_8py.html#a01d5223a6785f3df623e628f0cfefaff", null ],
     [ "C_CCP", "cz2m_8py.html#a13bbaa2618b01f864401b16716371c0b", null ],
     [ "try", "cz2m_8py.html#adf5a37109c63a2960ef47b3b722133cc", null ]

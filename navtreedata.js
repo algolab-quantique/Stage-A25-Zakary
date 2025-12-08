@@ -51,38 +51,39 @@ var NAVTREE =
     [ "External Tools", "md_docs_wiki_external_tools.html", [
       [ "Auto-formatters", "md_docs_wiki_external_tools.html#autotoc_md19", [
         [ "For Python", "md_docs_wiki_external_tools.html#autotoc_md20", null ],
-        [ "For C++", "md_docs_wiki_external_tools.html#autotoc_md21", null ]
+        [ "For C++", "md_docs_wiki_external_tools.html#autotoc_md21", null ],
+        [ "For CMake", "md_docs_wiki_external_tools.html#autotoc_md22", null ]
       ] ],
-      [ "Build Systems", "md_docs_wiki_external_tools.html#autotoc_md23", [
-        [ "In Python", "md_docs_wiki_external_tools.html#autotoc_md24", null ],
-        [ "In C++", "md_docs_wiki_external_tools.html#autotoc_md25", null ]
+      [ "Build Systems", "md_docs_wiki_external_tools.html#autotoc_md24", [
+        [ "In Python", "md_docs_wiki_external_tools.html#autotoc_md25", null ],
+        [ "In C++", "md_docs_wiki_external_tools.html#autotoc_md26", null ]
       ] ],
-      [ "Documentation", "md_docs_wiki_external_tools.html#autotoc_md27", null ],
-      [ "Pybind11 (and why it was chosen)", "md_docs_wiki_external_tools.html#autotoc_md29", null ]
+      [ "Documentation", "md_docs_wiki_external_tools.html#autotoc_md28", null ],
+      [ "Pybind11 (and why it was chosen)", "md_docs_wiki_external_tools.html#autotoc_md30", null ]
     ] ],
     [ "FAQ", "md_docs_wiki_faq.html", null ],
     [ "Nomenclature", "md_docs_wiki_nomenclature.html", [
-      [ "Z2R", "md_docs_wiki_nomenclature.html#autotoc_md34", null ],
-      [ "CZ2M", "md_docs_wiki_nomenclature.html#autotoc_md35", null ],
-      [ "The bitwise_[...] prefix", "md_docs_wiki_nomenclature.html#autotoc_md36", null ]
+      [ "Z2R", "md_docs_wiki_nomenclature.html#autotoc_md35", null ],
+      [ "CZ2M", "md_docs_wiki_nomenclature.html#autotoc_md36", null ],
+      [ "The bitwise_[...] prefix", "md_docs_wiki_nomenclature.html#autotoc_md37", null ]
     ] ],
     [ "Optimizations", "md_docs_wiki_optimizations.html", [
-      [ "Data structure", "md_docs_wiki_optimizations.html#autotoc_md38", null ],
-      [ "General", "md_docs_wiki_optimizations.html#autotoc_md40", null ],
-      [ "Multi-threading", "md_docs_wiki_optimizations.html#autotoc_md41", [
-        [ "Using OpenMP", "md_docs_wiki_optimizations.html#autotoc_md42", null ],
-        [ "Understanding the GIL", "md_docs_wiki_optimizations.html#autotoc_md43", null ]
+      [ "Data structure", "md_docs_wiki_optimizations.html#autotoc_md39", null ],
+      [ "General", "md_docs_wiki_optimizations.html#autotoc_md41", null ],
+      [ "Multi-threading", "md_docs_wiki_optimizations.html#autotoc_md42", [
+        [ "Using OpenMP", "md_docs_wiki_optimizations.html#autotoc_md43", null ],
+        [ "Understanding the GIL", "md_docs_wiki_optimizations.html#autotoc_md44", null ]
       ] ]
     ] ],
     [ "Packaging", "md_docs_wiki_packaging.html", [
-      [ "On Linux", "md_docs_wiki_packaging.html#autotoc_md45", null ],
-      [ "On MacOS", "md_docs_wiki_packaging.html#autotoc_md46", null ],
-      [ "On Windows...?", "md_docs_wiki_packaging.html#autotoc_md47", null ],
-      [ "Unstable install", "md_docs_wiki_packaging.html#autotoc_md48", null ]
+      [ "On Linux", "md_docs_wiki_packaging.html#autotoc_md46", null ],
+      [ "On MacOS", "md_docs_wiki_packaging.html#autotoc_md47", null ],
+      [ "On Windows...?", "md_docs_wiki_packaging.html#autotoc_md48", null ],
+      [ "Unstable install", "md_docs_wiki_packaging.html#autotoc_md49", null ]
     ] ],
     [ "Project Structure and Architecture", "md_docs_wiki_project_structure_and_architecture.html", [
-      [ "Structure", "md_docs_wiki_project_structure_and_architecture.html#autotoc_md50", null ],
-      [ "Architecture", "md_docs_wiki_project_structure_and_architecture.html#autotoc_md51", null ]
+      [ "Structure", "md_docs_wiki_project_structure_and_architecture.html#autotoc_md51", null ],
+      [ "Architecture", "md_docs_wiki_project_structure_and_architecture.html#autotoc_md52", null ]
     ] ],
     [ "Todo List", "todo.html", null ],
     [ "Deprecated List", "deprecated.html", null ],

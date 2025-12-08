@@ -109,7 +109,7 @@ $(document).ready(function(){initNavTree('md_docs_wiki_packaging.html',''); init
 <div class="contents">
 <div class="textblock"><p>Since we have custom C++ code that links to external libraries, in order to distribute the project to PyPI correctly, it needs to be built on <a href="https://packaging.python.org/en/latest/tutorials/packaging-projects/">https://packaging.python.org/en/latest/tutorials/packaging-projects/</a></p>
 <p>You will need to install <code>twine</code> and <code>build</code> via pip.</p>
-<h1><a class="anchor" id="autotoc_md45"></a>
+<h1><a class="anchor" id="autotoc_md46"></a>
 On Linux</h1>
 <p>For various <a href="https://peps.python.org/pep-0513/#rationale">reasons</a>, packaging on Linux is a bit difficult. Currently, <a href="https://github.com/pypa/auditwheel">auditwheel</a> is used to repair the <code>linux_x86_64</code> and change it to some sort of <code>manylinux</code> tag. (?)</p>
 <p>You'll need to install <code>auditwheel</code>.</p>
@@ -119,13 +119,13 @@ On Linux</h1>
 <div class="line">#                      z2r_accel-{VER}-{PYTHON}-{ABI}-{PLATFORM}.whl</div>
 </div><!-- fragment --><p> If you don't get any errors, thi will produce a file that looks roughtly like <code>z2r_accel-0.0.2-cp312-cp312-manylinux_2_39_x86_64</code>. You can now safely upload the files to PyPI:</p>
 <div class="fragment"><div class="line">twine upload dist/*manylinux*.whl dist/*.tar.gz </div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md46"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md47"></a>
 On MacOS</h1>
 <p>To be determined.</p>
-<h1><a class="anchor" id="autotoc_md47"></a>
+<h1><a class="anchor" id="autotoc_md48"></a>
 On Windows...?</h1>
 <p>To be determined.</p>
-<h1><a class="anchor" id="autotoc_md48"></a>
+<h1><a class="anchor" id="autotoc_md49"></a>
 Unstable install</h1>
 <div class="fragment"><div class="line">pip install -i https://test.pypi.org/simple/ z2r-accel</div>
 </div><!-- fragment --> </div></div><!-- contents -->
