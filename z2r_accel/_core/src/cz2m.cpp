@@ -28,6 +28,7 @@
  * @brief This function performs a 'tensor product' between two arrays of Pauli operators
  * In practice this is just a concatenation of the underlying z and x arrays.
  * @deprecated Use concatenate() instead, as it is generic and not aimed only for Pauli ops.
+ * @todo Either fix this function or remove it.
  *
  * @param z2
  * @param x2
