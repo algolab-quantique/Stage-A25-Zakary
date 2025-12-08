@@ -10,7 +10,7 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<script type="text/javascript" src="doxygen-awesome.js"></script>
+<!-- <script type="text/javascript" src="doxygen-awesome.js"></script> -->
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript">
   // initialize dark mode toggle (safe – initialization is idempotent)
@@ -31,6 +31,16 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeInteractiveToc.hideMobileMenu = false;
+    // DoxygenAwesomeInteractiveToc.minHeadings = 1; // Always show TOC, even with one heading
+    DoxygenAwesomeInteractiveToc.init();
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -108,7 +118,21 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md_docs_wiki_home"></a> </p><div style="text-align: center;"> <img src="logo_cropped.png" alt="Logo" width="150" class="inline"/></div><div style="text-align: center;"></div><hr  />
-<p>Welcome to the Z2 wiki! </p>
+<p>Welcome to the Z2 wiki!</p>
+<p>Complete source code available at: <a href="https://github.com/algolab-quantique/Stage-A25-Zakary">https://github.com/algolab-quantique/Stage-A25-Zakary</a></p>
+<h2><a class="anchor" id="autotoc_md37"></a>
+Quick Links</h2>
+<ul>
+<li><a class="el" href="md_docs_wiki_devlog.html">Development Log</a></li>
+<li><a class="el" href="md_docs_wiki_coding_tutorial.html">Coding Tutorial</a></li>
+<li><a class="el" href="md_docs_wiki_coding_convention.html">Coding Convention</a></li>
+<li><a class="el" href="md_docs_wiki_nomenclature.html">Nomenclature</a></li>
+<li><a class="el" href="md_docs_wiki_external_tools.html">External Tools</a></li>
+<li><a class="el" href="md_docs_wiki_packaging.html">Packaging</a></li>
+<li><a class="el" href="md_docs_wiki_optimizations.html">Optimizations</a></li>
+<li><a class="el" href="md_docs_wiki_faq.html">FAQ</a></li>
+<li><a class="el" href="md_docs_wiki_project_structure_and_architecture.html">Project Structure and Architecture</a> </li>
+</ul>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->

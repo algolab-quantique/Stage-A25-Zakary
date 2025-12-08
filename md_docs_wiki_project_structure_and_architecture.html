@@ -10,7 +10,7 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<script type="text/javascript" src="doxygen-awesome.js"></script>
+<!-- <script type="text/javascript" src="doxygen-awesome.js"></script> -->
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript">
   // initialize dark mode toggle (safe – initialization is idempotent)
@@ -31,6 +31,16 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeInteractiveToc.hideMobileMenu = false;
+    // DoxygenAwesomeInteractiveToc.minHeadings = 1; // Always show TOC, even with one heading
+    DoxygenAwesomeInteractiveToc.init();
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -107,7 +117,7 @@ $(document).ready(function(){initNavTree('md_docs_wiki_project_structure_and_arc
   <div class="headertitle"><div class="title">Project Structure and Architecture </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1><a class="anchor" id="autotoc_md51"></a>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md55"></a>
 Structure</h1>
 <p>The project structure is the exact same as PauliArray's <a href="https://github.com/algolab-quantique/pauliarray/tree/Voids">Voids</a> branch, with the following additions: </p><div class="fragment"><div class="line">├── _src</div>
 <div class="line">│   ├── bindings</div>
@@ -122,7 +132,7 @@ Structure</h1>
 <li><code>/src/bindings</code> Contains the pybind11 bindings necessary for the translation to and from Python.</li>
 <li><code>src/build</code> Contains the compiled dynamic shared libraries and stub files.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md52"></a>
+<h1><a class="anchor" id="autotoc_md56"></a>
 Architecture</h1>
 <div class="fragment"><div class="line">graph TB</div>
 <div class="line">    subgraph &quot;Python Layer&quot;</div>

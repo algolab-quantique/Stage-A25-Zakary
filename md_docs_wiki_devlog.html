@@ -10,7 +10,7 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<script type="text/javascript" src="doxygen-awesome.js"></script>
+<!-- <script type="text/javascript" src="doxygen-awesome.js"></script> -->
 <script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
 <script type="text/javascript">
   // initialize dark mode toggle (safe – initialization is idempotent)
@@ -31,6 +31,16 @@
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeInteractiveToc.hideMobileMenu = false;
+    // DoxygenAwesomeInteractiveToc.minHeadings = 1; // Always show TOC, even with one heading
+    DoxygenAwesomeInteractiveToc.init();
+</script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+</script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -159,7 +169,45 @@ December</h2>
 <li>Project has been added to PauliArray; Passes the exact same number of tests that PA passed without Z2P</li>
 <li>Used PauliArray with Z2P as a dependency in molecule simulation; Same results, no errors, but significantly faster!</li>
 <li>Feature freeze is active for core C++ functions, but not infrastructure (testing suite) or Python files</li>
-<li>There is a proposal for <a href="https://en.cppreference.com/w/cpp/experimental/simd.html">std::simd</a> to be added to the ISO Standard of C++26, which would allow for portable SIMD without having to deal with intrinsics. Interesting option for future developement and maintainance of library. </li>
+<li>There is a proposal for <a href="https://en.cppreference.com/w/cpp/experimental/simd.html">std::simd</a> to be added to the ISO Standard of C++26, which would allow for portable SIMD without having to deal with intrinsics. Interesting option for future developement and maintainance of library.</li>
+</ul>
+<h3><a class="anchor" id="autotoc_md18"></a>
+8th-12th</h3>
+<p><b>Features Added:</b></p><ul>
+<li>Added a Table Of Content to the right of every .md pages when generating doxygen documentation</li>
+<li>Added a copy button to code blocks in doxygen documentation</li>
+</ul>
+<p><b>Bug Fixes:</b></p><ul>
+<li>Fixed GH Pages doxygen build not having a light/dark mode switch.</li>
+</ul>
+<p><b>TODOs &amp; Known Issues:</b></p><ul>
+<li>Implement automatic Python and C++ test suite --&gt; Catch2 yet to be implemented</li>
+<li>Fully integrate project with PauliArray</li>
+<li>Multithreading is inconsistent for small arrays; suspect the GIL as root cause. Probable fix is to release the GIL during each bitwise operation.</li>
+<li>pybind-stubgen has difficulties and crashes when creating stubs for files using external libraries (e.g., xxhash)</li>
+<li>std::unordered_map is inneficient (?). Better alternatives are available online. Main use case for a better hashmap is in <code><a class="el" href="cz2m_8h.html#ae4da4fa68c447ad16c8312e9e6938628" title="This function finds unique rows in a NumPy 2D array by mapping the z2r to a hashmap.">unordered_unique()</a></code></li>
+<li><code><a class="el" href="cz2m_8h.html#abc190cf6fce33b858a0782c6058f86eb" title="Concatenates two numpy matrices along a specified axis.">concatenate()</a></code> should be split into two (one for each axis). There should also be an option or other function that permits direct insertion of one matrix onto/into another via an index parameter.</li>
+<li>Doxygen comments for Python are not displayed in HTML output</li>
+</ul>
+<p><b>Notes:</b> <br  />
+</p><ul>
+<li>details</li>
+</ul>
+<hr  />
+<h1><a class="anchor" id="autotoc_md20"></a>
+Template</h1>
+<p><b>Features Added:</b></p><ul>
+<li>added feature</li>
+</ul>
+<p><b>Bug Fixes:</b></p><ul>
+<li>squashed bug</li>
+</ul>
+<p><b>TODOs &amp; Known Issues:</b></p><ul>
+<li>{Copy previous week's section!}</li>
+</ul>
+<p><b>Notes:</b> <br  />
+</p><ul>
+<li>details </li>
 </ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
