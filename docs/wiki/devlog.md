@@ -1,6 +1,7 @@
 # Devlog
 This file documents changes, fixes, known issues and miscelaneous notes for each week. Please do not change previous entries.
 
+
 # 2025
 ## November
 ### 24th-28th
@@ -47,3 +48,41 @@ This file documents changes, fixes, known issues and miscelaneous notes for each
 - Used PauliArray with Z2P as a dependency in molecule simulation; Same results, no errors, but significantly faster! 
 - Feature freeze is active for core C++ functions, but not infrastructure (testing suite) or Python files
 - There is a proposal for [std::simd](https://en.cppreference.com/w/cpp/experimental/simd.html) to be added to the ISO Standard of C++26, which would allow for portable SIMD without having to deal with intrinsics. Interesting option for future developement and maintainance of library.
+
+### 8th-12th
+**Features Added:**
+- Added a Table Of Content to the right of every .md pages when generating doxygen documentation
+- Added a copy button to code blocks in doxygen documentation
+
+**Bug Fixes:**
+- Fixed GH Pages doxygen build not having a light/dark mode switch. 
+  
+**TODOs & Known Issues:**
+- Implement automatic Python and C++ test suite --> Catch2 yet to be implemented
+- Fully integrate project with PauliArray
+- Multithreading is inconsistent for small arrays; suspect [the GIL](Optimizations.md) as root cause. Probable fix is to release the GIL during each bitwise operation.
+- pybind-stubgen has difficulties and crashes when creating stubs for files using external libraries (e.g., xxhash)
+- std::unordered_map is inneficient (?). Better alternatives are available online. Main use case for a better hashmap is in `unordered_unique()`
+- `concatenate()` should be split into two (one for each axis). There should also be an option or other function that permits direct insertion of one matrix onto/into another via an index parameter.
+- Doxygen comments for Python are not displayed in HTML output
+
+**Notes:**  
+- details 
+
+
+
+---
+
+
+# Template
+**Features Added:**
+- added feature
+
+**Bug Fixes:**
+- squashed bug 
+  
+**TODOs & Known Issues:**
+- {Copy previous week's section!}
+
+**Notes:**  
+- details 
