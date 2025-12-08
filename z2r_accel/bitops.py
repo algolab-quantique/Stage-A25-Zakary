@@ -1,3 +1,12 @@
+## @package z2r_accel.bitops
+# @file cz2m.py
+# @author Zakary Romdhane (zakary.romdhane@usherbrooke.ca)
+# @brief
+# @version 0.1
+# @date 2025-12-05
+#
+# Copyright: Copyright 2025 Zakary Romdhane
+
 import numpy as np
 from numpy.typing import NDArray
 

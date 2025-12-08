@@ -4,7 +4,7 @@ All formatters can be automatically called before each commit with the help of [
 ```
 pre-commmit install
 ```
-That's it! 
+This will make it clang-format and black are called before any commit is made. 
 
 ### For Python
 We use [Black](https://github.com/psf/black), with `--line-length 100`
@@ -17,6 +17,12 @@ All of the options are found inside of the `.clang-format` file. LLVM's format i
 - `UseTab: Never`: Always forces spaces for indentation
 - `IndentWidth: 4`: Use 4-space standard for indentation
 - `IndentPPDirectives: AfterHash`: Indent preprocessor directives after their '#'
+
+### For CMake
+We use [cmake-format](https://cmake-format.readthedocs.io/en/latest/installation.html).
+
+It's an old tool that is a bit superfluous (since there's only 1 cmake file). Not very necessary to keep. 
+
 
 ---
 
@@ -31,7 +37,7 @@ All of the options are found inside of the `.clang-format` file. LLVM's format i
 ---
 
 ## Documentation
-Code comments are written in the [Doxygen](https://www.doxygen.nl/) format.
+Code comments are written in the [Doxygen](https://www.doxygen.nl/) format, with a better looking CSS/JS from [Doxygen Awesome](https://github.com/jothepro/doxygen-awesome-css)
 Any markdown files created should be located in `/docs/wiki/`. 
 
 On any push to `main`, a GH Action will trigger and try to generate the documentation and push changes to the `gh-pages` branch. This usually takes a minute. If successful, the GH will update the website at: https://algolab-quantique.github.io/Stage-A25-Zakary/

@@ -63,3 +63,4 @@ paulicpp/pauliarray/src/build/*.*
 /docs/html
 !/docs/html/.gitignore
 **/dump.txt
+*.pkl

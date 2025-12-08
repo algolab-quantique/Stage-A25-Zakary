@@ -1,3 +1,13 @@
+/**
+ * @file cz2m.h
+ * @author Zakary Romdhane (zakary.romdhane@usherbrooke.ca)
+ * @brief
+ * @date 2025-12-05
+ *
+ * @copyright Copyright 2025 Zakary Romdhane
+ *
+ */
+
 #pragma once
 
 #include <pybind11/numpy.h>
