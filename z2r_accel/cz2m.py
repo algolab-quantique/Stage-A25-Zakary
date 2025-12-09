@@ -1,4 +1,4 @@
-## @pacakge z2r_accel.cz2m
+## @package z2r_accel.cz2m
 # @file cz2m.py
 # @author Zakary Romdhane (zakary.romdhane@usherbrooke.ca)
 # @brief
