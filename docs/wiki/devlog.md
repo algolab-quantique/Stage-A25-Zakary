@@ -56,6 +56,8 @@ This file documents changes, fixes, known issues and miscelaneous notes for each
 **Features Added:**
 - Added a Table Of Content to the right of every .md pages when generating doxygen documentation
 - Added a copy button to code blocks in doxygen documentation
+- Created `builder.py`, a simple python script that tries to build and upload the project to PyPI (only test index for now)
+- Added a bunch of 
 
 **Bug Fixes:**
 - Fixed GH Pages doxygen build not having a light/dark mode switch. 
@@ -91,17 +93,3 @@ This file documents changes, fixes, known issues and miscelaneous notes for each
 
 **Notes:**  
 - details 
-
-
-
-
---- 
-
-Quest ce qui se passe avec les repos? a cloner de notre bord?
-    -> Changer le nom du repo pour autre que 'stage zakary'?
-
-Demain - Midi, souper? au siboire?
-
-Benchmarks a faire? 
-
-Autres
