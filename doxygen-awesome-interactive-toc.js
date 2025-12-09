@@ -53,6 +53,10 @@ class DoxygenAwesomeInteractiveToc {
 
     // Function made with help from Claude; I am unable to write JS properly without assistance.
     static generateToc() {
+        const url = window.location.pathname
+        const isMarkdownPage = url.includes('/md_') || url.match(/\.md\.html$/)
+        if(!isMarkdownPage) return null
+        
         // Find all headings in the content
         const contents = document.querySelector(".contents")
         if(!contents) return null

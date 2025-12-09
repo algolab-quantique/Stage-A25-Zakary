@@ -79,14 +79,16 @@ var NAVTREE =
       ] ]
     ] ],
     [ "Packaging", "md_docs_wiki_packaging.html", [
-      [ "On Linux", "md_docs_wiki_packaging.html#autotoc_md50", null ],
-      [ "On MacOS", "md_docs_wiki_packaging.html#autotoc_md51", null ],
-      [ "On Windows...?", "md_docs_wiki_packaging.html#autotoc_md52", null ],
-      [ "Unstable install", "md_docs_wiki_packaging.html#autotoc_md53", null ]
+      [ "Automatic upload", "md_docs_wiki_packaging.html#autotoc_md50", null ],
+      [ "Manual upload", "md_docs_wiki_packaging.html#autotoc_md51", [
+        [ "On Linux", "md_docs_wiki_packaging.html#autotoc_md52", null ],
+        [ "On MacOS", "md_docs_wiki_packaging.html#autotoc_md53", null ],
+        [ "Testing install", "md_docs_wiki_packaging.html#autotoc_md54", null ]
+      ] ]
     ] ],
     [ "Project Structure and Architecture", "md_docs_wiki_project_structure_and_architecture.html", [
-      [ "Structure", "md_docs_wiki_project_structure_and_architecture.html#autotoc_md55", null ],
-      [ "Architecture", "md_docs_wiki_project_structure_and_architecture.html#autotoc_md56", null ]
+      [ "Structure", "md_docs_wiki_project_structure_and_architecture.html#autotoc_md56", null ],
+      [ "Architecture", "md_docs_wiki_project_structure_and_architecture.html#autotoc_md57", null ]
     ] ],
     [ "Todo List", "todo.html", null ],
     [ "Deprecated List", "deprecated.html", null ],

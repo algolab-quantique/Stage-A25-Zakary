@@ -29,5 +29,6 @@ var namespacez2r__accel =
       [ "z2_to_uint8", "namespacez2r__accel_1_1cz2m.html#a01d5223a6785f3df623e628f0cfefaff", null ],
       [ "C_CCP", "namespacez2r__accel_1_1cz2m.html#a13bbaa2618b01f864401b16716371c0b", null ],
       [ "try", "namespacez2r__accel_1_1cz2m.html#adf5a37109c63a2960ef47b3b722133cc", null ]
-    ] ]
+    ] ],
+    [ "__version__", "namespacez2r__accel.html#af82355590ea2cafff0c9ee058d896cc2", null ]
 ];
