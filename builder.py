@@ -1,6 +1,10 @@
 import os, sys, subprocess
 import z2r_accel as z2
 
+IS_LINUX: bool = False
+if sys.platform.startswith("linux"):
+    IS_LINUX = True
+
 
 def build():
     # python -m build --outdir ./dist/{PROJECT_VERSION}
@@ -25,24 +29,40 @@ def auditwheel():
 def upload():
     # python3 -m twine upload --repository testpypi dist/*manylinux*.whl dist/*.tar.gz
     dist_dir = f"./dist/{z2.__version__}"
-    subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "twine",
-            "upload",
-            "--repository",
-            "testpypi",
-            os.path.join(dist_dir, "*manylinux*.whl"),
-            os.path.join(dist_dir, "*.tar.gz"),
-        ],
-        check=True,
-    )
+
+    if IS_LINUX:
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "twine",
+                "upload",
+                "--repository",
+                "testpypi",
+                os.path.join(dist_dir, "*manylinux*.whl"),
+                os.path.join(dist_dir, "*.tar.gz"),
+            ],
+            check=True,
+        )
+    else:
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "twine",
+                "upload",
+                "--repository",
+                "testpypi",
+                os.path.join(dist_dir, "*.whl"),
+                os.path.join(dist_dir, "*.tar.gz"),
+            ],
+            check=True,
+        )
 
 
 def main():
     build()
-    if sys.platform.startswith("linux"):
+    if IS_LINUX:
         auditwheel()
     upload()
 
