@@ -1,5 +1,5 @@
 # Project-related settings
-PROJECT_NAME           = "The Z2 Project"
+PROJECT_NAME           = "The Z2 Project" # ℤ₂
 # PROJECT_BRIEF          = "Fast binary array operations for scientific computing"
 PROJECT_LOGO           = ./docs/assets/logo_cropped.png
 
@@ -24,8 +24,6 @@ JAVADOC_AUTOBRIEF      = YES
 # Warning and message settings
 WARN_NO_PARAMDOC       = YES
 WARN_IF_UNDOCUMENTED   = YES
-
-
 
 
 

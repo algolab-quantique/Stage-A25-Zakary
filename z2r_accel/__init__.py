@@ -8,5 +8,7 @@
 # except ImportError:
 # 	pass
 
+__version__ = "0.0.6"
+
 from .bitops import *
 from .cz2m import *

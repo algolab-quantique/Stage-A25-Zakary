@@ -2,18 +2,25 @@
 requires = [
     "scikit-build-core", 
     "pybind11",
-    "pybind11-stubgen"
+    "pybind11-stubgen",
+    "numpy>=2.2.0"
     ]
 build-backend = "scikit_build_core.build"
 
 [project]
 name = "z2r_accel"
-version = "0.0.4"
-description = "Efficient library to handle packed Z2 arrays"
+version = "0.0.6"
+description = "High-performance binary NDArray operations for scientific and quantum computing"
 requires-python = ">=3.10"
 dependencies = [
     "numpy>=2.2.0",
 ]
+license = "Apache-2.0"
+readme = "README.md"
+authors = [
+    {name = "Zakary Romdhane", email = "zakary.romdhane@usherbrooke.ca"},
+]
+
 
 [project.optional-dependencies]
 dev = [
@@ -26,3 +33,7 @@ dev = [
     "mypy",
     "pre-commit"
 ]
+
+[project.urls]
+documentation = "https://algolab-quantique.github.io/Stage-A25-Zakary/"
+source = "https://github.com/algolab-quantique/Stage-A25-Zakary.git"

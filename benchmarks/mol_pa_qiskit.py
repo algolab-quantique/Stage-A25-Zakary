@@ -216,7 +216,7 @@ label_list = [
     n2_labels_positions,
     c2h2_labels_positions,
     c2h4_labels_positions,
-    # c3h8_labels_positions
+    c3h8_labels_positions,
 ]
 label_list_names = ["H2", "LiH", "H2O", "NH3", "N2", "C2H2", "C2H4", "C3H8"]
 
@@ -309,7 +309,10 @@ def plot_times(list1, list2, labels):
     plt.title("Computation Time Comparison")
     plt.legend()
     plt.grid(True)
-    plt.savefig("computation_time_comparison.png")
+    # plt.semilogx()
+    plt.semilogy()
+    # plt.savefig("computation_time_comparison.png")
+
     plt.show()
 
 
@@ -364,4 +367,5 @@ if __name__ == "__main__":
     qiskit_times = sym_qiskit()
     pauli_times = sym_pauli()
     molecule_labels = label_list_names[: len(pauli_times)]
-    plot_times_percentage(pauli_times, qiskit_times, molecule_labels)
+    # plot_times_percentage(pauli_times, qiskit_times, molecule_labels)
+    plot_times(pauli_times, qiskit_times, molecule_labels)
