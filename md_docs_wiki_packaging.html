@@ -120,12 +120,12 @@ $(document).ready(function(){initNavTree('md_docs_wiki_packaging.html',''); init
 <div class="textblock"><p>Since we have custom C++ code that links to external libraries, in order to distribute the project to PyPI correctly, it needs to be built on <a href="https://packaging.python.org/en/latest/tutorials/packaging-projects/">https://packaging.python.org/en/latest/tutorials/packaging-projects/</a></p>
 <p>You will need to install <code>twine</code> and <code>build</code> via pip. The project's API key will also be necessary to upload to PyPI.</p>
 <p>Z2P can be found on <a href="https://test.pypi.org/project/z2r-accel/">TestPyPi</a></p>
-<h1><a class="anchor" id="autotoc_md50"></a>
+<h1><a class="anchor" id="autotoc_md53"></a>
 Automatic upload</h1>
 <p>You can try to automatically upload the package by calling <code>builder.py</code>.</p>
-<h1><a class="anchor" id="autotoc_md51"></a>
+<h1><a class="anchor" id="autotoc_md54"></a>
 Manual upload</h1>
-<h2><a class="anchor" id="autotoc_md52"></a>
+<h2><a class="anchor" id="autotoc_md55"></a>
 On Linux</h2>
 <p>For various <a href="https://peps.python.org/pep-0513/#rationale">reasons</a>, packaging on Linux is a bit difficult. Currently, <a href="https://github.com/pypa/auditwheel">auditwheel</a> is used to repair the <code>linux_x86_64</code> and change it to some sort of <code>manylinux</code> tag. (?)</p>
 <p>You'll need to install <code>auditwheel</code>.</p>
@@ -136,10 +136,10 @@ On Linux</h2>
 <div class="line">#                      z2r_accel-{VER}-{PYTHON}-{ABI}-{PLATFORM}.whl</div>
 </div><!-- fragment --><p> If you don't get any errors, thi will produce a file that looks roughtly like <code>z2r_accel-0.0.2-cp312-cp312-manylinux_2_39_x86_64</code>. You can now safely upload the files to PyPI:</p>
 <div class="fragment"><div class="line">twine upload ./dist/{PROJECT_VERSION}/*manylinux*.whl ./dist/{PROJECT_VERSION}/*.tar.gz </div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md53"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md56"></a>
 On MacOS</h2>
 <p>To be determined.</p>
-<h2><a class="anchor" id="autotoc_md54"></a>
+<h2><a class="anchor" id="autotoc_md57"></a>
 Testing install</h2>
 <div class="fragment"><div class="line">pip install -i https://test.pypi.org/simple/ z2r-accel</div>
 </div><!-- fragment --> </div></div><!-- contents -->
