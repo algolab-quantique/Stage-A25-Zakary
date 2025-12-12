@@ -96,7 +96,8 @@ This section will try to lay out everything that has been done in my three month
 - `transpose()`, `matmul()`, `concatenate()` and `gauss_jordan_inverse()`: They all "work" fine, but they have NOT been heavily tested! They *should* be OK and could replace the calls from `bit_operations.py` in PA, but edge cases could break them.
 - `builder.py`: This script tries to automatically build and upload the project to TestPyPI. You need to manually update the version number in both `pyproject.toml` and `/z2r_accel/__init__.py`. The script also fails if there is already a .whl file in PyPI.
 - Pybind11: My current workflow doesnt create issues, but it is a bit barebones; There are no custom classes or structs passed to Python, and there is very little (if none at all) OOP. If maintenance is needed to add such things, i dont know how to do it efficiently
-- Everything in the TODOs
+- Everything in the devlog's TODOs/issues
+- Everything in the Doxygen documentation's Todo/Deprecated Lists
 
 ## Mysterious Behavior
 - pybind11-stubgen: I think this was a mistake to use. It panics often and makes the CMake build step fail. Why this happens is beyond me. Consider mypy in the future?
