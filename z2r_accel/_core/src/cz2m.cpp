@@ -28,7 +28,6 @@
  * @brief This function performs a 'tensor product' between two arrays of Pauli operators
  * In practice this is just a concatenation of the underlying z and x arrays.
  * @deprecated Use concatenate() instead, as it is generic and not aimed only for Pauli ops.
- * @todo Either fix this function or remove it.
  *
  * @param z2
  * @param x2
@@ -387,8 +386,11 @@ py::object unique(py::array z2r, bool return_index, bool return_inverse, bool re
  * @brief This function finds unique rows in a NumPy 2D array by mapping the z2r to a hashmap.
  * Thus, two identical rows will be encoded to the same key via the hashing function and ensures
  * a fast execution time.
+ * @todo Benchmark current std hashmap implementation against others.
+ * (e.g. robin-hood-hashing, google dense-hash-map, etc).
+ * Also benchmark std hashing function against other non-cryptographic ones. (e.g xxhash).
  *
- * @attention Does not work for higher dimensions.
+ * @attention Does not work for dimensions higher than 2.
  * @param z2r Both Z and X voids stiched together
  * @return py::tuple Returns (indices, inverse).
  * Indices gives the index of each unique row from z2r.
@@ -397,7 +399,6 @@ py::object unique(py::array z2r, bool return_index, bool return_inverse, bool re
 py::tuple unordered_unique(py::array z2r) {
 
     auto buf = z2r.request();
-    // TODO: Fix this cause its not working ! Ahah!!
     if (buf.ndim == 0) {
         py::array_t<int64_t> idx(1);
         py::array_t<int64_t> inv(1);
@@ -752,6 +753,7 @@ py::array_t<std::complex<double>> to_matrix(py::array z_voids, py::array x_voids
  *  101,
  *  101,
  *  011]
+ * @attention This function was only lightly tested. Use with caution.
  *
  * @param voids Input array
  * @return py::array Transposed array with minimal dtype
@@ -813,6 +815,9 @@ py::array transpose(py::array voids, int64_t num_bits) {
 
 /**
  * @brief Matrix multiplication of two void arrays (technically 1D), interpreted as 2D bit matrices.
+ *
+ * @attention This function was only lightly tested. Use with caution.
+ * @todo Optimize the heavy nested loops in this function.
  *
  * @param z2r_a
  * @param z2r_b
@@ -884,7 +889,7 @@ py::array matmul(py::array z2r_a, py::array z2r_b, int a_num_qubits, int b_num_q
 /**
  * @brief Concatenates two numpy matrices along a specified axis.
  * If axis=0, performs row stacking. If axis=1, performs column concatenation.
- *
+ * @attention This function was only lightly tested. Use with caution.
  * @param x1
  * @param x2
  * @param axis
@@ -987,7 +992,7 @@ py::array concatenate(py::array x1, py::array x2, int axis) {
 
 /**
  * @brief Converts a Z2R array to a uint8 array.
- *
+ * @attention This function was only lightly tested. Use with caution.
  * @param z2r
  * @param num_bits
  * @return py::array_t<uint8_t> Returns an array of shape (rows, num_bits) with each uint8_t element
@@ -1045,8 +1050,8 @@ py::array_t<uint8_t> z2_to_uint8(py::array z2r, int num_bits) {
  * - It is inconsistant with its dtype and num_qubits
  * - It is is singular, i.e inatly does not have a inverse
  * If an input is bad, a runtime error will be thrown and function exited.
- * TODO: rename function variables to something less ass
- *
+ * @todo rename function variables to something less terrible
+ * @attention This function was only lightly tested. Use with caution.
  * @param z2r
  * @param num_bits
  * @return py::array

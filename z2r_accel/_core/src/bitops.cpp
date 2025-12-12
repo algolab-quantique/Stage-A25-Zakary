@@ -103,12 +103,12 @@ py::array bitwise_not(py::array voids) {
     return res_voids;
 }
 
-// ! THIS DOES NOT WORK AT ALL!!! DO NOT USE!
-// Todo: fix this
 /**
  * @brief Performs an element-wise bitwise NOT operation on only the first `num_qubits` bits of a
  * NumPy contiguous (C-like) array. In other words, it flips the first `num_qubits` bits in the
  * array, with the remaining bits left unchanged.
+ *
+ * @todo Does not work on some inputs (?). No idea why. Fix needed
  *
  * @param voids the input array
  * @return py::array A NumPy contiguous array of the same shape and dtype as the input, containing
