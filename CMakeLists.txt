@@ -237,10 +237,10 @@ function(
     install(TARGETS ${TARGET_NAME} DESTINATION z2r_accel/_core/build)
 
     # post-build: generate Python stubs
-    add_custom_command(
-        TARGET ${TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR} ${Python_EXECUTABLE} -m
-                pybind11_stubgen z2r_accel._core.build.${TARGET_NAME} -o ${CMAKE_SOURCE_DIR})
+    # add_custom_command(
+    #     TARGET ${TARGET_NAME} POST_BUILD
+    #     COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${CMAKE_SOURCE_DIR} ${Python_EXECUTABLE} -m
+    #             pybind11_stubgen z2r_accel._core.build.${TARGET_NAME} -o ${CMAKE_SOURCE_DIR})
 endfunction()
 
 # add any ne wmodules here, with the name of the .so and the binding file

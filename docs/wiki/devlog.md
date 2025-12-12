@@ -71,17 +71,39 @@ This file documents changes, fixes, known issues and miscelaneous notes for each
 - std::unordered_map is inneficient (?). Main use case for a better hashmap is in `unordered_unique()`. This applies to not only the container, but also the hash function. 
 - `concatenate()` should be split into two (one for each axis). There should also be an option or other function that permits direct insertion of one matrix onto/into another via an index parameter.
 - Doxygen comments for Python are not displayed in HTML output
+- The `_bindings.cpp` have the necessary code to transfer Python and C++, but more documentation could be added (such as )
 
 **Notes:**  
 - Last week of internship, trying to wrap everything up - There may be some things that i forgot and should get axed,
-- 
 
 
 
 ---
 
+# What I Know
+This section will try to lay out everything that has been done in my three months working on the project by categorizing what i know (or don't), and why it works.
 
-# Template
+## Rock-Solid and Reliable
+- Formatters: Always work on manual triggers
+- Formatters (GitHub Actions): Should always check the formatting correctly.
+- Pre-commit actions: Will always work if the .yaml file is not modified.
+- All `_bitwise()` operations: These work on all dimensions of any input! All NumPy calls can be directly substituted for these, with an expected gain of ~2x on most operations.
+- Doxygen Documentation (local): Never had issues when running `doxygen Doxyfile`
+
+## Works, with Caveat(s)
+- Doxygen Deployement (GitHub Actions): This works 98% of the time, but there has previoulsy been at least 1 bug unique to the GH Pages that wasn't on my local machine. Awesome-Doxygen-CSS is great, but is also finnicky; Had to modify some JS for Tables of Content to work, and the Doxyfile is also a bit mysterious.
+- CMake: Build process works on both of my Linux machines and the Intel Macbook Pro. Build FAILED using M1 Macbook if using OpenMP - Disabling OpenMP directives let the build succeed.
+- `transpose()`, `matmul()`, `concatenate()` and `gauss_jordan_inverse()`: They all "work" fine, but they have NOT been heavily tested! They *should* be OK and could replace the calls from `bit_operations.py` in PA, but edge cases could break them.
+- `builder.py`: This script tries to automatically build and upload the project to TestPyPI. You need to manually update the version number in both `pyproject.toml` and `/z2r_accel/__init__.py`. The script also fails if there is already a .whl file in PyPI.
+- Pybind11: My current workflow doesnt create issues, but it is a bit barebones; There are no custom classes or structs passed to Python, and there is very little (if none at all) OOP. If maintenance is needed to add such things, i dont know how to do it efficiently
+- Everything in the TODOs
+
+## Mysterious Behavior
+- pybind11-stubgen: I think this was a mistake to use. It panics often and makes the CMake build step fail. Why this happens is beyond me. Consider mypy in the future?
+- PauliArray inputs: I have not looked deep in the PA source code. Sometimes, an input can be a |V13, but also can transform to the next power of 2 (|V16 in this case). This is behaviour is erratic and i could not find a specific way to initialize PauliArrays such that they were always one way or the other. 
+
+
+<!-- # Template
 **Features Added:**
 - added feature
 
@@ -92,4 +114,4 @@ This file documents changes, fixes, known issues and miscelaneous notes for each
 - {Copy previous week's section!}
 
 **Notes:**  
-- details 
+- details  -->
