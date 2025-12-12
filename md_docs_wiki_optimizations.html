@@ -117,7 +117,7 @@ $(document).ready(function(){initNavTree('md_docs_wiki_optimizations.html',''); 
   <div class="headertitle"><div class="title">Optimizations </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1><a class="anchor" id="autotoc_md46"></a>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md47"></a>
 Data structure</h1>
 <p>Handling long lists of 1s and 0s is at the heart of this project, and needs to be done as efficiently as possible. The current way all data is managed is throught a packed representation of integers such that:</p>
 <p><code>ex = 0b01100111</code> or <code>ex = 103</code>,</p><ul>
@@ -143,13 +143,13 @@ Data structure</h1>
 </li>
 </ol>
 <hr  />
-<h1><a class="anchor" id="autotoc_md48"></a>
+<h1><a class="anchor" id="autotoc_md49"></a>
 General</h1>
 <p>In most cases, we cast the data of a Z2R array to <code>uint64_t</code> via <code>std::bit_cast&lt;&gt;</code>. This is done because in most modern computers, 64 bits is the largest natively supported integer size. When an object's total size is less than 64 bits, casting is mostly on <code>uint8_t</code> and sometimes on <code>bitset&lt;N&gt;</code></p>
-<h1><a class="anchor" id="autotoc_md49"></a>
+<h1><a class="anchor" id="autotoc_md50"></a>
 Multi-threading</h1>
 <p>To fully utilize available hardware, we implement multi-threading wherever safe and beneficial. OpenMP provides simple syntax with powerful results while maintaining code readability. </p>
-<h2><a class="anchor" id="autotoc_md50"></a>
+<h2><a class="anchor" id="autotoc_md51"></a>
 Using OpenMP</h2>
 <p>Before adding OpenMP, make it <b>certain</b> that your code is thread-safe. Data races and memory corruption are difficult to debug. While mutexes can provide thread safety over otherwise unsafe operations, they often cause performance degradation in small functions (our primary use case). Use mutexes cautiously and verify they provide net benefits.</p>
 <p>As for the syntax, most <em>for(...)</em> loops in the project are prefaced with: </p><div class="fragment"><div class="line"><span class="preprocessor">#ifdef USE_OPENMP</span></div>
@@ -165,7 +165,7 @@ Using OpenMP</h2>
 <li><code>schedule(static)</code> assign each loop iterations to threads in a even, round-robin distribution.</li>
 </ul>
 <p>More keywords exist, but they are specific to certain behaviors that are much less common in this project</p>
-<h2><a class="anchor" id="autotoc_md51"></a>
+<h2><a class="anchor" id="autotoc_md52"></a>
 Understanding the GIL</h2>
 <p>Python's Global Interpreter Lock allows only one thread to execute Python bytecode at a time. This simplifies Python's memory management but prevents true multi-threading. Only multiprocessing can achieve true parallelism under the GIL.</p>
 <p>However, it is possible to get freed from the shackles of the GIL within C++. This can be done by declaring a section like this: </p><div class="fragment"><div class="line">{</div>

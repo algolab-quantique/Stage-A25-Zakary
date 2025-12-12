@@ -177,25 +177,28 @@ December</h2>
 <li>Added a Table Of Content to the right of every .md pages when generating doxygen documentation</li>
 <li>Added a copy button to code blocks in doxygen documentation</li>
 <li>Created <code>builder.py</code>, a simple python script that tries to build and upload the project to PyPI (only test index for now)</li>
-<li>Added a bunch of</li>
+<li>Added &ndash;no-omp to builder, a command line argument to skip OMP multi-threading when compiling</li>
+<li>Added a bunch of benchmarks for quantum molecule simulation</li>
 </ul>
 <p><b>Bug Fixes:</b></p><ul>
 <li>Fixed GH Pages doxygen build not having a light/dark mode switch.</li>
 <li>Fixed doxygen TOC appearing on non-markdown files</li>
 </ul>
 <p><b>TODOs &amp; Known Issues:</b></p><ul>
-<li>Implement automatic Python and C++ test suite --&gt; Catch2 yet to be implemented</li>
+<li>Implement automatic Python and C++ test suite</li>
 <li>Fully integrate project with PauliArray</li>
 <li>Multithreading is inconsistent for small arrays; suspect <a class="el" href="md_docs_wiki_optimizations.html">the GIL</a> as root cause. Probable fix is to release the GIL during each bitwise operation.</li>
 <li>pybind-stubgen has difficulties and crashes when creating stubs for files using external libraries (e.g., xxhash)</li>
 <li>std::unordered_map is inneficient (?). Main use case for a better hashmap is in <code><a class="el" href="cz2m_8h.html#ae4da4fa68c447ad16c8312e9e6938628" title="This function finds unique rows in a NumPy 2D array by mapping the z2r to a hashmap.">unordered_unique()</a></code>. This applies to not only the container, but also the hash function.</li>
 <li><code><a class="el" href="cz2m_8h.html#abc190cf6fce33b858a0782c6058f86eb" title="Concatenates two numpy matrices along a specified axis.">concatenate()</a></code> should be split into two (one for each axis). There should also be an option or other function that permits direct insertion of one matrix onto/into another via an index parameter.</li>
-<li>Doxygen comments for Python are not displayed in HTML output</li>
-<li>The <code>_bindings.cpp</code> have the necessary code to transfer Python and C++, but more documentation could be added (such as )</li>
+<li>Doxygen output does not display Python comments/docstrings in HTML</li>
+<li>Doxygen output does not display the Architecture's Mermaid graph.</li>
+<li>Doxygen output could benefit from having sections in the tree view on the left (seperate hand-made markdown and auto-generated APIs)</li>
+<li>The <code>_bindings.cpp</code> have the necessary code to transfer Python and C++, but more documentation could be added (such as function briefs and parameters)</li>
 </ul>
 <p><b>Notes:</b> <br  />
 </p><ul>
-<li>Last week of internship, trying to wrap everything up - There may be some things that i forgot and should get axed,</li>
+<li>Last week of internship, trying to wrap everything up - Feel free to modify whatever you want, as the project is licensed under Apache 2.0. I suspect that most of what is written could be optimized even further with better knowledge of computer architecture/C++.</li>
 </ul>
 <hr  />
 <h1><a class="anchor" id="autotoc_md20"></a>

@@ -160,11 +160,11 @@ Writing Functions</h2>
 <h2><a class="anchor" id="autotoc_md9"></a>
 Exposing Functions (Bindings)</h2>
 <p>Now that we have a new function, we need to expose it so that it can be called from inside Python.</p>
-<p>To do so, navigate to <code>_src/bindings/</code> and make a new C++ file (<code>{MODULE}_bindings.cpp</code>). Once done, add the following: </p><div class="fragment"><div class="line"><span class="preprocessor">#include &lt;pybind11/pybind11.h&gt;</span></div>
+<p>To do so, navigate to <code>_core/bindings/</code> and make a new C++ file (<code>{MODULE}_bindings.cpp</code>). Once done, add the following: </p><div class="fragment"><div class="line"><span class="preprocessor">#include &lt;pybind11/pybind11.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;pybind11/stl.h&gt;</span></div>
 <div class="line"><span class="keyword">namespace </span>py = pybind11;</div>
 <div class="line"> </div>
-<div class="line"><span class="preprocessor">#include &quot;../{MODULE}.hpp&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;../{MODULE}.cpp&quot;</span></div>
 <div class="line"> </div>
 <div class="line"><a class="code hl_function" href="bitops__bindings_8cpp.html#a12fc346c4c701932d86ea75773e67423">PYBIND11_MODULE</a>(_{MODULE}, m) {</div>
 <div class="line">    m.doc() = <span class="stringliteral">&quot;This is the description for {MODULE}!&quot;</span>;</div>

@@ -153,7 +153,7 @@ When Writing</h1>
 </ul>
 <hr  />
 <h1><a class="anchor" id="autotoc_md3"></a>
-Comments</h1>
+Comments and Documentation</h1>
 <p>In Python files, use Docstrings: </p><div class="fragment"><div class="line"><span class="keyword">def </span>add_integers(a:int, b:int) -&gt; int:</div>
 <div class="line">    <span class="stringliteral">&quot;&quot;&quot;</span></div>
 <div class="line"><span class="stringliteral">    Calculates the sum of two integers</span></div>
@@ -168,7 +168,8 @@ Comments</h1>
 <div class="line"><span class="keywordtype">int</span> add_integers(<span class="keywordtype">int</span> a, <span class="keywordtype">int</span> b) {</div>
 <div class="line">    <span class="keywordflow">return</span> a + b;</div>
 <div class="line">}</div>
-</div><!-- fragment --><hr  />
+</div><!-- fragment --><p>As for Doxygen documentation, all new user-readable files must be <code>/wiki</code> in markdown format (.md). Each file should be named in lowercase, with hyphens (-) replacing spaces. The first line of the document should be a heading with the your desired name (for example, this file is named <code>coding-convetion.md</code>, but is displayed <em>Coding Convention</em> in the browser)</p>
+<hr  />
 <h1><a class="anchor" id="autotoc_md5"></a>
 Formatting</h1>
 <p>Please format your files using the project's [[auto-formatters|External Tools::Auto-formatters]]. A GitHub Action will perform checks on every push to detect if all files were correctly formatted. </p>
