@@ -12,6 +12,11 @@ Z2P can be found on [TestPyPi](https://test.pypi.org/project/z2r-accel/)
 # Automatic upload
 You can try to automatically upload the package by calling `builder.py`.
 
+If you are on MacOS and DONT have OpenMP installed, run the script with:
+```
+python3 builder.py --no-omp
+```
+
 # Manual upload
 ## On Linux
 For various [reasons](https://peps.python.org/pep-0513/#rationale), packaging on Linux is a bit difficult. Currently, [auditwheel](https://github.com/pypa/auditwheel) is used to repair the `linux_x86_64` and change it to some sort of `manylinux` tag. (?)
@@ -39,7 +44,7 @@ twine upload ./dist/{PROJECT_VERSION}/*manylinux*.whl ./dist/{PROJECT_VERSION}/*
 
 
 ## On MacOS
-To be determined.
+TODO: Write documentation
 
 ## Testing install
 ```

@@ -37,10 +37,9 @@ While convenient, namespace imports create ambiguity in low-level code. Both the
 
 ---
 
-## Comments
+## Comments and Documentation
 In Python files, use Docstrings:
 ```python
-
 def add_integers(a:int, b:int) -> int:
 	"""
 	Calculates the sum of two integers
@@ -66,6 +65,10 @@ int add_integers(int a, int b) {
 	return a + b;
 }
 ```
+
+As for Doxygen documentation, all new user-readable files must be `/wiki` in markdown format (.md). Each file should be named in lowercase, with hyphens (-) replacing spaces. The first line of the document should be a heading with the your desired name (for example, this file is named `coding-convetion.md`, but is displayed *Coding Convention* in the browser)
+
+
 
 ---
 

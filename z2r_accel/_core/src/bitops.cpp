@@ -171,7 +171,7 @@ py::object bitwise_count(py::array z2r_1) {
     size_t total_64_chunks = num_elem * u64_per_elem;
 
     if (num_elem == 1) {
-        // Specila case for when the NumPy array is one-dimensional.
+        // Special case for when the NumPy array is one-dimensional.
         // This is necessary in order to return the exact same output as the Python version of this
         // function. i.e. a single integer instead of a one-element array.
         const uint8_t *base = ptr1;
@@ -251,7 +251,7 @@ py::object bitwise_dot(py::array z2r_1, py::array z2r_2) {
     size_t total_64_chunks = num_elem * u64_per_elem;
 
     if (num_elem == 1) {
-        // Specila case for when the NumPy array is one-dimensional.
+        // Special case for when the NumPy array is one-dimensional.
         // This is necessary in order to return the exact same output as the Python version of this
         // function. i.e. a single integer instead of a one-element array.
         const uint8_t *base1 = ptr1;
