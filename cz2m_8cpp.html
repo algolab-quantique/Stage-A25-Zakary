@@ -308,7 +308,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Concatenates two numpy matrices along a specified axis. </p>
-<p>If axis=0, performs row stacking. If axis=1, performs column concatenation.</p>
+<p>If axis=0, performs row stacking. If axis=1, performs column concatenation. </p><dl class="section attention"><dt>Attention</dt><dd>This function was only lightly tested. Use with caution. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">x1</td><td></td></tr>
@@ -352,8 +352,8 @@ Functions</h2></td></tr>
 <li>It is not "2D", as in a 1D list of packed voids</li>
 <li>It is not "square" (num_qubits == number of rows)</li>
 <li>It is inconsistant with its dtype and num_qubits</li>
-<li>It is is singular, i.e inatly does not have a inverse If an input is bad, a runtime error will be thrown and function exited. TODO: rename function variables to something less ass</li>
-</ul>
+<li>It is is singular, i.e inatly does not have a inverse If an input is bad, a runtime error will be thrown and function exited. <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000007">Todo:</a></b></dt><dd>rename function variables to something less terrible </dd></dl>
+<dl class="section attention"><dt>Attention</dt><dd>This function was only lightly tested. Use with caution. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">z2r</td><td></td></tr>
@@ -362,6 +362,8 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>py::array </dd></dl>
+</li>
+</ul>
 
 </div>
 </div>
@@ -443,6 +445,8 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Matrix multiplication of two void arrays (technically 1D), interpreted as 2D bit matrices. </p>
+<dl class="section attention"><dt>Attention</dt><dd>This function was only lightly tested. Use with caution. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Todo:</a></b></dt><dd>Optimize the heavy nested loops in this function.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">z2r_a</td><td></td></tr>
@@ -509,7 +513,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>applies Gauss-Jordan elimination on a binary matrix to produce row echelon form. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Optimize this function!</dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>Optimize this function!</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">voids</td><td></td></tr>
@@ -606,8 +610,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>This function performs a 'tensor product' between two arrays of Pauli operators In practice this is just a concatenation of the underlying z and x arrays. </p>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>Use <a class="el" href="cz2m_8cpp.html#ac5e25849d7db6f59bb064c56f6ca88dd" title="Concatenates two numpy matrices along a specified axis.">concatenate()</a> instead, as it is generic and not aimed only for Pauli ops. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>Either fix this function or remove it.</dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>Use <a class="el" href="cz2m_8cpp.html#ac5e25849d7db6f59bb064c56f6ca88dd" title="Concatenates two numpy matrices along a specified axis.">concatenate()</a> instead, as it is generic and not aimed only for Pauli ops.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">z2</td><td></td></tr>
@@ -695,7 +698,7 @@ Functions</h2></td></tr>
 <p>Transposes a technically 1D array of voids by interpreting it as a 2D array of bits. </p>
 <p>In other words, if the input array has shape (M,) and each element has N bits, the output array will have shape (N, M), where the rows correspond to the bits of the input elements.</p>
 <p>If input is: [0110, 1001, 1111]</p>
-<p>then output will be: [011, 101, 101, 011]</p>
+<p>then output will be: [011, 101, 101, 011] </p><dl class="section attention"><dt>Attention</dt><dd>This function was only lightly tested. Use with caution.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">voids</td><td>Input array </td></tr>
@@ -776,8 +779,8 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>This function finds unique rows in a NumPy 2D array by mapping the z2r to a hashmap. </p>
-<p>Thus, two identical rows will be encoded to the same key via the hashing function and ensures a fast execution time.</p>
-<dl class="section attention"><dt>Attention</dt><dd>Does not work for higher dimensions. </dd></dl>
+<p>Thus, two identical rows will be encoded to the same key via the hashing function and ensures a fast execution time. </p><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Benchmark current std hashmap implementation against others. (e.g. robin-hood-hashing, google dense-hash-map, etc). Also benchmark std hashing function against other non-cryptographic ones. (e.g xxhash).</dd></dl>
+<dl class="section attention"><dt>Attention</dt><dd>Does not work for dimensions higher than 2. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">z2r</td><td>Both Z and X voids stiched together </td></tr>
@@ -815,6 +818,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Converts a Z2R array to a uint8 array. </p>
+<dl class="section attention"><dt>Attention</dt><dd>This function was only lightly tested. Use with caution. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">z2r</td><td></td></tr>

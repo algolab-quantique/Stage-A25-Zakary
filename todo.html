@@ -118,10 +118,16 @@ $(document).ready(function(){initNavTree('todo.html',''); initResizable(); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><dl class="reflist">
+<dt>Member <a class="el" href="cz2m_8cpp.html#a410809120b7e19dd834d0eacf8314d4b">gauss_jordan_inverse</a>  (py::array z2r, int num_bits)</dt>
+<dd><a class="anchor" id="_todo000007"></a>rename function variables to something less terrible  </dd>
+<dt>Member <a class="el" href="cz2m_8cpp.html#a3c6e4cb97bf8045d53f0c6d4b48e834c">matmul</a>  (py::array z2r_a, py::array z2r_b, int a_num_qubits, int b_num_qubits)</dt>
+<dd><a class="anchor" id="_todo000006"></a>Optimize the heavy nested loops in this function. </dd>
+<dt>Member <a class="el" href="bitops_8cpp.html#a2866c8127e015b9756a4692c636dbd9f">paded_bitwise_not</a>  (py::array voids, int num_qubits)</dt>
+<dd><a class="anchor" id="_todo000002"></a>Does not work on some inputs (?). No idea why. Fix needed </dd>
 <dt>Member <a class="el" href="cz2m_8cpp.html#ae6f7178fc35327a981af856ca64fbc16">row_echelon</a>  (py::array voids, int num_qubits)</dt>
-<dd><a class="anchor" id="_todo000004"></a>Optimize this function! </dd>
-<dt>Member <a class="el" href="cz2m_8cpp.html#a9462b2d1d2e54e82ad72c6d30f03230c">tensor</a>  (py::array z2, py::array x2, py::array z1, py::array x1)</dt>
-<dd><a class="anchor" id="_todo000003"></a>Either fix this function or remove it.</dd>
+<dd><a class="anchor" id="_todo000005"></a>Optimize this function! </dd>
+<dt>Member <a class="el" href="cz2m_8cpp.html#ab33ae8090d4f59d905d416d2629ea5c6">unordered_unique</a>  (py::array z2r)</dt>
+<dd><a class="anchor" id="_todo000004"></a>Benchmark current std hashmap implementation against others. (e.g. robin-hood-hashing, google dense-hash-map, etc). Also benchmark std hashing function against other non-cryptographic ones. (e.g xxhash).</dd>
 </dl>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
