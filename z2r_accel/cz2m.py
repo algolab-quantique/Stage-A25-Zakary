@@ -12,7 +12,7 @@ import numpy as np
 from numpy.typing import NDArray
 from typing import Tuple
 
-# import pauliarray as pa
+import pauliarray as pa
 
 try:
     from ._core.build import _cz2m
@@ -73,8 +73,8 @@ def unordered_unique(
 
     idx, inv = _cz2m.unordered_unique(z2r)
 
-    # uniques = pa.PauliArray.from_zx_voids(paulis.zx_voids[idx], paulis.num_qubits)
-    uniques = None
+    uniques = pa.PauliArray.from_zx_voids(paulis.zx_voids[idx], paulis.num_qubits)
+    # uniques = None
 
     # print("Uniques:", uniques)
 
