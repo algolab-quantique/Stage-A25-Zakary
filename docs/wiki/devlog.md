@@ -57,25 +57,27 @@ This file documents changes, fixes, known issues and miscelaneous notes for each
 - Added a Table Of Content to the right of every .md pages when generating doxygen documentation
 - Added a copy button to code blocks in doxygen documentation
 - Created `builder.py`, a simple python script that tries to build and upload the project to PyPI (only test index for now)
-- Added a bunch of 
+- Added --no-omp to builder, a command line argument to skip OMP multi-threading when compiling
+- Added a bunch of benchmarks for quantum molecule simulation
 
 **Bug Fixes:**
 - Fixed GH Pages doxygen build not having a light/dark mode switch. 
 - Fixed doxygen TOC appearing on non-markdown files
   
 **TODOs & Known Issues:**
-- Implement automatic Python and C++ test suite --> Catch2 yet to be implemented
+- Implement automatic Python and C++ test suite
 - Fully integrate project with PauliArray
 - Multithreading is inconsistent for small arrays; suspect [the GIL](optimizations.md) as root cause. Probable fix is to release the GIL during each bitwise operation.
 - pybind-stubgen has difficulties and crashes when creating stubs for files using external libraries (e.g., xxhash)
 - std::unordered_map is inneficient (?). Main use case for a better hashmap is in `unordered_unique()`. This applies to not only the container, but also the hash function. 
 - `concatenate()` should be split into two (one for each axis). There should also be an option or other function that permits direct insertion of one matrix onto/into another via an index parameter.
-- Doxygen comments for Python are not displayed in HTML output
-- The `_bindings.cpp` have the necessary code to transfer Python and C++, but more documentation could be added (such as )
+- Doxygen output does not display Python comments/docstrings in HTML
+- Doxygen output does not display the Architecture's Mermaid graph.
+- Doxygen output could benefit from having sections in the tree view on the left (seperate hand-made markdown and auto-generated APIs)
+- The `_bindings.cpp` have the necessary code to transfer Python and C++, but more documentation could be added (such as function briefs and parameters)
 
 **Notes:**  
-- Last week of internship, trying to wrap everything up - There may be some things that i forgot and should get axed,
-
+- Last week of internship, trying to wrap everything up - Feel free to modify whatever you want, as the project is licensed under Apache 2.0. I suspect that most of what is written could be optimized even further with better knowledge of computer architecture/C++.
 
 
 ---
@@ -104,7 +106,9 @@ This section will try to lay out everything that has been done in my three month
 - PauliArray inputs: I have not looked deep in the PA source code. Sometimes, an input can be a |V13, but also can transform to the next power of 2 (|V16 in this case). This is behaviour is erratic and i could not find a specific way to initialize PauliArrays such that they were always one way or the other. 
 
 
-<!-- # Template
+<!-- 
+
+# Template
 **Features Added:**
 - added feature
 
@@ -115,4 +119,6 @@ This section will try to lay out everything that has been done in my three month
 - {Copy previous week's section!}
 
 **Notes:**  
-- details  -->
+- details 
+  
+  -->

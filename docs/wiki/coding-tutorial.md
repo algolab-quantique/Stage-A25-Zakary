@@ -51,13 +51,13 @@ And as for the code of the function:
 ## Exposing Functions (Bindings)
 Now that we have a new function, we need to expose it so that it can be called from inside Python.
 
-To do so, navigate to `_src/bindings/` and make a new C++ file (`{MODULE}_bindings.cpp`). Once done, add the following:
+To do so, navigate to `_core/bindings/` and make a new C++ file (`{MODULE}_bindings.cpp`). Once done, add the following:
 ```cpp
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 namespace py = pybind11;
 
-#include "../{MODULE}.hpp"
+#include "../{MODULE}.cpp"
 
 PYBIND11_MODULE(_{MODULE}, m) {
     m.doc() = "This is the description for {MODULE}!";
